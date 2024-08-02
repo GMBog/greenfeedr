@@ -4,6 +4,7 @@
 #'
 #' @param User The user name to log in to GreenFeed system
 #' @param Pass The password to log in to GreenFeed system
+#' @param Output_dir The directory to save the generated file
 #'
 #' @return An excel file with the daily data from GreenFeed system
 #'
