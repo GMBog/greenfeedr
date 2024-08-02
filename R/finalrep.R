@@ -61,6 +61,6 @@ finalrep <- function(Exp = NA, Unit = NA,
     dplyr::filter(AirflowLitersPerSec >= 25)
 
   # Create PDF report using Rmarkdown
-  render("~/API_GreenFeed/Reports_FinalGF.Rmd", output_file = paste0("~/Downloads/Report_", Exp))
+  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = paste0("~/Downloads/Report_", Exp))
 
 }
