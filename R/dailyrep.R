@@ -1,17 +1,17 @@
 #' @title dailyrep
 #'
-#' @description Download, processing, and reporting daily GreenFeed data
+#' @description Download, processing, and reporting daily GreenFeed data.
 #'
-#' @param User The user name to log in to GreenFeed system
-#' @param Pass The password to log in to GreenFeed system
-#' @param Exp The study name
-#' @param Unit The number of the GreenFeed unit/s
-#' @param Start_Date The start date of the study
-#' @param End_Date The end date of the study. By default is the current Date.
-#' @param Output_dir The directory to save the report
-#' @param RFID_file The file that contains the RFID of the animals in the study
+#' @param User The user name to log in to GreenFeed system.
+#' @param Pass The password to log in to GreenFeed system.
+#' @param Exp Study name.
+#' @param Unit The unit number/s of the GreenFeed.
+#' @param Start_Date Start date of the study.
+#' @param End_Date End date of the study. If not specified, the current date will be used.
+#' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
+#' @param RFID_file The file that contains the RFID of the animals in the study.
 #'
-#' @return An excel file with daily data and a PDF report with description of GreenFeed data
+#' @return An excel file with daily data and a PDF report with description of methane data.
 #'
 #' @examples
 #'
@@ -28,7 +28,7 @@
 
 
 dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
-                     Start_Date = NA, End_Date = Sys.Date(), Output_dir = NA, RFID_file = NA) {
+                     Start_Date = NA, End_Date = Sys.Date(), Dir = getwd(), RFID_file = NA) {
 
 
   #Dependent packages
@@ -73,11 +73,16 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     'WasInterrupted', 'InterruptingTags', 'TempPipeDegreesCelsius', 'IsPreliminary', 'RunTime'
   )
 
+  # Check if the directory exists, if not, create it
+  if (!dir.exists(Dir)) {
+    dir.create(Dir, recursive = TRUE)
+  }
+
   # Save your data as a datafile
-  name_file <- paste0(Output_dir, Exp, "_GFdata.csv")
+  name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
   write_excel_csv(df, file = name_file)
 
-  # Generate report as PDF for each of the experiment
+
   # Read cow's ID table included in the experiment
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
     CowsInExperiment <- read_table(RFID_file, col_types = cols(FarmName = col_character(), EID = col_character()))
@@ -90,10 +95,10 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   # Remove leading zeros from RFID column
   df$RFID <- gsub("^0+", "", df$RFID)
 
-  # Summarized data has the gas production data for a long period of time, so you should select the specific period of your experiment
+  # Summarized data has the gas production data
   df <- df %>%
 
-    # Step 1: Retained only those cows in the experiment
+    # Retained only those cows in the experiment
     dplyr::inner_join(CowsInExperiment, by = c("RFID" = "EID")) %>%
     distinct_at(vars(1:5), .keep_all = TRUE) %>%
 
@@ -103,15 +108,16 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
       HourOfDay = round(period_to_seconds(hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)
     ) %>%
 
-    # Step 2: Removing data with Airflow below the threshold (25 l/s)
+    # Removing data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
 
+  # Create the list of animals that will appear in the report
   CowsInExperiment <- CowsInExperiment %>%
     mutate(
       Actual_DIM = DIM + floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") + 1)),
-      MeP = ifelse(EID %in% df$RFID, "Yes", "No")
+      Data = ifelse(EID %in% df$RFID, "Yes", "No")
     ) %>%
-    relocate(Actual_DIM, MeP, .after = DIM) %>%
+    relocate(Actual_DIM, Data, .after = DIM) %>%
     arrange(desc(Actual_DIM))
 
   # Create PDF report using Rmarkdown

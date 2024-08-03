@@ -1,15 +1,16 @@
 #' @title get_api_data
 #'
-#' @description Download daily GreenFeed data
+#' @description Download daily GreenFeed data.
 #'
-#' @param User The user name to log in to GreenFeed system
-#' @param Pass The password to log in to GreenFeed system
-#' @param Exp The study name
-#' @param Unit The number of the GreenFeed unit/s
-#' @param Start_Date The start date of the study
-#' @param End_Date The end date of the study. By default is the current Date.
+#' @param User The user name to log in to GreenFeed system.
+#' @param Pass The password to log in to GreenFeed system.
+#' @param Exp Study name.
+#' @param Unit The unit number/s of the GreenFeed.
+#' @param Start_Date Start date of the study.
+#' @param End_Date End date of the study. If not specified, the current date will be used.
+#' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
 #'
-#' @return An excel file with the daily data from GreenFeed system
+#' @return An excel file with the daily data from GreenFeed system.
 #'
 #' @examples
 #'
@@ -22,7 +23,7 @@
 
 
 get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
-                         Start_Date = NA, End_Date = Sys.Date(), Output_dir = NA) {
+                         Start_Date = NA, End_Date = Sys.Date(), Dir = getwd()) {
 
 
   #Dependent packages
@@ -63,8 +64,13 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     'WasInterrupted', 'InterruptingTags', 'TempPipeDegreesCelsius', 'IsPreliminary', 'RunTime'
   )
 
+  # Check if the directory exists, if not, create it
+  if (!dir.exists(Dir)) {
+    dir.create(Dir, recursive = TRUE)
+  }
+
   # Save your data as a datafile
-  name_file <- paste0(Output_dir, Exp, "_GFdata.csv")
+  name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
   write_excel_csv(df, file = name_file)
 
 }

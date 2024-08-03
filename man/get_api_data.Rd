@@ -11,25 +11,27 @@ get_api_data(
   Unit = NA,
   Start_Date = NA,
   End_Date = Sys.Date(),
-  Output_dir = NA
+  Dir = getwd()
 )
 }
 \arguments{
-\item{User}{The user name to log in to GreenFeed system}
+\item{User}{The user name to log in to GreenFeed system.}
 
-\item{Pass}{The password to log in to GreenFeed system}
+\item{Pass}{The password to log in to GreenFeed system.}
 
-\item{Exp}{The study name}
+\item{Exp}{Study name.}
 
-\item{Unit}{The number of the GreenFeed unit/s}
+\item{Unit}{The unit number/s of the GreenFeed.}
 
-\item{Start_Date}{The start date of the study}
+\item{Start_Date}{Start date of the study.}
 
-\item{End_Date}{The end date of the study. By default is the current Date.}
+\item{End_Date}{End date of the study. If not specified, the current date will be used.}
+
+\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used.}
 }
 \value{
-An excel file with the daily data from GreenFeed system
+An excel file with the daily data from GreenFeed system.
 }
 \description{
-Download daily GreenFeed data
+Download daily GreenFeed data.
 }

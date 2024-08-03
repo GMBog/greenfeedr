@@ -13,18 +13,18 @@ finalrep(
 )
 }
 \arguments{
-\item{Exp}{The study name}
+\item{Exp}{Study name.}
 
-\item{Unit}{The number of the GreenFeed unit/s}
+\item{Unit}{The unit number/s of the GreenFeed.}
 
-\item{Start_Date}{The start date of the study}
+\item{Start_Date}{Start date of the study.}
 
-\item{End_Date}{The end date of the study}
+\item{End_Date}{End date of the study.}
 
-\item{Final_report}{The final report generate by C-Lock at the end of the study}
+\item{Final_report}{Final report generate by C-Lock.}
 }
 \value{
-An excel file with daily data and a PDF report with description of GreenFeed data
+An excel file with daily data and a PDF report with description of methane data.
 }
 \description{
 Processing and reporting GreenFeed data - final report

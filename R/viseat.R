@@ -1,15 +1,15 @@
 #' @title viseat
 #'
-#' @description Processing feedtimes file with intakes
+#' @description Processing visits and feed times in the GreenFeed.
 #'
-#' @param Exp The study name
-#' @param Unit List of the GreenFeed unit/s
-#' @param gcup Grams of pellets per cup
-#' @param Start_Date The start date of the study
-#' @param End_Date The end date of the study
-#' @param RFID_file The file that contains the RFID of the animals in the study
+#' @param Exp Study name.
+#' @param Unit List of the unit number/s of the GreenFeed.
+#' @param gcup Grams of pellets per cup.
+#' @param Start_Date Start date of the study.
+#' @param End_Date End date of the study.
+#' @param RFID_file The file that contains the RFID of the animals enrolled in the study.
 #'
-#' @return
+#' @return Table with a summary of drops and visits to the GreenFeed unit/s.
 #'
 #' @examples
 #'

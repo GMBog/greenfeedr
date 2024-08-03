@@ -2,13 +2,13 @@
 #'
 #' @description Processing and reporting GreenFeed data - final report
 #'
-#' @param Exp The study name
-#' @param Unit The number of the GreenFeed unit/s
-#' @param Start_Date The start date of the study
-#' @param End_Date The end date of the study
-#' @param Final_report The final report generate by C-Lock at the end of the study
+#' @param Exp Study name.
+#' @param Unit The unit number/s of the GreenFeed.
+#' @param Start_Date Start date of the study.
+#' @param End_Date End date of the study.
+#' @param Final_report Final report generate by C-Lock.
 #'
-#' @return An excel file with daily data and a PDF report with description of GreenFeed data
+#' @return An excel file with daily data and a PDF report with description of methane data.
 #'
 #' @examples
 #'
@@ -22,8 +22,7 @@
 #' @import rmarkdown
 
 
-finalrep <- function(Exp = NA, Unit = NA,
-                     Start_Date = NA, End_Date = NA, Final_report = NA) {
+finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA, Final_report = NA) {
 
   #Dependent packages
   library(readr)
@@ -52,6 +51,7 @@ finalrep <- function(Exp = NA, Unit = NA,
   # Remove leading zeros from RFID column
   df$RFID <- gsub("^0+", "", df$RFID)
 
+
   # Summarized data has the gas production data for a long period of time, so you should select the specific period of your experiment
   df <- df %>%
 
@@ -61,7 +61,8 @@ finalrep <- function(Exp = NA, Unit = NA,
     # Removing data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
 
+
   # Create PDF report using Rmarkdown
-  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = paste0("~/Downloads/Report_", Exp))
+  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = paste0(getwd(), "/Report_", Exp, ".pdf"))
 
 }

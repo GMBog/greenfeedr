@@ -11,30 +11,30 @@ dailyrep(
   Unit = NA,
   Start_Date = NA,
   End_Date = Sys.Date(),
-  Output_dir = NA,
+  Dir = getwd(),
   RFID_file = NA
 )
 }
 \arguments{
-\item{User}{The user name to log in to GreenFeed system}
+\item{User}{The user name to log in to GreenFeed system.}
 
-\item{Pass}{The password to log in to GreenFeed system}
+\item{Pass}{The password to log in to GreenFeed system.}
 
-\item{Exp}{The study name}
+\item{Exp}{Study name.}
 
-\item{Unit}{The number of the GreenFeed unit/s}
+\item{Unit}{The unit number/s of the GreenFeed.}
 
-\item{Start_Date}{The start date of the study}
+\item{Start_Date}{Start date of the study.}
 
-\item{End_Date}{The end date of the study. By default is the current Date.}
+\item{End_Date}{End date of the study. If not specified, the current date will be used.}
 
-\item{Output_dir}{The directory to save the report}
+\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used.}
 
-\item{RFID_file}{The file that contains the RFID of the animals in the study}
+\item{RFID_file}{The file that contains the RFID of the animals in the study.}
 }
 \value{
-An excel file with daily data and a PDF report with description of GreenFeed data
+An excel file with daily data and a PDF report with description of methane data.
 }
 \description{
-Download, processing, and reporting daily GreenFeed data
+Download, processing, and reporting daily GreenFeed data.
 }

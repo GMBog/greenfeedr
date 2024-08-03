@@ -14,17 +14,20 @@ pellin(
 )
 }
 \arguments{
-\item{Exp}{The study name}
+\item{Exp}{Study name.}
 
-\item{Unit}{List of the GreenFeed unit/s}
+\item{Unit}{List of the unit number/s of the GreenFeed.}
 
-\item{gcup}{Grams of pellets per cup}
+\item{gcup}{Grams of pellets per cup.}
 
-\item{Start_Date}{The start date of the study}
+\item{Start_Date}{Start date of the study.}
 
-\item{End_Date}{The end date of the study}
+\item{End_Date}{End date of the study.}
 
-\item{RFID_file}{The file that contains the RFID of the animals in the study}
+\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study.}
+}
+\value{
+An excel file with pellet intakes for all animals in the study.
 }
 \description{
 Processing feedtimes file with intakes

@@ -2,14 +2,14 @@
 #'
 #' @description Processing feedtimes file with intakes
 #'
-#' @param Exp The study name
-#' @param Unit List of the GreenFeed unit/s
-#' @param gcup Grams of pellets per cup
-#' @param Start_Date The start date of the study
-#' @param End_Date The end date of the study
-#' @param RFID_file The file that contains the RFID of the animals in the study
+#' @param Exp Study name.
+#' @param Unit List of the unit number/s of the GreenFeed.
+#' @param gcup Grams of pellets per cup.
+#' @param Start_Date Start date of the study.
+#' @param End_Date End date of the study.
+#' @param RFID_file The file that contains the RFID of the animals enrolled in the study.
 #'
-#' @return
+#' @return An excel file with pellet intakes for all animals in the study.
 #'
 #' @examples
 #'
@@ -103,27 +103,27 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
   all_dates <- seq(as.Date(Start_Date), as.Date(End_Date), by = "day")
 
   # Create file with AP intakes in kg
-  massAP_intakes_sp <- massAP_intakes %>%
+  df <- massAP_intakes %>%
     dplyr::filter(Date >= Start_Date & Date <= End_Date) %>%
     dplyr::select(-RFID)
 
-  massAP_intakes_sp$Date <- as.Date(massAP_intakes_sp$Date)
+  df$Date <- as.Date(massAP_intakes_sp$Date)
 
-  massAP_intakes_sp <- massAP_intakes_sp %>% tidyr::complete(Date = all_dates, nesting(Farm_name))
+  df <- massAP_intakes_sp %>% tidyr::complete(Date = all_dates, nesting(Farm_name))
 
   # Add cows without visits to the units
   grid_cows_missing <- expand.grid(
     Date = unique(massAP_intakes_sp$Date),
     Farm_name = CowsInExperiment$FarmName[CowsInExperiment$FarmName %in% noGFvisits],
     Intake_AP_kg = NA)
-  massAP_intakes_sp <- rbind(massAP_intakes_sp, grid_cows_missing)
+  df <- rbind(massAP_intakes_sp, grid_cows_missing)
 
   # Replace NA for a period (.)
-  massAP_intakes_sp$Intake_AP_kg[is.na(massAP_intakes_sp$Intake_AP_kg)] <- "."
+  df$Intake_AP_kg[is.na(df$Intake_AP_kg)] <- "."
 
   # Export a table with the amount of kg of pellets for a specific period!
-  output_file_path <- paste0("~/Downloads/Pellet_Intakes_", Start_Date, "_", End_Date, ".txt")
-  write.table(massAP_intakes_sp, file = output_file_path, quote = F, row.names = F)
+  name_file <- paste0(getwd(), "/Pellet_Intakes_", Start_Date, "_", End_Date, ".txt")
+  write_excel_csv(df, file = name_file)
 
 }
 
