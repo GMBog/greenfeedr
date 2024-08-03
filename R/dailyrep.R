@@ -7,6 +7,7 @@
 #' @param Exp The study name
 #' @param Unit The number of the GreenFeed unit/s
 #' @param Start_Date The start date of the study
+#' @param End_Date The end date of the study. By default is the current Date.
 #' @param Output_dir The directory to save the report
 #' @param RFID_file The file that contains the RFID of the animals in the study
 #'
@@ -16,6 +17,7 @@
 #'
 #'
 #' @export
+#'
 #' @import httr
 #' @import stringr
 #' @import readr
@@ -26,7 +28,7 @@
 
 
 dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
-                     Start_Date = NA, Output_dir = NA, RFID_file = NA) {
+                     Start_Date = NA, End_Date = Sys.Date(), Output_dir = NA, RFID_file = NA) {
 
 
   #Dependent packages
@@ -48,7 +50,7 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   # Now get data using the login token
   URL <- paste0(
     "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", Unit,
-    "&st=", Start_Date, "&et=", Sys.Date(), "%2012:00:00"
+    "&st=", Start_Date, "&et=", End_Date, "%2012:00:00"
   )
   print(URL)
 

@@ -10,6 +10,7 @@ dailyrep(
   Exp = NA,
   Unit = NA,
   Start_Date = NA,
+  End_Date = Sys.Date(),
   Output_dir = NA,
   RFID_file = NA
 )
@@ -24,6 +25,8 @@ dailyrep(
 \item{Unit}{The number of the GreenFeed unit/s}
 
 \item{Start_Date}{The start date of the study}
+
+\item{End_Date}{The end date of the study. By default is the current Date.}
 
 \item{Output_dir}{The directory to save the report}
 

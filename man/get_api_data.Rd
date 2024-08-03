@@ -4,14 +4,28 @@
 \alias{get_api_data}
 \title{get_api_data}
 \usage{
-get_api_data(User = NA, Pass = NA, Output_dir = NA)
+get_api_data(
+  User = NA,
+  Pass = NA,
+  Exp = NA,
+  Unit = NA,
+  Start_Date = NA,
+  End_Date = Sys.Date(),
+  Output_dir = NA
+)
 }
 \arguments{
 \item{User}{The user name to log in to GreenFeed system}
 
 \item{Pass}{The password to log in to GreenFeed system}
 
-\item{Output_dir}{The directory to save the generated file}
+\item{Exp}{The study name}
+
+\item{Unit}{The number of the GreenFeed unit/s}
+
+\item{Start_Date}{The start date of the study}
+
+\item{End_Date}{The end date of the study. By default is the current Date.}
 }
 \value{
 An excel file with the daily data from GreenFeed system

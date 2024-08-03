@@ -4,7 +4,10 @@
 #'
 #' @param User The user name to log in to GreenFeed system
 #' @param Pass The password to log in to GreenFeed system
-#' @param Output_dir The directory to save the generated file
+#' @param Exp The study name
+#' @param Unit The number of the GreenFeed unit/s
+#' @param Start_Date The start date of the study
+#' @param End_Date The end date of the study. By default is the current Date.
 #'
 #' @return An excel file with the daily data from GreenFeed system
 #'
@@ -12,12 +15,14 @@
 #'
 #'
 #' @export
+#'
 #' @import httr
 #' @import stringr
 #' @import readr
 
 
-get_api_data <- function(User = NA, Pass = NA, Output_dir = NA) {
+get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
+                         Start_Date = NA, End_Date = Sys.Date(), Output_dir = NA) {
 
 
   #Dependent packages
@@ -35,7 +40,7 @@ get_api_data <- function(User = NA, Pass = NA, Output_dir = NA) {
   # Now get data using the login token
   URL <- paste0(
     "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", Unit,
-    "&st=", Start_Date, "&et=", Sys.Date(), "%2012:00:00"
+    "&st=", Start_Date, "&et=", End_Date, "%2012:00:00"
   )
   print(URL)
 
@@ -59,7 +64,7 @@ get_api_data <- function(User = NA, Pass = NA, Output_dir = NA) {
   )
 
   # Save your data as a datafile
-  name_file <- paste0(Output_dir, "GFdata.csv")
+  name_file <- paste0(Output_dir, Exp, "_GFdata.csv")
   write_excel_csv(df, file = name_file)
 
 }
