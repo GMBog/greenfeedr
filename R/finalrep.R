@@ -63,6 +63,6 @@ finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA, Final_
 
 
   # Create PDF report using Rmarkdown
-  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = paste0(getwd(), "/Report_", Exp, ".pdf"))
+  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf")))
 
 }

@@ -11,7 +11,7 @@
 #' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
 #' @param RFID_file The file that contains the RFID of the animals in the study.
 #'
-#' @return An excel file with daily data and a PDF report with description of methane data.
+#' @return An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
 #'
 #' @examples
 #'
@@ -82,12 +82,13 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
   write_excel_csv(df, file = name_file)
 
-
   # Read cow's ID table included in the experiment
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
     CowsInExperiment <- read_table(RFID_file, col_types = cols(FarmName = col_character(), EID = col_character()))
+
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
     CowsInExperiment <- read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
+
   } else {
     stop("Unsupported file format.")
   }
@@ -105,20 +106,18 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     # Change the format of good data duration column: Good Data Duration column to minutes with two decimals
     dplyr::mutate(
       GoodDataDuration = round(period_to_seconds(hms(GoodDataDuration)) / 60, 2),
-      HourOfDay = round(period_to_seconds(hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)
-    ) %>%
+      HourOfDay = round(period_to_seconds(hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)) %>%
 
     # Removing data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
 
-  # Create the list of animals that will appear in the report
+  # Create the list of animals that will include in the PDF report
   CowsInExperiment <- CowsInExperiment %>%
-    mutate(
-      Actual_DIM = DIM + floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") + 1)),
-      Data = ifelse(EID %in% df$RFID, "Yes", "No")
-    ) %>%
-    relocate(Actual_DIM, Data, .after = DIM) %>%
-    arrange(desc(Actual_DIM))
+    dplyr::mutate(
+      DIM = DIM + floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") + 1)),
+      Data = ifelse(EID %in% df$RFID, "Yes", "No")) %>%
+    dplyr::relocate(Data, .after = DIM) %>%
+    dplyr::arrange(desc(DIM))
 
   # Create PDF report using Rmarkdown
   rmarkdown::render(system.file("DailyReportsGF.Rmd", package = "greenfeedR"), output_file = paste0("~/Downloads/Report_", Exp))
