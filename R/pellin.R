@@ -1,5 +1,5 @@
 #' @title pellin
-#'
+#' @name pellin
 #' @description Processing feedtimes file with intakes
 #'
 #' @param Exp Study name.
@@ -24,33 +24,27 @@
 #' @import lubridate
 #' @import reshape2
 #' @import plyr
+#' @import utils
 
+
+utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops",
+                         "MassFoodDrop", "Date", "RFID", "massAP_intakes_sp", "Farm_name"))
 
 pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
                    Start_Date = NA, End_Date = NA, RFID_file = NA) {
 
 
-  # Dependent packages
-  library(readr)
-  library(readxl)
-  library(data.table)
-  library(dplyr)
-  library(tidyverse)
-  library(lubridate)
-  library(reshape2)
-  library(plyr)
-
-
   # Open list of animal IDs in the study
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- read_table(RFID_file, col_types = cols(EID = col_character()))
+    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(EID = readr::col_character()))
+
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-    CowsInExperiment <- read_excel(RFID_file)
+    CowsInExperiment <- readxl::read_excel(RFID_file)
     CowsInExperiment$EID <- as.character(CowsInExperiment$EID)
+
   } else {
     stop("Unsupported file format.")
   }
-
   # Open GreenFeed feedtimes downloaded through C-Lock web interface
   feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
     file <- paste0(paste("~/Downloads/data", u, Start_Date, End_Date, sep = "_"), "/feedtimes.csv")
@@ -68,13 +62,13 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
   number_drops <- feedtimes %>%
     dplyr::filter(CowTag %in% CowsInExperiment$EID) %>%
     dplyr::mutate(Day = as.character(as.Date(FeedTime)),
-                  Time = round(period_to_seconds(hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
+                  Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
     dplyr::relocate(Day, Time, .before = unit) %>%
     dplyr::select(-FeedTime) %>%
 
     # Number of drops per cow per day and per unit
     dplyr::group_by(CowTag, unit, Day) %>%
-    dplyr::summarise(ndrops = n(),
+    dplyr::summarise(ndrops = dplyr::n(),
                      TotalPeriod = max(CurrentPeriod))
 
   # Calculating the mass food per drop in different units
@@ -95,7 +89,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
   # Adding the Farm name to the AP intakes
   massAP_intakes <- CowsInExperiment[,1:2] %>%
-    inner_join(massAP_intakes, by = c("EID" = "CowTag"))
+    dplyr::inner_join(massAP_intakes, by = c("EID" = "CowTag"))
   names(massAP_intakes) <- c("Farm_name", "RFID", "Date", "Intake_AP_kg")
 
 
@@ -109,7 +103,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
   df$Date <- as.Date(massAP_intakes_sp$Date)
 
-  df <- massAP_intakes_sp %>% tidyr::complete(Date = all_dates, nesting(Farm_name))
+  df <- massAP_intakes_sp %>% tidyr::complete(Date = all_dates, tidyr::nesting(Farm_name))
 
   # Add cows without visits to the units
   grid_cows_missing <- expand.grid(
@@ -123,7 +117,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
   # Export a table with the amount of kg of pellets for a specific period!
   name_file <- paste0(getwd(), "/Pellet_Intakes_", Start_Date, "_", End_Date, ".txt")
-  write_excel_csv(df, file = name_file)
+  readr::write_excel_csv(df, file = name_file)
 
 }
 

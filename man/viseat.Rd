@@ -3,16 +3,6 @@
 \name{viseat}
 \alias{viseat}
 \title{viseat}
-\usage{
-viseat(
-  Exp = NA,
-  Unit = list(NA),
-  gcup = 34,
-  Start_Date = NA,
-  End_Date = NA,
-  RFID_file = NA
-)
-}
 \arguments{
 \item{Exp}{Study name.}
 

@@ -1,5 +1,5 @@
 #' @title finalrep
-#'
+#' @name finalrep
 #' @description Processing and reporting GreenFeed data - final report
 #'
 #' @param Exp Study name.
@@ -20,19 +20,15 @@
 #' @import dplyr
 #' @import lubridate
 #' @import rmarkdown
+#' @import utils
 
 
 finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA, Final_report = NA) {
 
-  #Dependent packages
-  library(readr)
-  library(readxl)
-  library(dplyr)
-  library(lubridate)
-  library(rmarkdown)
+  utils::globalVariables(c("GoodDataDuration", "AirflowLitersPerSec"))
 
   # Open the final report file and set the name for each column
-  df <- read_excel(FinalReport, col_types = c("text", "text", "numeric", rep("date",3), rep("numeric",12), "text", rep("numeric",6)))
+  df <- readxl::read_excel(Final_report, col_types = c("text", "text", "numeric", rep("date",3), rep("numeric",12), "text", rep("numeric",6)))
   names(df)[1:14] <- c("RFID",
                        "FarmName",
                        "FeederID",
@@ -56,13 +52,13 @@ finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA, Final_
   df <- df %>%
 
     # Change the format of good data duration column: Good Data Duration column to minutes with two decimals
-    dplyr::mutate(GoodDataDuration = round(period_to_seconds(hms(format(as.POSIXct(GoodDataDuration),"%H:%M:%S"))) / 60, 2)) %>%
+    dplyr::mutate(GoodDataDuration = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(GoodDataDuration),"%H:%M:%S"))) / 60, 2)) %>%
 
     # Removing data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
 
 
   # Create PDF report using Rmarkdown
-  render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf")))
+  rmarkdown::render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"), output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf")))
 
 }

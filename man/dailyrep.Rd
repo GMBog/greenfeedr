@@ -3,18 +3,6 @@
 \name{dailyrep}
 \alias{dailyrep}
 \title{dailyrep}
-\usage{
-dailyrep(
-  User = NA,
-  Pass = NA,
-  Exp = NA,
-  Unit = NA,
-  Start_Date = NA,
-  End_Date = Sys.Date(),
-  Dir = getwd(),
-  RFID_file = NA
-)
-}
 \arguments{
 \item{User}{The user name to log in to GreenFeed system.}
 
@@ -33,7 +21,7 @@ dailyrep(
 \item{RFID_file}{The file that contains the RFID of the animals in the study.}
 }
 \value{
-An excel file with daily data and a PDF report with description of methane data.
+An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
 }
 \description{
 Download, processing, and reporting daily GreenFeed data.

@@ -1,5 +1,5 @@
 #' @title dailyrep
-#'
+#' @name dailyrep
 #' @description Download, processing, and reporting daily GreenFeed data.
 #'
 #' @param User The user name to log in to GreenFeed system.
@@ -25,26 +25,19 @@
 #' @import dplyr
 #' @import lubridate
 #' @import rmarkdown
+#' @import utils
 
+
+utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "DIM", "EID", "Data"))
 
 dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
                      Start_Date = NA, End_Date = Sys.Date(), Dir = getwd(), RFID_file = NA) {
 
 
-  #Dependent packages
-  library(httr)
-  library(stringr)
-  library(readr)
-  library(readxl)
-  library(dplyr)
-  library(lubridate)
-  library(rmarkdown)
-
-
   # First Authenticate to receive token:
-  req <- POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
-  stop_for_status(req)
-  TOK <- trimws(content(req, as = "text"))
+  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
+  httr::stop_for_status(req)
+  TOK <- trimws(httr::content(req, as = "text"))
   print(TOK)
 
   # Now get data using the login token
@@ -54,17 +47,17 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   )
   print(URL)
 
-  req <- POST(URL, body = list(token = TOK))
-  stop_for_status(req)
-  a <- content(req, as = "text")
+  req <- httr::POST(URL, body = list(token = TOK))
+  httr::stop_for_status(req)
+  a <- httr::content(req, as = "text")
   print(a)
 
   # Split the lines
-  perline <- str_split(a, "\\n")[[1]]
+  perline <- stringr::str_split(a, "\\n")[[1]]
   print(perline)
 
   # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
-  df <- do.call("rbind", str_split(perline[3:length(perline)], ","))
+  df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
   df <- as.data.frame(df)
   colnames(df) <- c(
     'FeederID', 'AnimalName', 'RFID', 'StartTime', 'EndTime', 'GoodDataDuration',
@@ -80,14 +73,15 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
 
   # Save your data as a datafile
   name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
-  write_excel_csv(df, file = name_file)
+  readr::write_excel_csv(df, file = name_file)
+
 
   # Read cow's ID table included in the experiment
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- read_table(RFID_file, col_types = cols(FarmName = col_character(), EID = col_character()))
+    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(FarmName = readr::col_character(), EID = readr::col_character()))
 
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-    CowsInExperiment <- read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
+    CowsInExperiment <- readxl::read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
 
   } else {
     stop("Unsupported file format.")
@@ -101,12 +95,12 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
 
     # Retained only those cows in the experiment
     dplyr::inner_join(CowsInExperiment, by = c("RFID" = "EID")) %>%
-    distinct_at(vars(1:5), .keep_all = TRUE) %>%
+    dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
 
     # Change the format of good data duration column: Good Data Duration column to minutes with two decimals
     dplyr::mutate(
-      GoodDataDuration = round(period_to_seconds(hms(GoodDataDuration)) / 60, 2),
-      HourOfDay = round(period_to_seconds(hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)) %>%
+      GoodDataDuration = round(lubridate::period_to_seconds(lubridate::hms(GoodDataDuration)) / 60, 2),
+      HourOfDay = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)) %>%
 
     # Removing data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
@@ -117,7 +111,7 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
       DIM = DIM + floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") + 1)),
       Data = ifelse(EID %in% df$RFID, "Yes", "No")) %>%
     dplyr::relocate(Data, .after = DIM) %>%
-    dplyr::arrange(desc(DIM))
+    dplyr::arrange(dplyr::desc(DIM))
 
   # Create PDF report using Rmarkdown
   rmarkdown::render(system.file("DailyReportsGF.Rmd", package = "greenfeedR"), output_file = paste0("~/Downloads/Report_", Exp))

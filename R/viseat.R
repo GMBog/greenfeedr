@@ -1,5 +1,5 @@
 #' @title viseat
-#'
+#' @name viseat
 #' @description Processing visits and feed times in the GreenFeed.
 #'
 #' @param Exp Study name.
@@ -24,29 +24,22 @@
 #' @import lubridate
 #' @import reshape2
 #' @import plyr
+#' @import utils
 
+utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date","FarmName"))
 
 viseat <- function(Exp = NA, Unit = list(NA), gcup = 34,
                    Start_Date = NA, End_Date = NA, RFID_file = NA) {
 
 
-  # Dependent packages
-  library(readr)
-  library(readxl)
-  library(data.table)
-  library(dplyr)
-  library(tidyverse)
-  library(lubridate)
-  library(reshape2)
-  library(plyr)
-
-
   # Open list of animal IDs in the study
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- read_table(RFID_file, col_types = cols(EID = col_character()))
+    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(EID = readr::col_character()))
+
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-    CowsInExperiment <- read_excel(RFID_file)
+    CowsInExperiment <- readxl::read_excel(RFID_file)
     CowsInExperiment$EID <- as.character(CowsInExperiment$EID)
+
   } else {
     stop("Unsupported file format.")
   }
@@ -69,14 +62,13 @@ viseat <- function(Exp = NA, Unit = list(NA), gcup = 34,
   daily_visits <- feedtimes %>%
     dplyr::inner_join(CowsInExperiment[,1:2], by = c("CowTag" = "EID")) %>%
     dplyr::mutate(Day = as.character(as.Date(FeedTime)),
-                  Time = round(period_to_seconds(hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
+                  Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
     dplyr::relocate(Day, Time, FarmName, .after = unit) %>%
     dplyr::select(-FeedTime) %>%
 
     # Number of drops per cow per day and per unit
     dplyr::group_by(FarmName, Day) %>%
-    dplyr::summarise(ndrops = n(),
-                     visits = max(CurrentPeriod))
+    dplyr::summarise(ndrops = dplyr::n(), visits = max(CurrentPeriod))
 
   # Get the number of drops and visits per cow
   visits <- daily_visits %>%

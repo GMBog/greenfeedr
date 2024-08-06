@@ -1,5 +1,5 @@
 #' @title get_api_data
-#'
+#' @name get_api_data
 #' @description Download daily GreenFeed data.
 #'
 #' @param User The user name to log in to GreenFeed system.
@@ -26,16 +26,10 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
                          Start_Date = NA, End_Date = Sys.Date(), Dir = getwd()) {
 
 
-  #Dependent packages
-  library(httr)
-  library(stringr)
-  library(readr)
-
-
   # First Authenticate to receive token:
-  req <- POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
-  stop_for_status(req)
-  TOK <- trimws(content(req, as = "text"))
+  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
+  httr::stop_for_status(req)
+  TOK <- trimws(httr::content(req, as = "text"))
   print(TOK)
 
   # Now get data using the login token
@@ -45,17 +39,17 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   )
   print(URL)
 
-  req <- POST(URL, body = list(token = TOK))
-  stop_for_status(req)
-  a <- content(req, as = "text")
+  req <- httr::POST(URL, body = list(token = TOK))
+  httr::stop_for_status(req)
+  a <- httr::content(req, as = "text")
   print(a)
 
   # Split the lines
-  perline <- str_split(a, "\\n")[[1]]
+  perline <- stringr::str_split(a, "\\n")[[1]]
   print(perline)
 
   # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
-  df <- do.call("rbind", str_split(perline[3:length(perline)], ","))
+  df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
   df <- as.data.frame(df)
   colnames(df) <- c(
     'FeederID', 'AnimalName', 'RFID', 'StartTime', 'EndTime', 'GoodDataDuration',
@@ -71,7 +65,7 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
 
   # Save your data as a datafile
   name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
-  write_excel_csv(df, file = name_file)
+  readr::write_excel_csv(df, file = name_file)
 
 }
 
