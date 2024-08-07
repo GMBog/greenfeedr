@@ -36,6 +36,7 @@
 #' @import readr
 #' @import readxl
 #' @import dplyr
+#' @importFrom dplyr %>%
 #' @import lubridate
 #' @import rmarkdown
 #' @import utils

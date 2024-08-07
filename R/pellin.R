@@ -31,6 +31,7 @@
 #' @import readr
 #' @import readxl
 #' @import dplyr
+#' @importFrom dplyr %>%
 #' @import lubridate
 #' @import utils
 
@@ -53,22 +54,37 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
   } else {
     stop("Unsupported file format.")
   }
+
   # Open GreenFeed feedtimes downloaded through C-Lock web interface
   feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
-    file <- paste0(paste(getwd(), "/data", u, Start_Date, End_Date, sep = "_"), "/feedtimes.csv")
+    # Construct the file path
+    file <- paste0(getwd(), "/data_", u, "_", Start_Date, "_", End_Date, "/feedtimes.csv")
+
+    # Check if the file exists
+    if (!file.exists(file)) {
+      stop(paste("File does not exist:", file))
+    }
+
     return(file)
   })
 
-  feedtimes <- dplyr::bind_rows(purrr::map2_dfr(feedtimes_file_paths, Unit, ~ readr::read_csv(.x) %>% dplyr::mutate(unit = .y))) %>%
+  # Read and bind feedtimes data
+  feedtimes <- dplyr::bind_rows(
+    purrr::map2_dfr(feedtimes_file_paths, Unit, function(file_path, unit) {
+      readr::read_csv(file_path) %>%
+        dplyr::mutate(unit = unit)
+    })
+  ) %>%
     dplyr::relocate(unit, .before = FeedTime) %>%
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+
 
   # Get the animal IDs that were not visiting the GreenFeed during the study
   noGFvisits <- CowsInExperiment$FarmName[!(CowsInExperiment$EID %in% feedtimes$CowTag)]
 
   # Adding to the table the visit day and daytime visit
   number_drops <- feedtimes %>%
-    dplyr::filter(CowTag %in% CowsInExperiment$EID) %>%
+    dplyr::filter(CowTag %in% CowsInExperiment$RFID) %>%
     dplyr::mutate(Day = as.character(as.Date(FeedTime)),
                   Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
     dplyr::relocate(Day, Time, .before = unit) %>%
@@ -97,7 +113,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
   # Adding the Farm name to the AP intakes
   massAP_intakes <- CowsInExperiment[,1:2] %>%
-    dplyr::inner_join(massAP_intakes, by = c("EID" = "CowTag"))
+    dplyr::inner_join(massAP_intakes, by = c("RFID" = "CowTag"))
   names(massAP_intakes) <- c("Farm_name", "RFID", "Date", "Intake_AP_kg")
 
 

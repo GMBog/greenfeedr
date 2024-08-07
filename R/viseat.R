@@ -27,6 +27,7 @@
 #' @import readr
 #' @import readxl
 #' @import dplyr
+#' @importFrom dplyr %>%
 #' @import lubridate
 #' @import utils
 
@@ -50,11 +51,24 @@ viseat <- function(Exp = NA, Unit = list(NA),
 
   # Open GreenFeed feedtimes downloaded through C-Lock web interface
   feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
-    file <- paste0(paste("~/Downloads/data", u, Start_Date, End_Date, sep = "_"), "/feedtimes.csv")
+    # Construct the file path
+    file <- paste0(getwd(), "/data_", u, "_", Start_Date, "_", End_Date, "/feedtimes.csv")
+
+    # Check if the file exists
+    if (!file.exists(file)) {
+      stop(paste("File does not exist:", file))
+    }
+
     return(file)
   })
 
-  feedtimes <- dplyr::bind_rows(purrr::map2_dfr(feedtimes_file_paths, Unit, ~ readr::read_csv(.x) %>% dplyr::mutate(unit = .y))) %>%
+  # Read and bind feedtimes data
+  feedtimes <- dplyr::bind_rows(
+    purrr::map2_dfr(feedtimes_file_paths, Unit, function(file_path, unit) {
+      readr::read_csv(file_path) %>%
+        dplyr::mutate(unit = unit)
+    })
+  ) %>%
     dplyr::relocate(unit, .before = FeedTime) %>%
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
 
