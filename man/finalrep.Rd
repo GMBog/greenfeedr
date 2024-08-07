@@ -3,15 +3,6 @@
 \name{finalrep}
 \alias{finalrep}
 \title{finalrep}
-\usage{
-finalrep(
-  Exp = NA,
-  Unit = NA,
-  Start_Date = NA,
-  End_Date = NA,
-  Final_report = NA
-)
-}
 \arguments{
 \item{Exp}{Study name.}
 
@@ -28,4 +19,19 @@ An excel file with daily data and a PDF report with description of methane data.
 }
 \description{
 Processing and reporting GreenFeed data - final report
+}
+\examples{
+\dontrun{
+Exp <- "Test_study"
+Unit <- "577,578"
+Start_Date <- "2023-01-01"
+End_Date <- "2023-04-01"
+
+Please replace with the final report from C-Lock with the finalized GreenFeed data
+Final_report = "/Users/CLock_finalreport.xlsx"
+
+finalrep(Exp, Unit, Start_Date, End_Date, Final_report)
+
+}
+
 }

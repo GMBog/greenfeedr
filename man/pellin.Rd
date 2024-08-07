@@ -22,3 +22,19 @@ An excel file with pellet intakes for all animals in the study.
 \description{
 Processing feedtimes file with intakes
 }
+\examples{
+\dontrun{
+Exp <- "Test_study"
+Unit <- list("577","578")
+Please replace here with the grams of pellet that fit in one cup (10 drop-test)
+gcup <- 34
+
+Start_Date <- "2023-01-01"
+End_Date <- "2023-04-01"
+RFID_file = "/Users/RFID_file.csv"
+
+pellin(Exp, Unit, gcup, Start_Date, End_Date, RFID_file)
+
+}
+
+}

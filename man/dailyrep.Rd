@@ -26,3 +26,19 @@ An Excel file with the GreenFeed daily data and a PDF report with a description 
 \description{
 Download, processing, and reporting daily GreenFeed data.
 }
+\examples{
+\dontrun{
+Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+User <- "your_username"
+Pass <- "your_password"
+Exp <- "Test_study"
+Unit <- 578
+Start_Date <- "2023-01-01"
+End_Date <- Sys.Date()
+Dir <- getwd()
+RFID_file = "/Users/RFID_file.csv"
+dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file)
+
+}
+
+}

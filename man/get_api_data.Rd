@@ -35,3 +35,18 @@ An excel file with the daily data from GreenFeed system.
 \description{
 Download daily GreenFeed data.
 }
+\examples{
+\dontrun{
+# Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+User <- "your_username"
+Pass <- "your_password"
+Exp <- "Test_study"
+Unit <- 578
+Start_Date <- "2023-01-01"
+End_Date <- Sys.Date()
+Dir <- getwd()
+
+get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+}
+
+}

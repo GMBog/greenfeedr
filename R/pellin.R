@@ -12,18 +12,26 @@
 #' @return An excel file with pellet intakes for all animals in the study.
 #'
 #' @examples
+#' \dontrun{
+#' Exp <- "Test_study"
+#' Unit <- list("577","578")
+#' Please replace here with the grams of pellet that fit in one cup (10 drop-test)
+#' gcup <- 34
 #'
+#' Start_Date <- "2023-01-01"
+#' End_Date <- "2023-04-01"
+#' RFID_file = "/Users/RFID_file.csv"
 #'
-#' @export
+#' pellin(Exp, Unit, gcup, Start_Date, End_Date, RFID_file)
+#'
+#' }
+#'
+#' @export pellin
 #'
 #' @import readr
 #' @import readxl
-#' @import data.table
 #' @import dplyr
-#' @import tidyverse
 #' @import lubridate
-#' @import reshape2
-#' @import plyr
 #' @import utils
 
 
@@ -47,7 +55,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
   }
   # Open GreenFeed feedtimes downloaded through C-Lock web interface
   feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
-    file <- paste0(paste("~/Downloads/data", u, Start_Date, End_Date, sep = "_"), "/feedtimes.csv")
+    file <- paste0(paste(getwd(), "/data", u, Start_Date, End_Date, sep = "_"), "/feedtimes.csv")
     return(file)
   })
 

@@ -4,7 +4,6 @@
 #'
 #' @param Exp Study name.
 #' @param Unit List of the unit number/s of the GreenFeed.
-#' @param gcup Grams of pellets per cup.
 #' @param Start_Date Start date of the study.
 #' @param End_Date End date of the study.
 #' @param RFID_file The file that contains the RFID of the animals enrolled in the study.
@@ -12,23 +11,28 @@
 #' @return Table with a summary of drops and visits to the GreenFeed unit/s.
 #'
 #' @examples
+#' \dontrun{
+#' Exp <- "Test_study"
+#' Unit <- list("577","578")
+#' Start_Date <- "2023-01-01"
+#' End_Date <- "2023-04-01"
+#' RFID_file = "/Users/RFID_file.csv"
 #'
+#' viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
 #'
-#' @export
+#' }
+#'
+#' @export viseat
 #'
 #' @import readr
 #' @import readxl
-#' @import data.table
 #' @import dplyr
-#' @import tidyverse
 #' @import lubridate
-#' @import reshape2
-#' @import plyr
 #' @import utils
 
 utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date","FarmName"))
 
-viseat <- function(Exp = NA, Unit = list(NA), gcup = 34,
+viseat <- function(Exp = NA, Unit = list(NA),
                    Start_Date = NA, End_Date = NA, RFID_file = NA) {
 
 
