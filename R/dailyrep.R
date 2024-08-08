@@ -10,6 +10,7 @@
 #' @param End_Date End date of the study. If not specified, the current date will be used.
 #' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
 #' @param RFID_file The file that contains the RFID of the animals in the study.
+#' @param Plot_opt Type of gas to plot: All, CH4, CO2, O2, or H2
 #'
 #' @return An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
 #'
@@ -24,6 +25,7 @@
 #' End_Date <- Sys.Date()
 #' Dir <- getwd()
 #' RFID_file = "/Users/RFID_file.csv"
+#' Plot_opt = "CH4"
 
 #' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file)
 #'
@@ -45,7 +47,8 @@
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "DIM", "Data"))
 
 dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
-                     Start_Date = NA, End_Date = Sys.Date(), Dir = getwd(), RFID_file = NA) {
+                     Start_Date = NA, End_Date = Sys.Date(),
+                     Dir = getwd(), RFID_file = NA, Plot_opt = "CH4") {
 
 
   # First Authenticate to receive token:
