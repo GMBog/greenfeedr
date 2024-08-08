@@ -45,11 +45,11 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
   # Open list of animal IDs in the study
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(EID = readr::col_character()))
+    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(RFID = readr::col_character()))
 
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
     CowsInExperiment <- readxl::read_excel(RFID_file)
-    CowsInExperiment$EID <- as.character(CowsInExperiment$EID)
+    CowsInExperiment$RFID <- as.character(CowsInExperiment$RFID)
 
   } else {
     stop("Unsupported file format.")
@@ -80,7 +80,7 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
 
 
   # Get the animal IDs that were not visiting the GreenFeed during the study
-  noGFvisits <- CowsInExperiment$FarmName[!(CowsInExperiment$EID %in% feedtimes$CowTag)]
+  noGFvisits <- CowsInExperiment$FarmName[!(CowsInExperiment$RFID %in% feedtimes$CowTag)]
 
   # Adding to the table the visit day and daytime visit
   number_drops <- feedtimes %>%
@@ -125,23 +125,22 @@ pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
     dplyr::filter(Date >= Start_Date & Date <= End_Date) %>%
     dplyr::select(-RFID)
 
-  df$Date <- as.Date(massAP_intakes_sp$Date)
+  df$Date <- as.Date(df$Date)
 
-  df <- massAP_intakes_sp %>% tidyr::complete(Date = all_dates, tidyr::nesting(Farm_name))
+  df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(Farm_name))
 
   # Add cows without visits to the units
   grid_cows_missing <- expand.grid(
-    Date = unique(massAP_intakes_sp$Date),
+    Date = unique(df$Date),
     Farm_name = CowsInExperiment$FarmName[CowsInExperiment$FarmName %in% noGFvisits],
     Intake_AP_kg = NA)
-  df <- rbind(massAP_intakes_sp, grid_cows_missing)
+  df <- rbind(df, grid_cows_missing)
 
   # Replace NA for a period (.)
   df$Intake_AP_kg[is.na(df$Intake_AP_kg)] <- "."
 
   # Export a table with the amount of kg of pellets for a specific period!
-  name_file <- paste0(getwd(), "/Pellet_Intakes_", Start_Date, "_", End_Date, ".txt")
-  readr::write_excel_csv(df, file = name_file)
+  readr::write_excel_csv(df, file = paste0(getwd(), "/Pellet_Intakes_", Start_Date, "_", End_Date, ".txt"))
 
 }
 

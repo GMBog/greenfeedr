@@ -84,9 +84,8 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     dir.create(Dir, recursive = TRUE)
   }
 
-  # Save your data as a datafile
-  name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
-  readr::write_excel_csv(df, file = name_file)
+  # Save GreenFeed data as a data file in the specified directory
+  readr::write_excel_csv(df, file = paste0(Dir, "/", Exp, "_GFdata.csv"))
 
 
   # Read file with the RFID (or TagID) in the study
@@ -100,11 +99,12 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     stop("Unsupported file format.")
   }
 
-  # Remove leading zeros from RFID column
-  df$RFID <- gsub("^0+", "", df$RFID)
 
   # Df contains GreenFeed gases data
   df <- df %>%
+
+    # Remove leading zeros from RFID col to match with IDs
+    dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
 
     # Retain only those animals that are in the experiment (it will remove unknown ID)
     dplyr::inner_join(CowsInExperiment, by = "RFID") %>%
@@ -120,6 +120,7 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     # Remove data with Airflow below the threshold (25 l/s)
     dplyr::filter(AirflowLitersPerSec >= 25)
 
+
   # Create the list of animals that will include in the PDF report
   CowsInExperiment <- CowsInExperiment %>%
     dplyr::mutate(
@@ -127,11 +128,13 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
       DIM = DIM + floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") + 1)),
       # 'Data' col is a binary (YES = animal has records, NO = animal has no records)
       Data = ifelse(RFID %in% df$RFID, "Yes", "No")) %>%
+    # Arrange dataset by Days in milk (DIM)
     dplyr::arrange(dplyr::desc(DIM))
 
 
   # Create PDF report using Rmarkdown
-  rmarkdown::render(system.file("DailyReportsGF.Rmd", package = "greenfeedR"), output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf")))
+  rmarkdown::render(system.file("DailyReportsGF.Rmd", package = "greenfeedR"),
+                    output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf")))
 
 }
 
