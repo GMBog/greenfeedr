@@ -21,7 +21,7 @@ library(kableExtra)
 
 ## Days of experiment: `r floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") +1))` days
 
-**Number of animals with records: `r nrow(semi_join(CowsInExperiment, df, by = c("EID" = "RFID")))` out of `r nrow(CowsInExperiment)`**
+**Number of animals with records: `r nrow(semi_join(CowsInExperiment, df, by = "RFID"))` out of `r nrow(CowsInExperiment)`**
 
 
 ```{r Summary, message=FALSE, echo=FALSE}
