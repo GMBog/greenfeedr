@@ -1,4 +1,4 @@
-Package: greenfeedR
+Package: greenfeedr
 Type: Package
 Title: Process GreenFeed data
 Version: 0.1.0

@@ -35,19 +35,18 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(greenfeedR)
-User = "your_username"
-Pass = "your_password"
+User <- "your_username"
+Pass <- "your_password"
 
-Exp = "Test"
-Unit = "212"
-Start_Date = "2024-07-15"
-End_Date = Sys.Date()
-Dir = "/Users/Downloads"
-RFID_file = "/Users/Test_RFID.csv"
+Exp <- "Test"
+Unit <- "212"
+Start_Date <- "2024-07-15"
+End_Date <- Sys.Date()
+Dir <- "/Users/Downloads"
+RFID_file <- "/Users/Test_RFID.csv"
 
 
-#dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file)
-
+# dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file)
 ```
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:

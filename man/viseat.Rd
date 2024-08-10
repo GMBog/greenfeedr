@@ -23,13 +23,12 @@ Processing visits and feed times in the GreenFeed.
 \examples{
 \dontrun{
 Exp <- "Test_study"
-Unit <- list("577","578")
+Unit <- list("577", "578")
 Start_Date <- "2023-01-01"
 End_Date <- "2023-04-01"
-RFID_file = "/Users/RFID_file.csv"
+RFID_file <- "/Users/RFID_file.csv"
 
 viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
-
 }
 
 }

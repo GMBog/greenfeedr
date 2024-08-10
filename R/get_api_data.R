@@ -35,8 +35,6 @@
 
 get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
                          Start_Date = NA, End_Date = Sys.Date(), Dir = getwd()) {
-
-
   # First Authenticate to receive token:
   req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
   httr::stop_for_status(req)
@@ -63,10 +61,10 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
   df <- as.data.frame(df)
   colnames(df) <- c(
-    'FeederID', 'AnimalName', 'RFID', 'StartTime', 'EndTime', 'GoodDataDuration',
-    'CO2GramsPerDay', 'CH4GramsPerDay', 'O2GramsPerDay', 'H2GramsPerDay', 'H2SGramsPerDay',
-    'AirflowLitersPerSec', 'AirflowCf', 'WindSpeedMetersPerSec', 'WindDirDeg', 'WindCf',
-    'WasInterrupted', 'InterruptingTags', 'TempPipeDegreesCelsius', 'IsPreliminary', 'RunTime'
+    "FeederID", "AnimalName", "RFID", "StartTime", "EndTime", "GoodDataDuration",
+    "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay", "H2SGramsPerDay",
+    "AirflowLitersPerSec", "AirflowCf", "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
+    "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
   )
 
   # Check if the directory exists, if not, create it
@@ -77,6 +75,4 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   # Save your data as a datafile
   name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
   readr::write_excel_csv(df, file = name_file)
-
 }
-

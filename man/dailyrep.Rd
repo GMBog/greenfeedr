@@ -19,6 +19,8 @@
 \item{Dir}{Directory to save the output file. If not specified, the current working directory will be used.}
 
 \item{RFID_file}{The file that contains the RFID of the animals in the study.}
+
+\item{Plot_opt}{Type of gas to plot: All, CH4, CO2, O2, or H2.}
 }
 \value{
 An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
@@ -28,7 +30,7 @@ Download, processing, and reporting daily GreenFeed data.
 }
 \examples{
 \dontrun{
-Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+# Replace "your_username" and "your_password" with actual GreenFeed credentials
 User <- "your_username"
 Pass <- "your_password"
 Exp <- "Test_study"
@@ -36,9 +38,10 @@ Unit <- 578
 Start_Date <- "2023-01-01"
 End_Date <- Sys.Date()
 Dir <- getwd()
-RFID_file = "/Users/RFID_file.csv"
-dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file)
+RFID_file <- "/Users/RFID_file.csv"
+Plot_opt <- "CH4"
 
+dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 }
 
 }

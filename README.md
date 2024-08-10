@@ -1,22 +1,22 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedR
+# greenfeedr
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of greenfeedR is to provide convenient functions to process
+The goal of greenfeedr is to provide convenient functions to process
 GreenFeed files
 
 ## Installation
 
-You can install the development version of greenfeedR from
-[GitHub](https://github.com/GMBog/greenfeedR) with:
+You can install the development version of greenfeedr from
+[GitHub](https://github.com/GMBog/greenfeedr) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("GMBog/greenfeedR")
+pak::pak("GMBog/greenfeedr")
 ```
 
 ## Example

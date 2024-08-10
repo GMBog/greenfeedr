@@ -39,37 +39,37 @@ utils::globalVariables(c("GoodDataDuration", "AirflowLitersPerSec"))
 
 finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA,
                      Final_report = list(NA), Plot_opt = "CH4") {
-
   # Function to read and process each file
   process_file <- function(file) {
     df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
-    names(df)[1:14] <- c("RFID",
-                         "FarmName",
-                         "FeederID",
-                         "StartTime",
-                         "EndTime",
-                         "GoodDataDuration",
-                         "HourOfDay",
-                         "CO2GramsPerDay",
-                         "CH4GramsPerDay",
-                         "O2GramsPerDay",
-                         "H2GramsPerDay",
-                         "H2SGramsPerDay",
-                         "AirflowLitersPerSec",
-                         "AirflowCf")
+    names(df)[1:14] <- c(
+      "RFID",
+      "FarmName",
+      "FeederID",
+      "StartTime",
+      "EndTime",
+      "GoodDataDuration",
+      "HourOfDay",
+      "CO2GramsPerDay",
+      "CH4GramsPerDay",
+      "O2GramsPerDay",
+      "H2GramsPerDay",
+      "H2SGramsPerDay",
+      "AirflowLitersPerSec",
+      "AirflowCf"
+    )
 
 
     df <- df %>%
-
       # Remove leading zeros from RFID col to match with IDs
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-
       # Change the format of good data duration column to minutes with two decimals
       dplyr::mutate(GoodDataDuration = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(GoodDataDuration), "%H:%M:%S"))) / 60, 2)) %>%
-
       # Remove data with Airflow below the threshold (25 l/s)
-      dplyr::filter(AirflowLitersPerSec >= 25,
-                    StartTime >= Start_Date)
+      dplyr::filter(
+        AirflowLitersPerSec >= 25,
+        StartTime >= Start_Date
+      )
 
     return(df)
   }
@@ -79,6 +79,6 @@ finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA,
 
   # Create PDF report using Rmarkdown
   rmarkdown::render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"),
-                    output_file = file.path(getwd(), paste0("Report_", Exp, ".pdf")))
-
+    output_file = file.path(getwd(), paste0("Report_", Exp, ".pdf"))
+  )
 }

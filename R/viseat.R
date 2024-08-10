@@ -13,13 +13,12 @@
 #' @examples
 #' \dontrun{
 #' Exp <- "Test_study"
-#' Unit <- list("577","578")
+#' Unit <- list("577", "578")
 #' Start_Date <- "2023-01-01"
 #' End_Date <- "2023-04-01"
-#' RFID_file = "/Users/RFID_file.csv"
+#' RFID_file <- "/Users/RFID_file.csv"
 #'
 #' viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
-#'
 #' }
 #'
 #' @export viseat
@@ -31,20 +30,16 @@
 #' @import lubridate
 #' @import utils
 
-utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date","FarmName"))
+utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"))
 
 viseat <- function(Exp = NA, Unit = list(NA),
                    Start_Date = NA, End_Date = NA, RFID_file = NA) {
-
-
   # Open list of animal IDs in the study
   if (tolower(tools::file_ext(RFID_file)) == "csv") {
     CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(EID = readr::col_character()))
-
   } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
     CowsInExperiment <- readxl::read_excel(RFID_file)
     CowsInExperiment$EID <- as.character(CowsInExperiment$EID)
-
   } else {
     stop("Unsupported file format.")
   }
@@ -78,12 +73,13 @@ viseat <- function(Exp = NA, Unit = list(NA),
 
   # Get the number of drops and visits per day per cow
   daily_visits <- feedtimes %>%
-    dplyr::inner_join(CowsInExperiment[,1:2], by = c("CowTag" = "EID")) %>%
-    dplyr::mutate(Day = as.character(as.Date(FeedTime)),
-                  Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)) %>%
+    dplyr::inner_join(CowsInExperiment[, 1:2], by = c("CowTag" = "EID")) %>%
+    dplyr::mutate(
+      Day = as.character(as.Date(FeedTime)),
+      Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)
+    ) %>%
     dplyr::relocate(Day, Time, FarmName, .after = unit) %>%
     dplyr::select(-FeedTime) %>%
-
     # Number of drops per cow per day and per unit
     dplyr::group_by(FarmName, Day) %>%
     dplyr::summarise(ndrops = dplyr::n(), visits = max(CurrentPeriod))
@@ -91,16 +87,13 @@ viseat <- function(Exp = NA, Unit = list(NA),
   # Get the number of drops and visits per cow
   visits <- daily_visits %>%
     dplyr::group_by(FarmName) %>%
-    dplyr::summarise(total_drops = sum(ndrops),
-                     total_visits = sum(visits),
-                     mean_drops = round(mean(ndrops),2),
-                     mean_visits = round(mean(visits),2))
+    dplyr::summarise(
+      total_drops = sum(ndrops),
+      total_visits = sum(visits),
+      mean_drops = round(mean(ndrops), 2),
+      mean_visits = round(mean(visits), 2)
+    )
 
 
   return(visits)
-
 }
-
-
-
-

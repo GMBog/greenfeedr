@@ -6,13 +6,11 @@ output: pdf_document
 
 
 ```{r libraries, include=FALSE}
-
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(RColorBrewer)
 library(kableExtra)
-
 ```
 
 # Study: `r Exp`
@@ -25,9 +23,7 @@ library(kableExtra)
 
 
 ```{r Summary, message=FALSE, echo=FALSE}
-
 kbl(CowsInExperiment, "simple")
-
 ```
 
 \newpage
@@ -35,39 +31,40 @@ kbl(CowsInExperiment, "simple")
 ## **Daily gases records**
 
 ```{r Data per day, message=FALSE, echo=FALSE, fig.height=4.2, fig.width=7}
-
 cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
 df[cols_to_convert] <- lapply(df[cols_to_convert], as.numeric)
 
-#Plot 1: Total number of production records per day
-plot1 <- ggplot(as.data.frame(table(as.Date(df$StartTime))), aes(x = Var1, y = Freq)) + 
+# Plot 1: Total number of production records per day
+plot1 <- ggplot(as.data.frame(table(as.Date(df$StartTime))), aes(x = Var1, y = Freq)) +
   geom_col(color = "black") +
   labs(title = "Total records per day", x = "", y = "Number of records") +
   geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 2.2, position = position_dodge(width = 0.9)) +
   theme_classic() +
-  theme(plot.title = element_text(size = 11, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
-        axis.title.y = element_text(size = 10, face = "bold"),
-        legend.position = "none")
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
+    axis.title.y = element_text(size = 10, face = "bold"),
+    legend.position = "none"
+  )
 
 plot1
 
 
-#Plot 2: Methane production per day (It is used as a reference for gas production per day)
-plot2 <- ggplot(df, aes(x = as.character(as.Date(StartTime)), y = CH4GramsPerDay, color = as.character(as.Date(StartTime)))) + 
+# Plot 2: Methane production per day (It is used as a reference for gas production per day)
+plot2 <- ggplot(df, aes(x = as.character(as.Date(StartTime)), y = CH4GramsPerDay, color = as.character(as.Date(StartTime)))) +
   geom_boxplot(lwd = 0.8) +
   scale_y_continuous(breaks = c(seq(0, max(df$CH4GramsPerDay), 50))) +
   labs(title = "Methane (CH4) production per day", x = "", y = "CH4 (g/d)") +
   geom_hline(yintercept = mean(df$CH4GramsPerDay), linetype = "dashed", color = "black", linewidth = 0.5) +
   theme_classic() +
-  theme(plot.title = element_text(size = 11, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
-        axis.title.y = element_text(size = 10, face = "bold"),
-        legend.position = "none")
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
+    axis.title.y = element_text(size = 10, face = "bold"),
+    legend.position = "none"
+  )
 
 plot2
-
-
 ```
 
 \newpage
@@ -75,39 +72,41 @@ plot2
 ## **Daily gases records per animal**
 
 ```{r Data per cow, message=FALSE, warning=FALSE, echo=FALSE, fig.height=4, fig.width=7}
-
 ## Description of total number of records and CH4 PER COW
 
-#Plot 1: Total number of records per cow
+# Plot 1: Total number of records per cow
 plot1 <- df %>%
   dplyr::mutate(day = as.Date(EndTime)) %>%
-  
   dplyr::group_by(FarmName, day) %>%
-  dplyr::summarise(n = n(), 
-                   daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
-  
+  dplyr::summarise(
+    n = n(),
+    daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE)
+  ) %>%
   dplyr::group_by(FarmName) %>%
-  dplyr::summarise(n = sum(n), 
-                   daily_CH4 = mean(daily_CH4, na.rm = TRUE)) %>%
-  
-  ggplot(aes(x = reorder(FarmName, -daily_CH4), y = n)) + 
-    geom_bar(stat = "identity", position = position_dodge()) +
-    
-    labs(title = "Total records per animal", x = "", y = "Number of total records", fill = "") +
-    
-    theme_classic() +
-    theme(plot.title = element_text(size = 11, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
-        axis.title.y = element_text(size = 10, face = "bold"),
-        legend.position = "none") +
-  
-    #geom_hline(yintercept = floor(as.numeric(difftime(max(df$StartTime), min(df$StartTime), units = "days"))),
-    #         linetype = "dashed", color = "red", linewidth = 0.5) +
-    geom_text(aes(label = n), vjust = -1, color = "black",
-            position = position_dodge(width = 0.9), size = 2.2)
+  dplyr::summarise(
+    n = sum(n),
+    daily_CH4 = mean(daily_CH4, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = reorder(FarmName, -daily_CH4), y = n)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Total records per animal", x = "", y = "Number of total records", fill = "") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
+    axis.title.y = element_text(size = 10, face = "bold"),
+    legend.position = "none"
+  ) +
+
+  # geom_hline(yintercept = floor(as.numeric(difftime(max(df$StartTime), min(df$StartTime), units = "days"))),
+  #         linetype = "dashed", color = "red", linewidth = 0.5) +
+  geom_text(aes(label = n),
+    vjust = -1, color = "black",
+    position = position_dodge(width = 0.9), size = 2.2
+  )
 
 
-##Changing the format of the hour of the day
+## Changing the format of the hour of the day
 df$HourOfDay <- as.numeric(df$HourOfDay)
 
 plot2 <- df %>%
@@ -117,26 +116,26 @@ plot2 <- df %>%
     HourOfDay >= 4 & HourOfDay < 10 ~ "4AM - 10AM",
     HourOfDay >= 10 & HourOfDay < 16 ~ "10AM - 4PM",
     HourOfDay >= 16 & HourOfDay < 22 ~ "4PM - 10PM",
-    TRUE ~ NA_character_)) %>%
-  
+    TRUE ~ NA_character_
+  )) %>%
   dplyr::group_by(FarmName, AMPM) %>%
   dplyr::summarise(n = n()) %>%
-  
   ggplot(aes(x = FarmName, y = n, fill = factor(AMPM, levels = c("10PM - 4AM", "4AM - 10AM", "10AM - 4PM", "4PM - 10PM")))) +
   geom_bar(stat = "identity", position = "fill") +
   labs(title = "Distribution of records across the day", x = "", y = "Percentage of total records", fill = "") +
   theme_classic() +
-  theme(plot.title = element_text(size = 11, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
-        legend.position = "bottom",
-        axis.title.y = element_text(size = 10, face = "bold")) +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1.05, size = 8),
+    legend.position = "bottom",
+    axis.title.y = element_text(size = 10, face = "bold")
+  ) +
   scale_fill_brewer(palette = "BrBG") +
   scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1), labels = c("0%", "25%", "50%", "75%", "100%"), expand = c(0, 0))
 
 
 plot1
 plot2
-
 ```
 
 \newpage
@@ -144,104 +143,114 @@ plot2
 ## **Daily gas production per animal**
 
 ```{r Gas data production per cow, message=T, warning=FALSE, echo=FALSE, fig.height=3, fig.width=7}
-
 ## The daily averages for different gases is calculated as the weighted mean using visit time to the GreenFeed (or 'GoodDataDuration')
 
 # Function to generate plots
 generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) {
   options_selected <- strsplit(Plot_opt, ", ")[[1]]
-  
+
   if ("All" %in% options_selected) {
     options_selected <- c("CH4", "O2", "CO2", "H2")
   }
-  
+
   plots <- list()
-  
+
   if ("CH4" %in% options_selected) {
     p1 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
       dplyr::summarise(daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
-      
-      {ggplot(., aes(x = reorder(RFID, -daily_CH4), y = daily_CH4, color = daily_CH4)) + 
-        geom_boxplot(fatten = NULL, outlier.shape = NA) +
-        stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
-        labs(title = "Methane (CH4) production per animal", x = "", y = "CH4 (g/d)") +
-        theme_classic() +
-        theme(plot.title = element_text(size = 11, face = "bold"),
-              axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
-              axis.title.y = element_text(size = 10, face = "bold"),
-              legend.position = "none") +
-        geom_hline(yintercept = mean(.$daily_CH4), linetype = "dashed", color = "red", linewidth = 0.6) +
-        scale_y_continuous(breaks = seq(0, max(.$daily_CH4), by = 100))
-    }
+      {
+        ggplot(., aes(x = reorder(RFID, -daily_CH4), y = daily_CH4, color = daily_CH4)) +
+          geom_boxplot(fatten = NULL, outlier.shape = NA) +
+          stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
+          labs(title = "Methane (CH4) production per animal", x = "", y = "CH4 (g/d)") +
+          theme_classic() +
+          theme(
+            plot.title = element_text(size = 11, face = "bold"),
+            axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
+            axis.title.y = element_text(size = 10, face = "bold"),
+            legend.position = "none"
+          ) +
+          geom_hline(yintercept = mean(.$daily_CH4), linetype = "dashed", color = "red", linewidth = 0.6) +
+          scale_y_continuous(breaks = seq(0, max(.$daily_CH4), by = 100))
+      }
     plots <- c(plots, list(p1))
   }
-  
+
   if ("CO2" %in% options_selected) {
     p3 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
       dplyr::summarise(daily_CO2 = weighted.mean(CO2GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
-      {ggplot(., aes(x = reorder(RFID, -daily_CO2), y = daily_CO2, color = daily_CO2)) + 
-        geom_boxplot(fatten = NULL, outlier.shape = NA) +
-        stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
-        labs(title = "Carbon dioxide (CO2) production per animal", x = "", y = "CO2 (g/d)") +
-        theme_classic() +
-        theme(plot.title = element_text(size = 11, face = "bold"),
-              axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
-              axis.title.y = element_text(size = 10, face = "bold"),
-              legend.position = "none") +
-        geom_hline(yintercept = mean(.$daily_CO2), linetype = "dashed", color = "red", linewidth = 0.6) +
-        scale_y_continuous(breaks = seq(0, max(.$daily_CO2), by = 2000))
+      {
+        ggplot(., aes(x = reorder(RFID, -daily_CO2), y = daily_CO2, color = daily_CO2)) +
+          geom_boxplot(fatten = NULL, outlier.shape = NA) +
+          stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
+          labs(title = "Carbon dioxide (CO2) production per animal", x = "", y = "CO2 (g/d)") +
+          theme_classic() +
+          theme(
+            plot.title = element_text(size = 11, face = "bold"),
+            axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
+            axis.title.y = element_text(size = 10, face = "bold"),
+            legend.position = "none"
+          ) +
+          geom_hline(yintercept = mean(.$daily_CO2), linetype = "dashed", color = "red", linewidth = 0.6) +
+          scale_y_continuous(breaks = seq(0, max(.$daily_CO2), by = 2000))
       }
     plots <- c(plots, list(p3))
   }
-  
+
   if ("O2" %in% options_selected) {
     p2 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
       dplyr::summarise(daily_O2 = weighted.mean(O2GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
-      {ggplot(., aes(x = reorder(RFID, -daily_O2), y = daily_O2, color = daily_O2)) + 
-        geom_boxplot(fatten = NULL, outlier.shape = NA) +
-        stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
-        labs(title = "Oxygen (O2) production per animal", x = "", y = "O2 (g/d)") +
-        theme_classic() +
-        theme(plot.title = element_text(size = 11, face = "bold"),
-              axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
-              axis.title.y = element_text(size = 10, face = "bold"),
-              legend.position = "none") +
-        geom_hline(yintercept = mean(.$daily_O2), linetype = "dashed", color = "red", linewidth = 0.6) +
-        scale_y_continuous(breaks = seq(0, max(.$daily_O2), by = 2000))
+      {
+        ggplot(., aes(x = reorder(RFID, -daily_O2), y = daily_O2, color = daily_O2)) +
+          geom_boxplot(fatten = NULL, outlier.shape = NA) +
+          stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
+          labs(title = "Oxygen (O2) production per animal", x = "", y = "O2 (g/d)") +
+          theme_classic() +
+          theme(
+            plot.title = element_text(size = 11, face = "bold"),
+            axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
+            axis.title.y = element_text(size = 10, face = "bold"),
+            legend.position = "none"
+          ) +
+          geom_hline(yintercept = mean(.$daily_O2), linetype = "dashed", color = "red", linewidth = 0.6) +
+          scale_y_continuous(breaks = seq(0, max(.$daily_O2), by = 2000))
       }
     plots <- c(plots, list(p2))
   }
-  
+
   if ("H2" %in% options_selected) {
     if (any(df$H2GramsPerDay > 0)) {
       p4 <- df %>%
         dplyr::mutate(day = as.Date(EndTime)) %>%
         dplyr::group_by(RFID, day) %>%
         dplyr::summarise(daily_H2 = weighted.mean(H2GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
-        {ggplot(., aes(x = reorder(RFID, -daily_H2), y = daily_H2, color = daily_H2)) + 
-          geom_boxplot(fatten = NULL, outlier.shape = NA) +
-          stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
-          labs(title = "Hydrogen (H2) production per animal", x = "", y = "H2 (g/d)") +
-          theme_classic() +
-          theme(plot.title = element_text(size = 11, face = "bold"),
-                axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
-                axis.title.y = element_text(size = 10, face = "bold"),
-                legend.position = "none") +
-          geom_hline(yintercept = mean(.$daily_H2), linetype = "dashed", color = "red", linewidth = 0.6) +
-          scale_y_continuous(breaks = seq(0, max(.$daily_H2), by = 0.5))
-        }  
+        {
+          ggplot(., aes(x = reorder(RFID, -daily_H2), y = daily_H2, color = daily_H2)) +
+            geom_boxplot(fatten = NULL, outlier.shape = NA) +
+            stat_summary(fun = mean, geom = "errorbar", aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7, color = "black", linetype = "solid") +
+            labs(title = "Hydrogen (H2) production per animal", x = "", y = "H2 (g/d)") +
+            theme_classic() +
+            theme(
+              plot.title = element_text(size = 11, face = "bold"),
+              axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5),
+              axis.title.y = element_text(size = 10, face = "bold"),
+              legend.position = "none"
+            ) +
+            geom_hline(yintercept = mean(.$daily_H2), linetype = "dashed", color = "red", linewidth = 0.6) +
+            scale_y_continuous(breaks = seq(0, max(.$daily_H2), by = 0.5))
+        }
       plots <- c(plots, list(p4))
     } else {
       print("No hydrogen (H2) data from GreenFeed")
     }
   }
-  
+
   return(plots)
 }
 
@@ -250,5 +259,4 @@ plots <- generate_plots(df, Plot_opt)
 for (p in plots) {
   print(p)
 }
-
 ```
