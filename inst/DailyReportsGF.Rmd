@@ -147,15 +147,18 @@ plot2
 
 # Function to generate plots
 generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) {
-  options_selected <- strsplit(Plot_opt, ", ")[[1]]
-
-  if ("All" %in% options_selected) {
-    options_selected <- c("CH4", "O2", "CO2", "H2")
+  # Convert to lowercase to avoid case sensitivity issues
+  Plot_opt <- tolower(Plot_opt)
+  
+  if ("all" %in% Plot_opt) {
+    options_selected <- c("ch4", "o2", "co2", "h2")
+  } else {
+    options_selected <- Plot_opt
   }
 
   plots <- list()
 
-  if ("CH4" %in% options_selected) {
+  if ("ch4" %in% options_selected) {
     p1 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
@@ -178,7 +181,7 @@ generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) 
     plots <- c(plots, list(p1))
   }
 
-  if ("CO2" %in% options_selected) {
+  if ("co2" %in% options_selected) {
     p3 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
@@ -201,7 +204,7 @@ generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) 
     plots <- c(plots, list(p3))
   }
 
-  if ("O2" %in% options_selected) {
+  if ("o2" %in% options_selected) {
     p2 <- df %>%
       dplyr::mutate(day = as.Date(EndTime)) %>%
       dplyr::group_by(RFID, day) %>%
@@ -224,7 +227,7 @@ generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) 
     plots <- c(plots, list(p2))
   }
 
-  if ("H2" %in% options_selected) {
+  if ("h2" %in% options_selected) {
     if (any(df$H2GramsPerDay > 0)) {
       p4 <- df %>%
         dplyr::mutate(day = as.Date(EndTime)) %>%

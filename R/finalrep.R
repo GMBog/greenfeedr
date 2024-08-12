@@ -13,15 +13,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' Exp <- "Test_study"
-#' Unit <- "577,578"
-#' Start_Date <- "2023-01-01"
-#' End_Date <- "2023-04-01"
-#'
-#' # Please replace with the final report/s from C-Lock with the finalized GreenFeed data.
-#' ## In case you have multiple reports from the same study you can combine them
-#' Final_report <- list("/Users/CLock_finalreport1.xlsx", "/Users/CLock_finalreport2.xlsx")
-#'
+#' Exp <- "StudyName"
+#' Unit <- "1"
+#' Start_Date <- "2024-01-22"
+#' End_Date <- "2024-03-08"
+#' Final_report <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 #' finalrep(Exp, Unit, Start_Date, End_Date, Final_report, "CH4")
 #' }
 #'
@@ -35,7 +31,7 @@
 #' @import rmarkdown
 #' @import utils
 
-utils::globalVariables(c("GoodDataDuration", "AirflowLitersPerSec"))
+utils::globalVariables(c("GoodDataDuration", "AirflowLitersPerSec", "CH4GramsPerDay"))
 
 finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA,
                      Final_report = list(NA), Plot_opt = "CH4") {
@@ -68,7 +64,8 @@ finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA,
       # Remove data with Airflow below the threshold (25 l/s)
       dplyr::filter(
         AirflowLitersPerSec >= 25,
-        StartTime >= Start_Date
+        StartTime >= Start_Date,
+        CH4GramsPerDay >= 0
       )
 
     return(df)
@@ -78,7 +75,8 @@ finalrep <- function(Exp = NA, Unit = NA, Start_Date = NA, End_Date = NA,
   df <- do.call(rbind, lapply(Final_report, process_file))
 
   # Create PDF report using Rmarkdown
-  rmarkdown::render(system.file("FinalReportsGF.Rmd", package = "greenfeedR"),
+  rmarkdown::render(
+    input = system.file("FinalReportsGF.Rmd", package = "greenfeedr"),
     output_file = file.path(getwd(), paste0("Report_", Exp, ".pdf"))
   )
 }

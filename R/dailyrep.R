@@ -129,7 +129,8 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
 
 
   # Create PDF report using Rmarkdown
-  rmarkdown::render(system.file("DailyReportsGF.Rmd", package = "greenfeedR"),
+  rmarkdown::render(
+    input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
     output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf"))
   )
 }

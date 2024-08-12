@@ -24,15 +24,11 @@ Processing and reporting GreenFeed data - final report
 }
 \examples{
 \dontrun{
-Exp <- "Test_study"
-Unit <- "577,578"
-Start_Date <- "2023-01-01"
-End_Date <- "2023-04-01"
-
-# Please replace with the final report/s from C-Lock with the finalized GreenFeed data.
-## In case you have multiple reports from the same study you can combine them
-Final_report <- list("/Users/CLock_finalreport1.xlsx", "/Users/CLock_finalreport2.xlsx")
-
+Exp <- "StudyName"
+Unit <- "1"
+Start_Date <- "2024-01-22"
+End_Date <- "2024-03-08"
+Final_report <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 finalrep(Exp, Unit, Start_Date, End_Date, Final_report, "CH4")
 }
 
