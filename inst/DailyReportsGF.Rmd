@@ -149,7 +149,7 @@ plot2
 generate_plots <- function(data, Plot_opt = c("All", "CH4", "O2", "CO2", "H2")) {
   # Convert to lowercase to avoid case sensitivity issues
   Plot_opt <- tolower(Plot_opt)
-  
+
   if ("all" %in% Plot_opt) {
     options_selected <- c("ch4", "o2", "co2", "h2")
   } else {

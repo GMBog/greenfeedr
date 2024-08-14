@@ -29,8 +29,8 @@
 #' @export get_api_data
 #'
 #' @import httr
-#' @import stringr
 #' @import readr
+#' @import stringr
 
 
 get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
@@ -39,7 +39,6 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
   httr::stop_for_status(req)
   TOK <- trimws(httr::content(req, as = "text"))
-  print(TOK)
 
   # Now get data using the login token
   URL <- paste0(
@@ -51,11 +50,9 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   req <- httr::POST(URL, body = list(token = TOK))
   httr::stop_for_status(req)
   a <- httr::content(req, as = "text")
-  print(a)
 
   # Split the lines
   perline <- stringr::str_split(a, "\\n")[[1]]
-  print(perline)
 
   # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
   df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))

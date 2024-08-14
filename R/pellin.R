@@ -27,12 +27,13 @@
 #'
 #' @export pellin
 #'
-#' @import readr
-#' @import readxl
 #' @import dplyr
 #' @importFrom dplyr %>%
 #' @import lubridate
 #' @import purrr
+#' @import readr
+#' @import readxl
+#' @import tidyr
 #' @import utils
 
 

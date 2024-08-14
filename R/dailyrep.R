@@ -30,16 +30,16 @@
 #' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 #' }
 #'
-#' @export
+#' @export dailyrep
 #'
-#' @import httr
-#' @import stringr
-#' @import readr
-#' @import readxl
 #' @import dplyr
 #' @importFrom dplyr %>%
+#' @import httr
 #' @import lubridate
+#' @import readr
+#' @import readxl
 #' @import rmarkdown
+#' @import stringr
 #' @import utils
 
 

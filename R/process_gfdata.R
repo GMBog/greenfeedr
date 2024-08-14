@@ -1,6 +1,6 @@
 #' @title process_gfdata
 #' @name process_gfdata
-#' @description Process daily data from GreenFeed.
+#' @description Process daily data from GreenFeed using your own parameters.
 #'
 #' @param file File with GreenFeed data
 #' @param Start_Date Start date of the study
@@ -9,22 +9,27 @@
 #' @param param1 Number of records a day
 #' @param param2 Number of days with records
 #'
-#' @return Tables with processed data
-#' @export
+#' @return Tables with GreenFeed processed data: daily data and weekly data
+#' @export process_gfdata
 #'
 #' @examples
+#' \dontrun{
+#' Start_Date <- "2024-01-22"
+#' End_Date <- "2024-03-08"
+#' input_type <- "final"
+#' file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+#' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
+#' }
 #'
+#' @import dplyr
+#' @importFrom dplyr %>%
 #' @import readxl
 #' @importFrom stats weighted.mean
 #' @importFrom stats sd
-#' @import dplyr
-#' @importFrom dplyr %>%
-
 
 utils::globalVariables(c("EndTime", "daily_CH4", "weekly_CH4", "nDays", "nRecords", "TotalMin", "CV"))
 
 process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, param1, param2) {
-
   # Ensure param1 and param2 are defined
   if (missing(param1) || missing(param2)) {
     stop("Please define 'param1' (minimum records per day) and 'param2' (minimum days per week).")
@@ -40,10 +45,9 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
 
   # Function to read and process each file
   process_file <- function(file, input_type) {
-
     if (input_type == "final") {
       # Read from Excel file
-      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
+      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
 
       # Rename columns
       names(df)[1:14] <- c(
@@ -102,7 +106,6 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
         # 'HourOfDay' col is a new col that will contains the time of the day in which the visit happened
         HourOfDay = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(StartTime), "%H:%M:%S"))) / 3600, 2)
       )
-
   }
 
   # Combine all files into one data frame
@@ -110,20 +113,18 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
 
 
 
-  ##Computing weekly production of gases
+  ## Computing weekly production of gases
   daily_df <- df %>%
     dplyr::mutate(day = as.Date(EndTime)) %>%
     dplyr::filter(CH4GramsPerDay >= 200 & CH4GramsPerDay <= 800) %>%
-
     dplyr::group_by(RFID, day) %>%
     dplyr::summarise(
       n = n(),
       daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE),
       minutes = sum(GoodDataDuration, na.rm = TRUE),
-      .groups = 'drop'
+      .groups = "drop"
     ) %>%
-
-    dplyr::filter(n >= param1) %>%  # Filter out days with less than 2 records
+    dplyr::filter(n >= param1) %>% # Filter out days with less than 2 records
 
     dplyr::mutate(week = floor(as.numeric(difftime(day, min(day), units = "weeks"))) + 1) %>%
     dplyr::select(RFID, week, n, minutes, daily_CH4)
@@ -136,10 +137,9 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
       nRecords = sum(n),
       TotalMin = round(sum(minutes), 2),
       weekly_CH4 = stats::weighted.mean(daily_CH4, minutes, na.rm = TRUE),
-      .groups = 'drop'  # Un-group after summarizing
+      .groups = "drop" # Un-group after summarizing
     ) %>%
-
-    dplyr::filter(nDays >= param2) %>%  # Filter out weeks with less than "param2" days
+    dplyr::filter(nDays >= param2) %>% # Filter out weeks with less than "param2" days
     dplyr::select(RFID, week, nDays, nRecords, TotalMin, weekly_CH4)
 
 
@@ -149,7 +149,4 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
 
   # Return a list of data frames
   return(list(daily_data = daily_df, weekly_data = weekly_df))
-
-
 }
-

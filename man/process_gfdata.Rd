@@ -17,8 +17,18 @@
 \item{param2}{Number of days with records}
 }
 \value{
-Tables with processed data
+Tables with GreenFeed processed data: daily data and weekly data
 }
 \description{
-Process daily data from GreenFeed.
+Process daily data from GreenFeed using your own parameters.
+}
+\examples{
+\dontrun{
+Start_Date <- "2024-01-22"
+End_Date <- "2024-03-08"
+input_type <- "final"
+file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
+}
+
 }

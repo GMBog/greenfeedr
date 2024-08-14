@@ -23,11 +23,11 @@
 #'
 #' @export viseat
 #'
-#' @import readr
-#' @import readxl
 #' @import dplyr
 #' @importFrom dplyr %>%
 #' @import lubridate
+#' @import readr
+#' @import readxl
 #' @import utils
 
 utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"))

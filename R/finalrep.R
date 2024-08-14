@@ -23,11 +23,11 @@
 #'
 #' @export finalrep
 #'
-#' @import readr
-#' @import readxl
 #' @import dplyr
 #' @importFrom dplyr %>%
 #' @import lubridate
+#' @import readr
+#' @import readxl
 #' @import rmarkdown
 #' @import utils
 
