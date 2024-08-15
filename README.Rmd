@@ -22,11 +22,11 @@ The goal of greenfeedR is to provide convenient functions to process GreenFeed f
 
 ## Installation
 
-You can install the development version of greenfeedR from [GitHub](https://github.com/GMBog/greenfeedR) with:
+You can install the development version of greenfeedr from [GitHub](https://github.com/GMBog/greenfeedr) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("GMBog/greenfeedR")
+pak::pak("GMBog/greenfeedr")
 ```
 
 ## Example
@@ -42,7 +42,7 @@ Start_Date <- "2023-10-23"
 End_Date <- "2024-01-12"
 Final_report <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
-finalrep(Exp, Unit, Start_Date, End_Date, Final_report, Plot_opt = "All")
+#finalrep(Exp, Unit, Start_Date, End_Date, Final_report, Plot_opt = "All")
 ```
 
 
