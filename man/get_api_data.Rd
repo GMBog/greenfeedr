@@ -15,33 +15,33 @@ get_api_data(
 )
 }
 \arguments{
-\item{User}{The user name to log in to GreenFeed system.}
+\item{User}{User name to log in to GreenFeed}
 
-\item{Pass}{The password to log in to GreenFeed system.}
+\item{Pass}{Password to log in to GreenFeed}
 
-\item{Exp}{Study name.}
+\item{Exp}{Study name}
 
-\item{Unit}{The unit number/s of the GreenFeed.}
+\item{Unit}{The unit number/s of the GreenFeed}
 
-\item{Start_Date}{Start date of the study.}
+\item{Start_Date}{Start date of the study}
 
-\item{End_Date}{End date of the study. If not specified, the current date will be used.}
+\item{End_Date}{End date of the study. If not specified, the current date will be used}
 
-\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used.}
+\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
 }
 \value{
-An excel file with the daily data from GreenFeed system.
+A .csv file with daily data from GreenFeed unit/s
 }
 \description{
-Download daily GreenFeed data.
+Download daily GreenFeed data using API
 }
 \examples{
 \dontrun{
 # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
 User <- "your_username"
 Pass <- "your_password"
-Exp <- "Test_study"
-Unit <- 578
+Exp <- "StudyName"
+Unit <- 1
 Start_Date <- "2023-01-01"
 End_Date <- Sys.Date()
 Dir <- getwd()

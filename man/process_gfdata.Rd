@@ -4,23 +4,23 @@
 \alias{process_gfdata}
 \title{process_gfdata}
 \arguments{
-\item{file}{File with GreenFeed data}
+\item{file}{File with GreenFeed data in daily or final format}
 
 \item{Start_Date}{Start date of the study}
 
 \item{End_Date}{End date of the study}
 
-\item{input_type}{Data could be from daily or final report: "daily" or "final"}
+\item{input_type}{Input data could be from daily or final report: "daily" or "final"}
 
 \item{param1}{Number of records a day}
 
 \item{param2}{Number of days with records}
 }
 \value{
-Tables with GreenFeed processed data: daily data and weekly data
+Datasets with GreenFeed processed data in a daily and weekly
 }
 \description{
-Process daily data from GreenFeed using your own parameters.
+Process daily and final GreenFeed data
 }
 \examples{
 \dontrun{

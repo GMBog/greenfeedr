@@ -1,16 +1,15 @@
 #' @title process_gfdata
 #' @name process_gfdata
-#' @description Process daily data from GreenFeed using your own parameters.
+#' @description Process daily and final GreenFeed data
 #'
-#' @param file File with GreenFeed data
+#' @param file File with GreenFeed data in daily or final format
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study
-#' @param input_type Data could be from daily or final report: "daily" or "final"
+#' @param input_type Input data could be from daily or final report: "daily" or "final"
 #' @param param1 Number of records a day
 #' @param param2 Number of days with records
 #'
-#' @return Tables with GreenFeed processed data: daily data and weekly data
-#' @export process_gfdata
+#' @return Datasets with GreenFeed processed data in a daily and weekly
 #'
 #' @examples
 #' \dontrun{
@@ -21,13 +20,16 @@
 #' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
 #' }
 #'
+#' @export process_gfdata
+#'
 #' @import dplyr
 #' @importFrom dplyr %>%
 #' @import readxl
 #' @importFrom stats weighted.mean
 #' @importFrom stats sd
 
-utils::globalVariables(c("EndTime", "CH4", "CO2", "O2", "H2", "nDays", "nRecords", "TotalMin", "CV"))
+utils::globalVariables(c("EndTime", "CH4GramsPerDay", "CH4", "CO2GramsPerDay", "CO2", "O2GramsPerDay", "O2",
+                         "H2GramsPerDay", "H2", "nDays", "nRecords", "TotalMin", "CV"))
 
 process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, param1, param2) {
   # Ensure param1 and param2 are defined

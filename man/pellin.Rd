@@ -4,31 +4,30 @@
 \alias{pellin}
 \title{pellin}
 \arguments{
-\item{Exp}{Study name.}
+\item{Exp}{Study name}
 
-\item{Unit}{List of the unit number/s of the GreenFeed.}
+\item{Unit}{List of the unit number/s of the GreenFeed}
 
-\item{gcup}{Grams of pellets per cup.}
+\item{gcup}{Grams of pellets per cup}
 
-\item{Start_Date}{Start date of the study.}
+\item{Start_Date}{Start date of the study}
 
-\item{End_Date}{End date of the study.}
+\item{End_Date}{End date of the study}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study.}
+\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study}
 }
 \value{
-An excel file with pellet intakes for all animals in the study.
+An Excel file with pellet intakes for all animals in the study
 }
 \description{
 Processing feedtimes file with intakes
 }
 \examples{
 \dontrun{
-Exp <- "Test_study"
-Unit <- list("577", "578")
+Exp <- "StudyName"
+Unit <- list(1, 2)
 # Please replace here with the grams of pellet that fit in one cup (10 drop-test)
 gcup <- 34
-
 Start_Date <- "2023-01-01"
 End_Date <- "2023-04-01"
 RFID_file <- "/Users/RFID_file.csv"

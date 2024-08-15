@@ -22,10 +22,10 @@ test_that("process_gfdata works correctly", {
   expect_s3_class(result$weekly_data, "data.frame")
 
   # Check that the daily data has the expected columns
-  expect_true(all(c("RFID", "week", "n", "minutes", "daily_CH4") %in% colnames(result$daily_data)))
+  expect_true(all(c("RFID", "week", "n", "minutes", "CH4", "CO2", "O2", "H2") %in% colnames(result$daily_data)))
 
   # Check that the weekly data has the expected columns
-  expect_true(all(c("RFID", "week", "nDays", "nRecords", "TotalMin", "weekly_CH4") %in% colnames(result$weekly_data)))
+  expect_true(all(c("RFID", "week", "nDays", "nRecords", "TotalMin", "CH4", "CO2", "O2", "H2") %in% colnames(result$weekly_data)))
 
   # Check that the daily data has filtered out days with less than `param1` records
   expect_true(all(result$daily_data$n >= param1))
@@ -34,8 +34,8 @@ test_that("process_gfdata works correctly", {
   expect_true(all(result$weekly_data$nDays >= param2))
 
   # Check for valid mean, sd, and CV calculations
-  expect_true(!is.na(mean(result$weekly_data$weekly_CH4)))
-  expect_true(!is.na(sd(result$weekly_data$weekly_CH4)))
-  expect_true(!is.na(sd(result$weekly_data$weekly_CH4) / mean(result$weekly_data$weekly_CH4) * 100))
+  expect_true(!is.na(mean(result$weekly_data$CH4)))
+  expect_true(!is.na(sd(result$weekly_data$CH4)))
+  expect_true(!is.na(sd(result$weekly_data$CH4) / mean(result$weekly_data$CH4) * 100))
 
 })

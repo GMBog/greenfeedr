@@ -1,31 +1,32 @@
 #' @title dailyrep
 #' @name dailyrep
-#' @description Download, processing, and reporting daily GreenFeed data.
+#' @description Download and report daily GreenFeed data
 #'
-#' @param User The user name to log in to GreenFeed system.
-#' @param Pass The password to log in to GreenFeed system.
-#' @param Exp Study name.
-#' @param Unit The unit number/s of the GreenFeed.
-#' @param Start_Date Start date of the study.
-#' @param End_Date End date of the study. If not specified, the current date will be used.
-#' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
-#' @param RFID_file The file that contains the RFID of the animals in the study.
-#' @param Plot_opt Type of gas to plot: All, CH4, CO2, O2, or H2.
+#' @param User User name to log in to GreenFeed
+#' @param Pass Password to log in to GreenFeed
+#' @param Exp Study name
+#' @param Unit The unit number/s of the GreenFeed
+#' @param Start_Date Start date of the study
+#' @param End_Date End date of the study. If not specified, the current date will be used
+#' @param Dir Directory to save the output file. If not specified, the current working directory will be used
+#' @param RFID_file The file that contains the RFID of the animals in the study
+#' @param Plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be process
 #'
-#' @return An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
+#' @return A .csv file with daily data from GreenFeed unit/s and
+#'     a PDF report with a description of daily data
 #'
 #' @examples
 #' \dontrun{
 #' # Replace "your_username" and "your_password" with actual GreenFeed credentials
 #' User <- "your_username"
 #' Pass <- "your_password"
-#' Exp <- "Test_study"
-#' Unit <- 578
+#' Exp <- "StudyName"
+#' Unit <- 1
 #' Start_Date <- "2023-01-01"
 #' End_Date <- Sys.Date()
 #' Dir <- getwd()
 #' RFID_file <- "/Users/RFID_file.csv"
-#' Plot_opt <- "CH4"
+#' Plot_opt <- "All"
 #'
 #' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 #' }
@@ -52,7 +53,6 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
   httr::stop_for_status(req)
   TOK <- trimws(httr::content(req, as = "text"))
-  print(TOK)
 
   # Now get data using the login token
   URL <- paste0(
@@ -67,7 +67,6 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
 
   # Split the lines
   perline <- stringr::str_split(a, "\\n")[[1]]
-  print(perline)
 
   # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
   df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
@@ -84,7 +83,7 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     dir.create(Dir, recursive = TRUE)
   }
 
-  # Save GreenFeed data as a data file in the specified directory
+  # Save GreenFeed data as a csv file in the specified directory
   readr::write_excel_csv(df, file = paste0(Dir, "/", Exp, "_GFdata.csv"))
 
 
@@ -98,7 +97,7 @@ dailyrep <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
   }
 
 
-  # Df contains GreenFeed gases data
+  # df contains daily GreenFeed data
   df <- df %>%
     # Remove leading zeros from RFID col to match with IDs
     dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%

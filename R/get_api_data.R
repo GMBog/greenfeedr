@@ -1,24 +1,24 @@
 #' @title get_api_data
 #' @name get_api_data
-#' @description Download daily GreenFeed data.
+#' @description Download daily GreenFeed data using API
 #'
-#' @param User The user name to log in to GreenFeed system.
-#' @param Pass The password to log in to GreenFeed system.
-#' @param Exp Study name.
-#' @param Unit The unit number/s of the GreenFeed.
-#' @param Start_Date Start date of the study.
-#' @param End_Date End date of the study. If not specified, the current date will be used.
-#' @param Dir Directory to save the output file. If not specified, the current working directory will be used.
+#' @param User User name to log in to GreenFeed
+#' @param Pass Password to log in to GreenFeed
+#' @param Exp Study name
+#' @param Unit The unit number/s of the GreenFeed
+#' @param Start_Date Start date of the study
+#' @param End_Date End date of the study. If not specified, the current date will be used
+#' @param Dir Directory to save the output file. If not specified, the current working directory will be used
 #'
-#' @return An excel file with the daily data from GreenFeed system.
+#' @return A .csv file with daily data from GreenFeed unit/s
 #'
 #' @examples
 #' \dontrun{
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
 #' User <- "your_username"
 #' Pass <- "your_password"
-#' Exp <- "Test_study"
-#' Unit <- 578
+#' Exp <- "StudyName"
+#' Unit <- 1
 #' Start_Date <- "2023-01-01"
 #' End_Date <- Sys.Date()
 #' Dir <- getwd()
@@ -69,7 +69,7 @@ get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
     dir.create(Dir, recursive = TRUE)
   }
 
-  # Save your data as a datafile
+  # Save your data as a datafile in csv format
   name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
   readr::write_excel_csv(df, file = name_file)
 }

@@ -4,42 +4,43 @@
 \alias{dailyrep}
 \title{dailyrep}
 \arguments{
-\item{User}{The user name to log in to GreenFeed system.}
+\item{User}{User name to log in to GreenFeed}
 
-\item{Pass}{The password to log in to GreenFeed system.}
+\item{Pass}{Password to log in to GreenFeed}
 
-\item{Exp}{Study name.}
+\item{Exp}{Study name}
 
-\item{Unit}{The unit number/s of the GreenFeed.}
+\item{Unit}{The unit number/s of the GreenFeed}
 
-\item{Start_Date}{Start date of the study.}
+\item{Start_Date}{Start date of the study}
 
-\item{End_Date}{End date of the study. If not specified, the current date will be used.}
+\item{End_Date}{End date of the study. If not specified, the current date will be used}
 
-\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used.}
+\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
 
-\item{RFID_file}{The file that contains the RFID of the animals in the study.}
+\item{RFID_file}{The file that contains the RFID of the animals in the study}
 
-\item{Plot_opt}{Type of gas to plot: All, CH4, CO2, O2, or H2.}
+\item{Plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be process}
 }
 \value{
-An Excel file with the GreenFeed daily data and a PDF report with a description of the gas data.
+A .csv file with daily data from GreenFeed unit/s and
+    a PDF report with a description of daily data
 }
 \description{
-Download, processing, and reporting daily GreenFeed data.
+Download and report daily GreenFeed data
 }
 \examples{
 \dontrun{
 # Replace "your_username" and "your_password" with actual GreenFeed credentials
 User <- "your_username"
 Pass <- "your_password"
-Exp <- "Test_study"
-Unit <- 578
+Exp <- "StudyName"
+Unit <- 1
 Start_Date <- "2023-01-01"
 End_Date <- Sys.Date()
 Dir <- getwd()
 RFID_file <- "/Users/RFID_file.csv"
-Plot_opt <- "CH4"
+Plot_opt <- "All"
 
 dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 }
