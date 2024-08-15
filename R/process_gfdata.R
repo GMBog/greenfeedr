@@ -27,7 +27,7 @@
 #' @importFrom stats weighted.mean
 #' @importFrom stats sd
 
-utils::globalVariables(c("EndTime", "daily_CH4", "weekly_CH4", "nDays", "nRecords", "TotalMin", "CV"))
+utils::globalVariables(c("EndTime", "CH4", "CO2", "O2", "H2", "nDays", "nRecords", "TotalMin", "CV"))
 
 process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, param1, param2) {
   # Ensure param1 and param2 are defined
@@ -120,14 +120,17 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
     dplyr::group_by(RFID, day) %>%
     dplyr::summarise(
       n = n(),
-      daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE),
+      CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE),
+      CO2 = weighted.mean(CO2GramsPerDay, GoodDataDuration, na.rm = TRUE),
+      O2 = weighted.mean(O2GramsPerDay, GoodDataDuration, na.rm = TRUE),
+      H2 = weighted.mean(H2GramsPerDay, GoodDataDuration, na.rm = TRUE),
       minutes = sum(GoodDataDuration, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     dplyr::filter(n >= param1) %>% # Filter out days with less than 2 records
 
     dplyr::mutate(week = floor(as.numeric(difftime(day, min(day), units = "weeks"))) + 1) %>%
-    dplyr::select(RFID, week, n, minutes, daily_CH4)
+    dplyr::select(RFID, week, n, minutes, CH4, CO2, O2, H2)
 
 
   weekly_df <- daily_df %>%
@@ -136,16 +139,29 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
       nDays = n(),
       nRecords = sum(n),
       TotalMin = round(sum(minutes), 2),
-      weekly_CH4 = stats::weighted.mean(daily_CH4, minutes, na.rm = TRUE),
+      CH4 = stats::weighted.mean(CH4, minutes, na.rm = TRUE),
+      CO2 = stats::weighted.mean(CO2, minutes, na.rm = TRUE),
+      O2 = stats::weighted.mean(O2, minutes, na.rm = TRUE),
+      H2 = stats::weighted.mean(H2, minutes, na.rm = TRUE),
       .groups = "drop" # Un-group after summarizing
     ) %>%
     dplyr::filter(nDays >= param2) %>% # Filter out weeks with less than "param2" days
-    dplyr::select(RFID, week, nDays, nRecords, TotalMin, weekly_CH4)
+    dplyr::select(RFID, week, nDays, nRecords, TotalMin, CH4, CO2, O2, H2)
 
 
-  ### Description of mean, sd, and CV for weekly CH4
-  print(paste("CH4: ", round(mean(weekly_df$weekly_CH4), 2), "+-", round(stats::sd(weekly_df$weekly_CH4), 2)))
-  print(paste("CV = ", round(stats::sd(weekly_df$weekly_CH4) / mean(weekly_df$weekly_CH4) * 100, 1)))
+  ### Description of mean, sd, and CV for weekly gases
+  print(paste("CH4: ", round(mean(weekly_df$CH4, na.rm = TRUE), 2), "+-", round(stats::sd(weekly_df$CH4, na.rm = TRUE), 2)))
+  print(paste("CH4 CV = ", round(stats::sd(weekly_df$CH4, na.rm = TRUE) / mean(weekly_df$CH4, na.rm = TRUE) * 100, 1)))
+
+  print(paste("CO2: ", round(mean(weekly_df$CO2, na.rm = TRUE), 2), "+-", round(stats::sd(weekly_df$CO2, na.rm = TRUE), 2)))
+  print(paste("CO2 CV = ", round(stats::sd(weekly_df$CO2, na.rm = TRUE) / mean(weekly_df$CO2, na.rm = TRUE) * 100, 1)))
+
+  print(paste("O2: ", round(mean(weekly_df$O2, na.rm = TRUE), 2), "+-", round(stats::sd(weekly_df$O2, na.rm = TRUE), 2)))
+  print(paste("O2 CV = ", round(stats::sd(weekly_df$O2, na.rm = TRUE) / mean(weekly_df$O2, na.rm = TRUE) * 100, 1)))
+
+  print(paste("H2: ", round(mean(weekly_df$H2, na.rm = TRUE), 2), "+-", round(stats::sd(weekly_df$H2, na.rm = TRUE), 2)))
+  print(paste("H2 CV = ", round(stats::sd(weekly_df$H2, na.rm = TRUE) / mean(weekly_df$H2, na.rm = TRUE) * 100, 1)))
+
 
   # Return a list of data frames
   return(list(daily_data = daily_df, weekly_data = weekly_df))
