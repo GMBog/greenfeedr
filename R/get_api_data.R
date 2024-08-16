@@ -1,7 +1,7 @@
 #' @name get_api_data
 #' @title Download daily GreenFeed data using API
 #'
-#' @description `get_api_data()` download daily data from GreenFeed unit/s
+#' @description `get_api_data( )` download daily data from GreenFeed unit/s
 #'     using an application programming interface (API).
 #'
 #' @param User User name to log in to GreenFeed
