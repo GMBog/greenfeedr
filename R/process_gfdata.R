@@ -12,6 +12,7 @@
 #' @param input_type Input data could be from daily or final report: "daily" or "final"
 #' @param param1 Number of records a day
 #' @param param2 Number of days with records
+#' @param min_time Minimum number of minutes for a visit
 #'
 #' @return Datasets with GreenFeed processed data in a daily and weekly format
 #'
@@ -21,7 +22,7 @@
 #' End_Date <- "2024-03-08"
 #' input_type <- "final"
 #' file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-#' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
+#' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3, min_time = 2)
 #' }
 #'
 #' @export process_gfdata
@@ -35,7 +36,7 @@
 utils::globalVariables(c("EndTime", "CH4GramsPerDay", "CH4", "CO2GramsPerDay", "CO2", "O2GramsPerDay", "O2",
                          "H2GramsPerDay", "H2", "nDays", "nRecords", "TotalMin", "CV"))
 
-process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, param1, param2) {
+process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, param1, param2, min_time = 2) {
   # Ensure param1 and param2 are defined
   if (missing(param1) || missing(param2)) {
     stop("Please define 'param1' (minimum records per day) and 'param2' (minimum days per week).")
@@ -122,7 +123,11 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(), input_type, 
   ## Computing weekly production of gases
   daily_df <- df %>%
     dplyr::mutate(day = as.Date(EndTime)) %>%
-    dplyr::filter(CH4GramsPerDay >= 200 & CH4GramsPerDay <= 800) %>%
+    dplyr::filter(
+      CH4GramsPerDay >= 200 & CH4GramsPerDay <= 800,  # Remove outliers for methane emissions
+      GoodDataDuration >= min_time                    # Remove those records with less than min_time parameter
+      ) %>%
+
     dplyr::group_by(RFID, day) %>%
     dplyr::summarise(
       n = n(),

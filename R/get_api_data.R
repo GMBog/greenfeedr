@@ -10,7 +10,7 @@
 #' @param User User name to log in to GreenFeed
 #' @param Pass Password to log in to GreenFeed
 #' @param Exp Study name
-#' @param Unit The unit number(s) of the GreenFeed
+#' @param Unit The unit number(s) of the GreenFeed. If multiple units, they should be included as vector.
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study. If not specified, the current date will be used
 #' @param Dir Directory to save the output file. If not specified, the current working directory will be used
@@ -36,6 +36,7 @@
 #' @import httr
 #' @import readr
 #' @import stringr
+
 get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
                          Start_Date = NA, End_Date = Sys.Date(), Dir = getwd()) {
   # First Authenticate to receive token:
