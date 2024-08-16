@@ -21,7 +21,7 @@ get_api_data(
 
 \item{Exp}{Study name}
 
-\item{Unit}{The unit number(s) of the GreenFeed}
+\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be included as vector.}
 
 \item{Start_Date}{Start date of the study}
 

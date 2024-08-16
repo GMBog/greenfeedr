@@ -15,6 +15,8 @@
 \item{param1}{Number of records a day}
 
 \item{param2}{Number of days with records}
+
+\item{min_time}{Minimum number of minutes for a visit}
 }
 \value{
 Datasets with GreenFeed processed data in a daily and weekly format
@@ -31,7 +33,7 @@ Start_Date <- "2024-01-22"
 End_Date <- "2024-03-08"
 input_type <- "final"
 file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
+data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3, min_time = 2)
 }
 
 }
