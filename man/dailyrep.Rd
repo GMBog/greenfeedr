@@ -2,7 +2,7 @@
 % Please edit documentation in R/dailyrep.R
 \name{dailyrep}
 \alias{dailyrep}
-\title{dailyrep}
+\title{Download and Report Daily GreenFeed Data}
 \arguments{
 \item{User}{User name to log in to GreenFeed}
 
@@ -10,7 +10,7 @@
 
 \item{Exp}{Study name}
 
-\item{Unit}{The unit number/s of the GreenFeed}
+\item{Unit}{The unit number(s) of the GreenFeed}
 
 \item{Start_Date}{Start date of the study}
 
@@ -20,14 +20,15 @@
 
 \item{RFID_file}{The file that contains the RFID of the animals in the study}
 
-\item{Plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be process}
+\item{Plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be processed}
 }
 \value{
-A .csv file with daily data from GreenFeed unit/s and
+A .csv file with daily data from GreenFeed unit(s) and
     a PDF report with a description of daily data
 }
 \description{
-Download and report daily GreenFeed data
+dailyrep( ) download daily data using API and
+    generate a PDF report to check correct functionality of GreenFeed unit/s.
 }
 \examples{
 \dontrun{

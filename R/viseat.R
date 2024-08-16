@@ -1,14 +1,15 @@
-#' @title viseat
 #' @name viseat
-#' @description Processing visits and feed times in the GreenFeed.
 #'
-#' @param Exp Study name.
-#' @param Unit List of the unit number/s of the GreenFeed.
-#' @param Start_Date Start date of the study.
-#' @param End_Date End date of the study.
-#' @param RFID_file The file that contains the RFID of the animals enrolled in the study.
+#' @title Processing visits and feed times in the GreenFeed
+#' @description Processing visits and feed times in the GreenFeed
 #'
-#' @return Table with a summary of drops and visits to the GreenFeed unit/s.
+#' @param Exp Study name
+#' @param Unit List of the unit number/s of the GreenFeed
+#' @param Start_Date Start date of the study
+#' @param End_Date End date of the study
+#' @param RFID_file The file that contains the RFID of the animals enrolled in the study
+#'
+#' @return Table with a summary of drops and visits to the GreenFeed unit/s
 #'
 #' @examples
 #' \dontrun{
@@ -21,7 +22,7 @@
 #' viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
 #' }
 #'
-#' @export viseat
+#' @export
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

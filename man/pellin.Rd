@@ -2,11 +2,11 @@
 % Please edit documentation in R/pellin.R
 \name{pellin}
 \alias{pellin}
-\title{pellin}
+\title{Processing feedtimes file with intakes}
 \arguments{
 \item{Exp}{Study name}
 
-\item{Unit}{List of the unit number/s of the GreenFeed}
+\item{Unit}{List of the unit number(s) of the GreenFeed}
 
 \item{gcup}{Grams of pellets per cup}
 
@@ -20,7 +20,7 @@
 An Excel file with pellet intakes for all animals in the study
 }
 \description{
-Processing feedtimes file with intakes
+This function processes the feedtimes file to calculate pellet intakes for all animals in the study.
 }
 \examples{
 \dontrun{

@@ -1,5 +1,6 @@
-#' @title finalrep
 #' @name finalrep
+#'
+#' @title Report final GreenFeed data
 #' @description Report final GreenFeed data
 #'
 #' @param Exp Study name

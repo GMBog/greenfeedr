@@ -1,18 +1,20 @@
-#' @title dailyrep
 #' @name dailyrep
-#' @description Download and report daily GreenFeed data
+#' @title Download and Report Daily GreenFeed Data
+#'
+#' @description dailyrep( ) download daily data using API and
+#'     generate a PDF report to check correct functionality of GreenFeed unit/s.
 #'
 #' @param User User name to log in to GreenFeed
 #' @param Pass Password to log in to GreenFeed
 #' @param Exp Study name
-#' @param Unit The unit number/s of the GreenFeed
+#' @param Unit The unit number(s) of the GreenFeed
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study. If not specified, the current date will be used
 #' @param Dir Directory to save the output file. If not specified, the current working directory will be used
 #' @param RFID_file The file that contains the RFID of the animals in the study
-#' @param Plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be process
+#' @param Plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be processed
 #'
-#' @return A .csv file with daily data from GreenFeed unit/s and
+#' @return A .csv file with daily data from GreenFeed unit(s) and
 #'     a PDF report with a description of daily data
 #'
 #' @examples
@@ -31,7 +33,7 @@
 #' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 #' }
 #'
-#' @export dailyrep
+#' @export
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%
@@ -42,7 +44,6 @@
 #' @import rmarkdown
 #' @import stringr
 #' @import utils
-
 
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "DIM", "Data"))
 

@@ -1,16 +1,18 @@
-#' @title get_api_data
 #' @name get_api_data
-#' @description Download daily GreenFeed data using API
+#' @title Download daily GreenFeed data using API
+#'
+#' @description `get_api_data()` download daily data from GreenFeed unit/s
+#'     using an application programming interface (API).
 #'
 #' @param User User name to log in to GreenFeed
 #' @param Pass Password to log in to GreenFeed
 #' @param Exp Study name
-#' @param Unit The unit number/s of the GreenFeed
+#' @param Unit The unit number(s) of the GreenFeed
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study. If not specified, the current date will be used
 #' @param Dir Directory to save the output file. If not specified, the current working directory will be used
 #'
-#' @return A .csv file with daily data from GreenFeed unit/s
+#' @return A .csv file with daily data from GreenFeed unit(s)
 #'
 #' @examples
 #' \dontrun{
@@ -26,13 +28,11 @@
 #' get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
 #' }
 #'
-#' @export get_api_data
+#' @export
 #'
 #' @import httr
 #' @import readr
 #' @import stringr
-
-
 get_api_data <- function(User = NA, Pass = NA, Exp = NA, Unit = NA,
                          Start_Date = NA, End_Date = Sys.Date(), Dir = getwd()) {
   # First Authenticate to receive token:

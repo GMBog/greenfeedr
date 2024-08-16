@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_gfdata.R
 \name{process_gfdata}
 \alias{process_gfdata}
-\title{process_gfdata}
+\title{Process daily and final GreenFeed data}
 \arguments{
 \item{file}{File with GreenFeed data in daily or final format}
 
@@ -17,10 +17,10 @@
 \item{param2}{Number of days with records}
 }
 \value{
-Datasets with GreenFeed processed data in a daily and weekly
+Datasets with GreenFeed processed data in a daily and weekly format
 }
 \description{
-Process daily and final GreenFeed data
+Process daily and final GreenFeed data into structured datasets.
 }
 \examples{
 \dontrun{

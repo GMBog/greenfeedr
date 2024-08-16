@@ -1,9 +1,10 @@
-#' @title pellin
 #' @name pellin
-#' @description Processing feedtimes file with intakes
+#'
+#' @title Processing feedtimes file with intakes
+#' @description This function processes the feedtimes file to calculate pellet intakes for all animals in the study.
 #'
 #' @param Exp Study name
-#' @param Unit List of the unit number/s of the GreenFeed
+#' @param Unit List of the unit number(s) of the GreenFeed
 #' @param gcup Grams of pellets per cup
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study
@@ -34,7 +35,6 @@
 #' @import readxl
 #' @import tidyr
 #' @import utils
-
 
 utils::globalVariables(c(
   "unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops",

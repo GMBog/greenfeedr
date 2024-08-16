@@ -2,7 +2,7 @@
 % Please edit documentation in R/finalrep.R
 \name{finalrep}
 \alias{finalrep}
-\title{finalrep}
+\title{Report final GreenFeed data}
 \arguments{
 \item{Exp}{Study name}
 

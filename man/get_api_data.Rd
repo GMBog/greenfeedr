@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_api_data.R
 \name{get_api_data}
 \alias{get_api_data}
-\title{get_api_data}
+\title{Download daily GreenFeed data using API}
 \usage{
 get_api_data(
   User = NA,
@@ -21,7 +21,7 @@ get_api_data(
 
 \item{Exp}{Study name}
 
-\item{Unit}{The unit number/s of the GreenFeed}
+\item{Unit}{The unit number(s) of the GreenFeed}
 
 \item{Start_Date}{Start date of the study}
 
@@ -30,10 +30,11 @@ get_api_data(
 \item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
 }
 \value{
-A .csv file with daily data from GreenFeed unit/s
+A .csv file with daily data from GreenFeed unit(s)
 }
 \description{
-Download daily GreenFeed data using API
+`get_api_data()` download daily data from GreenFeed unit/s
+    using an application programming interface (API).
 }
 \examples{
 \dontrun{

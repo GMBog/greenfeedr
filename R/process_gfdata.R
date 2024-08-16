@@ -1,6 +1,7 @@
-#' @title process_gfdata
 #' @name process_gfdata
-#' @description Process daily and final GreenFeed data
+#'
+#' @title Process daily and final GreenFeed data
+#' @description Process daily and final GreenFeed data into structured datasets.
 #'
 #' @param file File with GreenFeed data in daily or final format
 #' @param Start_Date Start date of the study
@@ -9,7 +10,7 @@
 #' @param param1 Number of records a day
 #' @param param2 Number of days with records
 #'
-#' @return Datasets with GreenFeed processed data in a daily and weekly
+#' @return Datasets with GreenFeed processed data in a daily and weekly format
 #'
 #' @examples
 #' \dontrun{
@@ -20,7 +21,7 @@
 #' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
 #' }
 #'
-#' @export process_gfdata
+#' @export
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

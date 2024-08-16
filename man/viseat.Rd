@@ -2,23 +2,23 @@
 % Please edit documentation in R/viseat.R
 \name{viseat}
 \alias{viseat}
-\title{viseat}
+\title{Processing visits and feed times in the GreenFeed}
 \arguments{
-\item{Exp}{Study name.}
+\item{Exp}{Study name}
 
-\item{Unit}{List of the unit number/s of the GreenFeed.}
+\item{Unit}{List of the unit number/s of the GreenFeed}
 
-\item{Start_Date}{Start date of the study.}
+\item{Start_Date}{Start date of the study}
 
-\item{End_Date}{End date of the study.}
+\item{End_Date}{End date of the study}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study.}
+\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study}
 }
 \value{
-Table with a summary of drops and visits to the GreenFeed unit/s.
+Table with a summary of drops and visits to the GreenFeed unit/s
 }
 \description{
-Processing visits and feed times in the GreenFeed.
+Processing visits and feed times in the GreenFeed
 }
 \examples{
 \dontrun{
