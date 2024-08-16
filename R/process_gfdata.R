@@ -10,9 +10,9 @@
 #' @param Start_Date Start date of the study
 #' @param End_Date End date of the study
 #' @param input_type Input data could be from daily or final report: "daily" or "final"
-#' @param param1 Number of records a day
-#' @param param2 Number of days with records
-#' @param min_time Minimum number of minutes for a visit
+#' @param param1 Number of records per day to be consider for analysis
+#' @param param2 Number of days with records per week to be consider for analysis
+#' @param min_time Minimum number of minutes for a records to be consider for analysis
 #'
 #' @return Datasets with GreenFeed processed data in a daily and weekly format
 #'
