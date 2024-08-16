@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedR
+# greenfeedr
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of greenfeedR is to provide convenient functions to process
+The goal of greenfeedr is to provide convenient functions to process
 GreenFeed files
 
 ## Installation

@@ -13,12 +13,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# greenfeedR
+# greenfeedr
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of greenfeedR is to provide convenient functions to process GreenFeed files
+The goal of greenfeedr is to provide convenient functions to process GreenFeed files
 
 ## Installation
 
