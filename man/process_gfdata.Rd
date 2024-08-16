@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_gfdata.R
 \name{process_gfdata}
 \alias{process_gfdata}
-\title{Process daily and final GreenFeed data}
+\title{Process Daily and Final GreenFeed Data}
 \arguments{
 \item{file}{File with GreenFeed data in daily or final format}
 
@@ -20,7 +20,10 @@
 Datasets with GreenFeed processed data in a daily and weekly format
 }
 \description{
-Process daily and final GreenFeed data into structured datasets.
+`process_gfdata()` processes and computes daily and weekly averages
+    for daily and final GreenFeed data, organizing it into structured datasets.
+    This function handles data cleaning, aggregation, and summarization to facilitate
+    further analysis and reporting.
 }
 \examples{
 \dontrun{

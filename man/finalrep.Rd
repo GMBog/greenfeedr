@@ -2,7 +2,7 @@
 % Please edit documentation in R/finalrep.R
 \name{finalrep}
 \alias{finalrep}
-\title{Report final GreenFeed data}
+\title{Report Final GreenFeed Data}
 \arguments{
 \item{Exp}{Study name}
 
@@ -20,7 +20,10 @@
 A PDF report with description of final GreenFeed data.
 }
 \description{
-Report final GreenFeed data
+`finalrep()` generates a final report for GreenFeed data, summarizing key metrics
+    and providing a comprehensive overview of the collected data.
+    This report includes analysis and visualizations to assist in evaluating
+    the performance and outcomes of the GreenFeed units.
 }
 \examples{
 \dontrun{

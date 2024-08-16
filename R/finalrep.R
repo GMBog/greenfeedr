@@ -1,7 +1,10 @@
 #' @name finalrep
+#' @title Report Final GreenFeed Data
 #'
-#' @title Report final GreenFeed data
-#' @description Report final GreenFeed data
+#' @description `finalrep()` generates a final report for GreenFeed data, summarizing key metrics
+#'     and providing a comprehensive overview of the collected data.
+#'     This report includes analysis and visualizations to assist in evaluating
+#'     the performance and outcomes of the GreenFeed units.
 #'
 #' @param Exp Study name
 #' @param Unit The unit number/s of the GreenFeed

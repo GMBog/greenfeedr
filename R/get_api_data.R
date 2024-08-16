@@ -1,8 +1,11 @@
 #' @name get_api_data
 #' @title Download daily GreenFeed data using API
 #'
-#' @description `get_api_data( )` download daily data from GreenFeed unit/s
-#'     using an application programming interface (API).
+#' @description `get_api_data()` downloads daily data from GreenFeed unit(s)
+#'     using an application programming interface (API). This function
+#'     retrieves data based on specified parameters such as date range and
+#'     unit identifiers, providing a structured data output for further analysis
+#'     or reporting.
 #'
 #' @param User User name to log in to GreenFeed
 #' @param Pass Password to log in to GreenFeed
@@ -28,7 +31,7 @@
 #' get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
 #' }
 #'
-#' @export
+#' @export get_api_data
 #'
 #' @import httr
 #' @import readr

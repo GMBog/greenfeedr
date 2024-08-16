@@ -27,8 +27,11 @@ A .csv file with daily data from GreenFeed unit(s) and
     a PDF report with a description of daily data
 }
 \description{
-dailyrep( ) download daily data using API and
-    generate a PDF report to check correct functionality of GreenFeed unit/s.
+`dailyrep()` downloads daily data using an application programming interface (API)
+    and generates a PDF report to verify the correct functionality of GreenFeed unit(s).
+    This function retrieves data based on the specified parameters, processes it,
+    and outputs a summary report in PDF format. The report includes essential metrics and plots
+    to ensure that the GreenFeed units are operating as expected.
 }
 \examples{
 \dontrun{

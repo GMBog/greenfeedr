@@ -1,7 +1,7 @@
 #' @name viseat
+#' @title Process GreenFeed Visits
 #'
-#' @title Processing visits and feed times in the GreenFeed
-#' @description Processing visits and feed times in the GreenFeed
+#' @description `viseat()` processes visits to the GreenFeed
 #'
 #' @param Exp Study name
 #' @param Unit List of the unit number/s of the GreenFeed
@@ -22,7 +22,7 @@
 #' viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
 #' }
 #'
-#' @export
+#' @export viseat
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

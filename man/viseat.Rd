@@ -2,7 +2,7 @@
 % Please edit documentation in R/viseat.R
 \name{viseat}
 \alias{viseat}
-\title{Processing visits and feed times in the GreenFeed}
+\title{Process GreenFeed Visits}
 \arguments{
 \item{Exp}{Study name}
 
@@ -18,7 +18,7 @@
 Table with a summary of drops and visits to the GreenFeed unit/s
 }
 \description{
-Processing visits and feed times in the GreenFeed
+`viseat()` processes visits to the GreenFeed
 }
 \examples{
 \dontrun{

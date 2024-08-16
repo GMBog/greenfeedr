@@ -1,8 +1,11 @@
 #' @name dailyrep
 #' @title Download and Report Daily GreenFeed Data
 #'
-#' @description dailyrep( ) download daily data using API and
-#'     generate a PDF report to check correct functionality of GreenFeed unit/s.
+#' @description `dailyrep()` downloads daily data using an application programming interface (API)
+#'     and generates a PDF report to verify the correct functionality of GreenFeed unit(s).
+#'     This function retrieves data based on the specified parameters, processes it,
+#'     and outputs a summary report in PDF format. The report includes essential metrics and plots
+#'     to ensure that the GreenFeed units are operating as expected.
 #'
 #' @param User User name to log in to GreenFeed
 #' @param Pass Password to log in to GreenFeed
@@ -33,7 +36,7 @@
 #' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
 #' }
 #'
-#' @export
+#' @export dailyrep
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

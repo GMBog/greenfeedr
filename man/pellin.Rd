@@ -2,7 +2,7 @@
 % Please edit documentation in R/pellin.R
 \name{pellin}
 \alias{pellin}
-\title{Processing feedtimes file with intakes}
+\title{Process Pellet Intakes}
 \arguments{
 \item{Exp}{Study name}
 
@@ -20,7 +20,10 @@
 An Excel file with pellet intakes for all animals in the study
 }
 \description{
-This function processes the feedtimes file to calculate pellet intakes for all animals in the study.
+`pellin()` processes the feedtimes file, including visits and food drops,
+    to calculate pellet intakes per animal for the entire requested period.
+    This function aggregates data to provide insights into the feeding behavior
+    and pellet consumption of the animals during a study.
 }
 \examples{
 \dontrun{

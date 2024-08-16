@@ -1,7 +1,10 @@
 #' @name process_gfdata
+#' @title Process Daily and Final GreenFeed Data
 #'
-#' @title Process daily and final GreenFeed data
-#' @description Process daily and final GreenFeed data into structured datasets.
+#' @description `process_gfdata()` processes and computes daily and weekly averages
+#'     for daily and final GreenFeed data, organizing it into structured datasets.
+#'     This function handles data cleaning, aggregation, and summarization to facilitate
+#'     further analysis and reporting.
 #'
 #' @param file File with GreenFeed data in daily or final format
 #' @param Start_Date Start date of the study
@@ -21,7 +24,7 @@
 #' data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3)
 #' }
 #'
-#' @export
+#' @export process_gfdata
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

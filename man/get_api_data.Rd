@@ -33,8 +33,11 @@ get_api_data(
 A .csv file with daily data from GreenFeed unit(s)
 }
 \description{
-`get_api_data( )` download daily data from GreenFeed unit/s
-    using an application programming interface (API).
+`get_api_data()` downloads daily data from GreenFeed unit(s)
+    using an application programming interface (API). This function
+    retrieves data based on specified parameters such as date range and
+    unit identifiers, providing a structured data output for further analysis
+    or reporting.
 }
 \examples{
 \dontrun{
