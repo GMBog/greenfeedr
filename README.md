@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedr
-
-# pkgdown <img src="man/figures/logo.png" align="right" />
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" />
 
 <!-- badges: start -->
 <!-- badges: end -->
