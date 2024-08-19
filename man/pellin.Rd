@@ -25,17 +25,3 @@ An Excel file with pellet intakes for all animals in the study
     This function aggregates data to provide insights into the feeding behavior
     and pellet consumption of the animals during a study.
 }
-\examples{
-\dontrun{
-Exp <- "StudyName"
-Unit <- list(1, 2)
-# Please replace here with the grams of pellet that fit in one cup (10 drop-test)
-gcup <- 34
-Start_Date <- "2023-01-01"
-End_Date <- "2023-04-01"
-RFID_file <- "/Users/RFID_file.csv"
-
-pellin(Exp, Unit, gcup, Start_Date, End_Date, RFID_file)
-}
-
-}
