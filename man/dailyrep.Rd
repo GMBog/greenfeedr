@@ -10,7 +10,7 @@
 
 \item{Exp}{Study name}
 
-\item{Unit}{The unit number(s) of the GreenFeed}
+\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma}
 
 \item{Start_Date}{Start date of the study}
 
@@ -18,9 +18,9 @@
 
 \item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
 
-\item{RFID_file}{The file that contains the RFID of the animals in the study}
-
 \item{Plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be processed}
+
+\item{RFID_file}{The file that contains the RFID of the animals in the study}
 }
 \value{
 A .csv file with daily data from GreenFeed unit(s) and
@@ -34,19 +34,19 @@ A .csv file with daily data from GreenFeed unit(s) and
     to ensure that the GreenFeed units are operating as expected.
 }
 \examples{
-\dontrun{
-# Replace "your_username" and "your_password" with actual GreenFeed credentials
-User <- "your_username"
-Pass <- "your_password"
+\dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+User <- Sys.getenv("API_USER")
+Pass <- Sys.getenv("API_PASS")
 Exp <- "StudyName"
 Unit <- 1
 Start_Date <- "2023-01-01"
 End_Date <- Sys.Date()
 Dir <- getwd()
-RFID_file <- "/Users/RFID_file.csv"
 Plot_opt <- "All"
 
-dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, RFID_file, Plot_opt)
-}
+# Example without RFID_file (by default NA)
+dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, Plot_opt)
 
+\dontshow{\}) # examplesIf}
 }

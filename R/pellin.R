@@ -18,7 +18,7 @@
 #' @examples
 #' \dontrun{
 #' Exp <- "StudyName"
-#' Unit <- list(1, 2)
+#' Unit <- list(1)
 #' # Please replace here with the grams of pellet that fit in one cup (10 drop-test)
 #' gcup <- 34
 #' Start_Date <- "2023-01-01"
@@ -44,48 +44,38 @@ utils::globalVariables(c(
   "MassFoodDrop", "Date", "RFID", "massAP_intakes_sp", "Farm_name"
 ))
 
-pellin <- function(Exp = NA, Unit = list(NA), gcup = 34,
-                   Start_Date = NA, End_Date = NA, RFID_file = NA) {
-  # Open list of animal IDs in the study
-  if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(RFID = readr::col_character()))
-  } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-    CowsInExperiment <- readxl::read_excel(RFID_file)
-    CowsInExperiment$RFID <- as.character(CowsInExperiment$RFID)
-  } else {
-    stop("Unsupported file format.")
+pellin <- function(file, Unit, gcup = 34,
+                   Start_Date, End_Date, RFID_file = NA) {
+
+  # Read file with the RFID in the study
+   if (!is.na(RFID_file)) {
+    if (tolower(tools::file_ext(RFID_file)) == "csv") {
+      RFID_file <- readr::read_table(RFID_file, col_types = readr::cols(FarmName = readr::col_character(), RFID = readr::col_character()))
+    } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
+      RFID_file <- readxl::read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
+    } else {
+      stop("Unsupported file format.")
+    }
   }
 
-  # Open GreenFeed feedtimes downloaded through C-Lock web interface
-  feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
-    # Construct the file path
-    file <- paste0(getwd(), "/data_", u, "_", Start_Date, "_", End_Date, "/feedtimes.csv")
-
-    # Check if the file exists
-    if (!file.exists(file)) {
-      stop(paste("File does not exist:", file))
-    }
-
-    return(file)
-  })
-
   # Read and bind feedtimes data
-  feedtimes <- dplyr::bind_rows(
-    purrr::map2_dfr(feedtimes_file_paths, Unit, function(file_path, unit) {
-      readr::read_csv(file_path) %>%
-        dplyr::mutate(unit = unit)
-    })
-  ) %>%
-    dplyr::relocate(unit, .before = FeedTime) %>%
-    dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+  feedtimes <- purrr::map2_dfr(file, Unit, ~ {
+    read_csv(.x) %>%
+      mutate(unit = .y)
+  }) %>%
+    relocate(unit, .before = FeedTime) %>%
+    mutate(CowTag = gsub("^0+", "", CowTag))
 
 
   # Get the animal IDs that were not visiting the GreenFeed during the study
-  noGFvisits <- CowsInExperiment$FarmName[!(CowsInExperiment$RFID %in% feedtimes$CowTag)]
+  if (nrow(RFID_file) > 0 && !is.na(RFID_file)) {
+    noGFvisits <- RFID_file$FarmName[!(RFID_file$RFID %in% feedtimes$CowTag)]
+    feedtimes <- feedtimes %>%
+      dplyr::filter(CowTag %in% RFID_file$RFID)
+  }
 
   # Adding to the table the visit day and daytime visit
   number_drops <- feedtimes %>%
-    dplyr::filter(CowTag %in% CowsInExperiment$RFID) %>%
     dplyr::mutate(
       Day = as.character(as.Date(FeedTime)),
       Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)

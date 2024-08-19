@@ -3,6 +3,7 @@
 export(dailyrep)
 export(finalrep)
 export(get_api_data)
+export(has_credentials)
 export(pellin)
 export(process_gfdata)
 export(viseat)

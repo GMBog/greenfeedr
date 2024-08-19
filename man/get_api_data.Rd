@@ -5,11 +5,11 @@
 \title{Download daily GreenFeed data using API}
 \usage{
 get_api_data(
-  User = NA,
-  Pass = NA,
-  Exp = NA,
-  Unit = NA,
-  Start_Date = NA,
+  User,
+  Pass,
+  Exp,
+  Unit,
+  Start_Date,
   End_Date = Sys.Date(),
   Dir = getwd()
 )
@@ -21,7 +21,7 @@ get_api_data(
 
 \item{Exp}{Study name}
 
-\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be included as vector.}
+\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma.}
 
 \item{Start_Date}{Start date of the study}
 
@@ -40,17 +40,26 @@ A .csv file with daily data from GreenFeed unit(s)
     or reporting.
 }
 \examples{
-\dontrun{
+\dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
-User <- "your_username"
-Pass <- "your_password"
+User <- Sys.getenv("API_USER")
+Pass <- Sys.getenv("API_PASS")
 Exp <- "StudyName"
-Unit <- 1
+Unit <- "304,305" # Specify multiple units as a comma-separated string
 Start_Date <- "2023-01-01"
 End_Date <- Sys.Date()
 Dir <- getwd()
 
+# Example with multiple units as a comma-separated string
 get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
-}
 
+# Example with a single unit as a numeric value
+Unit <- 304
+get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+
+# Example with units as a vector
+Unit <- c(304, 305)
+get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+
+\dontshow{\}) # examplesIf}
 }

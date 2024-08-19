@@ -45,7 +45,7 @@ test_that("get_api_data correctly processes and saves data", {
   expect_true(file.exists(output_file_path))
 
   # Read the output file and check its content
-  df <- read_csv(output_file_path)
+  df <- readr::read_csv(output_file_path)
 
   # Print the structure and content of the data frame for debugging
   print(str(df))
@@ -58,11 +58,11 @@ test_that("get_api_data correctly processes and saves data", {
   # For demonstration purposes, check the content of the existing file
   if (file.exists(test_file_path)) {
     # Read the existing CSV file
-    df_existing <- read_csv(test_file_path)
+    df_existing <- readr::read_csv(test_file_path, skip = 1)
 
     # Check if the existing file has expected data
     expect_gt(nrow(df_existing), 0)
-    expect_equal(df_existing$FeederID[1], 1, info = "The FeederID in the existing CSV file does not match the expected value.")
+    expect_equal(df_existing$FeederID[1], 579, info = "The FeederID in the existing CSV file does not match the expected value.")
   } else {
     stop("The test file does not exist at: ", test_file_path)
   }

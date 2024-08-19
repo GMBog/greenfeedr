@@ -12,11 +12,11 @@
 
 \item{input_type}{Input data could be from daily or final report: "daily" or "final"}
 
-\item{param1}{Number of records a day}
+\item{param1}{Number of records per day to be consider for analysis}
 
-\item{param2}{Number of days with records}
+\item{param2}{Number of days with records per week to be consider for analysis}
 
-\item{min_time}{Minimum number of minutes for a visit}
+\item{min_time}{Minimum number of minutes for a records to be consider for analysis}
 }
 \value{
 Datasets with GreenFeed processed data in a daily and weekly format
@@ -28,12 +28,24 @@ Datasets with GreenFeed processed data in a daily and weekly format
     further analysis and reporting.
 }
 \examples{
-\dontrun{
-Start_Date <- "2024-01-22"
-End_Date <- "2024-03-08"
-input_type <- "final"
-file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-data <- process_gfdata(file, Start_Date, End_Date, input_type, param1 = 2, param2 = 3, min_time = 2)
-}
+file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+data1 <- process_gfdata(file1,
+                       Start_Date = "2024-05-13",
+                       input_type = "daily",
+                       param1 = 2,
+                       param2 = 3,
+                       min_time = 2)
+head(data1)
+
+file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+data2 <- process_gfdata(file2,
+                       Start_Date = "2024-05-13",
+                       End_Date = "2024-05-25",
+                       input_type = "final",
+                       param1 = 2,
+                       param2 = 3,
+                       min_time = 2)
+
+head(data2)
 
 }
