@@ -21,18 +21,26 @@ pak::pak("GMBog/greenfeedr")
 
 ## Example
 
+``` r
+library(greenfeedr)
+library(ggplot2)
+library(dplyr)
+```
+
 This is a basic example which shows you how to work with GreenFeed
 files:
 
 ``` r
-library(greenfeedr)
 
-# Lets use an example daily data from a study using dairy cows. 
+# Define file paths for example data
+## Example data contains 62 dairy cows from a study using one GreenFeed unit 
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 
-# Run the function process_gfdata using the example data.
-## Note that End_Date by default is today's data so we don't need to define
-data11 <- process_gfdata(file1,
+# Here you can evaluate the use of different parameters to process the data
+# let's check the number of cows we retain when we use param2 = 3 or 4 and min_time = 2 or 3
+
+# Run the function process_gfdata() and create two objects data11 and data12:
+data32 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
                         param1 = 2,
@@ -47,33 +55,38 @@ data11 <- process_gfdata(file1,
 #> [1] "H2: 0 +- 0"
 #> [1] "H2 CV = NaN%"
 
-data12 <- process_gfdata(file1,
+data43 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
                         param1 = 2,
-                        param2 = 5,
+                        param2 = 4,
                         min_time = 3)
-#> [1] "CH4: 454.96 +- 78.38"
-#> [1] "CH4 CV = 17.2%"
-#> [1] "CO2: 12386.83 +- 1758.98"
-#> [1] "CO2 CV = 14.2%"
-#> [1] "O2: 8204.45 +- 788.7"
-#> [1] "O2 CV = 9.6%"
+#> [1] "CH4: 392.33 +- 121.81"
+#> [1] "CH4 CV = 31%"
+#> [1] "CO2: 10994.11 +- 2714.04"
+#> [1] "CO2 CV = 24.7%"
+#> [1] "O2: 7436.6 +- 1442.16"
+#> [1] "O2 CV = 19.4%"
 #> [1] "H2: 0 +- 0"
 #> [1] "H2 CV = NaN%"
 
-# The function returns a list with 2 dataset: daily_data and weekly_data
-dim(data11$daily_data); dim(data12$daily_data)
-#> [1] 62  8
-#> [1] 35  8
-dim(data11$weekly_data); dim(data12$weekly_data)
-#> [1] 10  9
-#> [1] 2 9
+# Then check the number of cows from each returned data sets:
+cat("If we use 3 days with records per week (=param2) and a minimum time of 2 minutes (=min_time), we keep: ", nrow(data32$daily_data), "in data")
+#> If we use 3 days with records per week (=param2) and a minimum time of 2 minutes (=min_time), we keep:  62 in data
+cat("Otherwise, if we use 4 days with records per week (=param2) and a minimum time of 3 minutes (=min_time), we keep: ", nrow(data43$daily_data), "in data")
+#> Otherwise, if we use 4 days with records per week (=param2) and a minimum time of 3 minutes (=min_time), we keep:  35 in data
+cat("Ohhh that means we remove half of the cows in the study, due to the parameters defined in data processing")
+#> Ohhh that means we remove half of the cows in the study, due to the parameters defined in data processing
 
 
+# Now, let's check the difference between process daily and final data.
+## First note that here we defined the End_Date because we want to process all data from a completed study for which received the final report from C-Lock.
 
+## Example data contains the final report from the same 62 dairy cows from a study using one GreenFeed unit 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-data2 <- process_gfdata(file2,
+
+# Run the function process_gfdata() and create one object finaldata:
+finaldata <- process_gfdata(file2,
                         Start_Date = "2024-05-13",
                         End_Date = "2024-05-25",
                         input_type = "final",
@@ -89,7 +102,7 @@ data2 <- process_gfdata(file2,
 #> [1] "H2: 0 +- 0"
 #> [1] "H2 CV = NaN%"
 
-head(data2)
+head(finaldata)
 #> $daily_data
 #> # A tibble: 116 × 8
 #>    RFID           week     n minutes CH4GramsPerDay CO2GramsPerDay O2GramsPerDay
