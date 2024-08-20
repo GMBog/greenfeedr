@@ -40,23 +40,25 @@ file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 
 # Run the function process_gfdata using the example data.
 ## Note that End_Date by default is today's data so we don't need to define
-data1 <- process_gfdata(file1,
+data11 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
                         param1 = 2,
                         param2 = 3,
                         min_time = 2)
-head(data1)
-nrow(data1)
 
-data1 <- process_gfdata(file1,
+data12 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
                         param1 = 2,
                         param2 = 5,
                         min_time = 3)
-head(data1)
-nrow(data1)
+
+# The function returns a list with 2 dataset: daily_data and weekly_data
+dim(data11$daily_data); dim(data12$daily_data)
+dim(data11$weekly_data); dim(data12$weekly_data)
+
+
 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 data2 <- process_gfdata(file2,
