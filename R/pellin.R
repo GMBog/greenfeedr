@@ -6,7 +6,7 @@
 #'     This function aggregates data to provide insights into the feeding behavior
 #'     and pellet consumption of the animals during a study.
 #'
-#' @param Exp Study name
+#' @param file File with feedtimes from C-Lock
 #' @param Unit List of the unit number(s) of the GreenFeed
 #' @param gcup Grams of pellets per cup
 #' @param Start_Date Start date of the study

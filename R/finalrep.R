@@ -113,13 +113,13 @@ finalrep <- function(Exp, Unit, Start_Date, End_Date,
   }
 
   # If RFID file is provided then perform inner join
-  if (!is.na(RFID_file) && nrow(RFID_file) > 0) {
-    df <- inner_join(df, RFID_file, by = "RFID")
+  if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
+    df <- dplyr::inner_join(df, RFID_file, by = "RFID")
   }
 
   # Create PDF report using Rmarkdown
   rmarkdown::render(
     input = system.file("FinalReportsGF.Rmd", package = "greenfeedr"),
-    output_file = file.path(getwd(), paste0("Report_", Exp, ".pdf"))
+    output_file = file.path(getwd(), paste0("FinalReport_", Exp, ".pdf"))
   )
 }

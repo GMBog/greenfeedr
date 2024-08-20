@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of greenfeedr is to provide convenient functions to process GreenFeed files
+The goal of greenfeedr is to provide functions for downloading, processing, and reporting GreenFeed data
 
 ## Installation
 
@@ -30,18 +30,30 @@ pak::pak("GMBog/greenfeedr")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to work with GreenFeed files:
 
-```{r example}
+```{r example, message=FALSE, warning=FALSE}
 library(greenfeedr)
 
-Exp <- "StudyName"
-Unit <- "1"
-Start_Date <- "2023-10-23"
-End_Date <- "2024-01-12"
-Final_report <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+data1 <- process_gfdata(file1,
+                        Start_Date = "2024-05-13",
+                        input_type = "daily",
+                        param1 = 2,
+                        param2 = 3,
+                        min_time = 2)
+head(data1)
 
-#finalrep(Exp, Unit, Start_Date, End_Date, Final_report, Plot_opt = "All")
+file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+data2 <- process_gfdata(file2,
+                        Start_Date = "2024-05-13",
+                        End_Date = "2024-05-25",
+                        input_type = "final",
+                        param1 = 2,
+                        param2 = 3,
+                        min_time = 2)
+
+head(data2)
 ```
 
 

@@ -26,13 +26,16 @@
 #' Pass <- Sys.getenv("API_PASS")
 #' Exp <- "StudyName"
 #' Unit <- 1
+#'
+#' # The data range must be fewer than 180 days
 #' Start_Date <- "2023-01-01"
 #' End_Date <- Sys.Date()
+#'
 #' Dir <- getwd()
 #' Plot_opt <- "All"
 #'
 #' # Example without RFID_file (by default NA)
-#' dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, Plot_opt)
+#' dailyrep(User, Pass, Exp, Unit = 1, Start_Date, End_Date, Dir, Plot_opt)
 #'
 #'
 #' @export dailyrep
@@ -52,18 +55,28 @@ utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec",
 dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
                      Dir = getwd(), Plot_opt = "CH4", RFID_file = NA) {
 
+
+
+
   # Ensure Unit is a comma-separated string
   if (is.numeric(Unit)) {
+    # Convert numeric to character
     Unit <- as.character(Unit)
   } else if (is.character(Unit)) {
+    # If it's already a comma-separated string, keep it as is
     if (grepl(",", Unit)) {
-      Unit <- strsplit(Unit, ",")[[1]]
+      Unit <- Unit
+    } else {
+      # If it's a single string without commas, keep it as is
+      Unit <- Unit
     }
   } else if (is.list(Unit) || is.vector(Unit)) {
-    Unit <- paste(Unit, collapse = ",")
+    # Convert lists or vectors to a single comma-separated string
+    Unit <- paste(unlist(Unit), collapse = ",")
   }
 
-  Unit <- as.character(Unit)
+  # Ensure the final output is a single comma-separated string
+  Unit <- paste(Unit, collapse = ",")
 
   # First Authenticate to receive token:
   req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
@@ -80,6 +93,7 @@ dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
   req <- httr::POST(URL, body = list(token = TOK))
   httr::stop_for_status(req)
   a <- httr::content(req, as = "text")
+  print(a)
 
   # Split the lines
   perline <- stringr::str_split(a, "\\n")[[1]]
@@ -180,7 +194,7 @@ dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
   # Create PDF report using Rmarkdown
   rmarkdown::render(
     input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
-    output_file = file.path(getwd(), paste0("/Report_", Exp, ".pdf"))
+    output_file = file.path(getwd(), paste0("/DailyReport_", Exp, ".pdf"))
   )
 }
 
