@@ -35,7 +35,11 @@ This is a basic example which shows you how to work with GreenFeed files:
 ```{r example, message=FALSE, warning=FALSE}
 library(greenfeedr)
 
+# Lets use an example daily data from a study using dairy cows. 
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+
+# Run the function process_gfdata using the example data.
+## Note that End_Date by default is today's data so we don't need to define
 data1 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
@@ -43,6 +47,16 @@ data1 <- process_gfdata(file1,
                         param2 = 3,
                         min_time = 2)
 head(data1)
+nrow(data1)
+
+data1 <- process_gfdata(file1,
+                        Start_Date = "2024-05-13",
+                        input_type = "daily",
+                        param1 = 2,
+                        param2 = 5,
+                        min_time = 3)
+head(data1)
+nrow(data1)
 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 data2 <- process_gfdata(file2,

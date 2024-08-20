@@ -27,7 +27,11 @@ files:
 ``` r
 library(greenfeedr)
 
+# Lets use an example daily data from a study using dairy cows. 
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+
+# Run the function process_gfdata using the example data.
+## Note that End_Date by default is today's data so we don't need to define
 data1 <- process_gfdata(file1,
                         Start_Date = "2024-05-13",
                         input_type = "daily",
@@ -75,6 +79,50 @@ head(data1)
 #>  9 840003250681710     1     4       10     29.7           430.         12428.
 #> 10 840003250681728     1     6       30    101.            293.          9070.
 #> # ℹ 2 more variables: O2GramsPerDay <dbl>, H2GramsPerDay <dbl>
+nrow(data1)
+#> NULL
+
+data1 <- process_gfdata(file1,
+                        Start_Date = "2024-05-13",
+                        input_type = "daily",
+                        param1 = 2,
+                        param2 = 5,
+                        min_time = 3)
+#> [1] "CH4: 454.96 +- 78.38"
+#> [1] "CH4 CV = 17.2%"
+#> [1] "CO2: 12386.83 +- 1758.98"
+#> [1] "CO2 CV = 14.2%"
+#> [1] "O2: 8204.45 +- 788.7"
+#> [1] "O2 CV = 9.6%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+head(data1)
+#> $daily_data
+#> # A tibble: 35 × 8
+#>    RFID           week     n minutes CH4GramsPerDay CO2GramsPerDay O2GramsPerDay
+#>    <chr>         <dbl> <int>   <dbl>          <dbl>          <dbl>         <dbl>
+#>  1 840003234513…     1     4   17.9            399.         11478.         7963.
+#>  2 840003234513…     1     2    6.3            168.          5979.         4644.
+#>  3 840003234513…     1     4   14.3            404.         10265.         6306.
+#>  4 840003250681…     1     2    7.41           495.         14894.        10622.
+#>  5 840003250681…     2     3   13.8            320.          9595.         6303.
+#>  6 840003250681…     1     3   15.1            615.         16193.        10012.
+#>  7 840003250681…     1     2    7.32           230.          6315.         3860.
+#>  8 840003250681…     1     2    8.35           248.          8367.         6197.
+#>  9 840003250681…     1     3   11.9            655.         16471.        10613.
+#> 10 840003250681…     1     2    8.42           624.         16610.        10714.
+#> # ℹ 25 more rows
+#> # ℹ 1 more variable: H2GramsPerDay <dbl>
+#> 
+#> $weekly_data
+#> # A tibble: 2 × 9
+#>   RFID             week nDays nRecords TotalMin CH4GramsPerDay CO2GramsPerDay
+#>   <chr>           <dbl> <int>    <int>    <dbl>          <dbl>          <dbl>
+#> 1 840003250681660     1     5       12     51.1           510.         13631.
+#> 2 840003250681696     1     5       11     48.6           400.         11143.
+#> # ℹ 2 more variables: O2GramsPerDay <dbl>, H2GramsPerDay <dbl>
+nrow(data1)
+#> NULL
 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 data2 <- process_gfdata(file2,
