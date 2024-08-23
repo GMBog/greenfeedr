@@ -6,15 +6,7 @@ output: pdf_document
 
 ```{r libraries, include=FALSE}
 library(dplyr)
-library(lubridate)
 library(ggplot2)
-library(RColorBrewer)
-library(reshape2)
-library(gridExtra)
-library(plyr)
-library(ggpubr)
-library(reshape2)
-library(kableExtra)
 ```
 
 # Study: `r exp`

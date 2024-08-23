@@ -7,10 +7,12 @@ output: pdf_document
 
 ```{r libraries, include=FALSE}
 library(dplyr)
-library(lubridate)
 library(ggplot2)
-library(RColorBrewer)
 library(kableExtra)
+library(lubridate)
+library(RColorBrewer)
+library(tidyr)
+library(stringr)
 ```
 
 # Study: `r exp`
