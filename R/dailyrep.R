@@ -7,36 +7,35 @@
 #'     and outputs a summary report in PDF format. The report includes essential metrics and plots
 #'     to ensure that the GreenFeed units are operating as expected.
 #'
-#' @param User User name to log in to GreenFeed
-#' @param Pass Password to log in to GreenFeed
-#' @param Exp Study name
-#' @param Unit The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma
-#' @param Start_Date Start date of the study
-#' @param End_Date End date of the study. If not specified, the current date will be used
-#' @param Dir Directory to save the output file. If not specified, the current working directory will be used
-#' @param Plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be processed
-#' @param RFID_file The file that contains the RFID of the animals in the study
+#' @param user User name to log in to the GreenFeed system
+#' @param pass Password to log in to the GreenFeed system
+#' @param exp Study name
+#' @param unit The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"
+#' @param start_date Start date of the study
+#' @param end_date End date of the study. By default the current date is used
+#' @param save_dir Directory to save the output file. By default the current working directory is used
+#' @param plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported
+#' @param RFID_file File that contains RFID of the animals in the study
 #'
-#' @return A .csv file with daily data from GreenFeed unit(s) and
-#'     a PDF report with a description of daily data
+#' @return A CSV file with daily data from GreenFeed unit(s) and
+#'     a PDF report with a description of the daily records
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
-#' User <- Sys.getenv("API_USER")
-#' Pass <- Sys.getenv("API_PASS")
-#' Exp <- "StudyName"
-#' Unit <- 1
+#' user <- Sys.getenv("API_USER")
+#' pass <- Sys.getenv("API_PASS")
+#' exp <- "StudyName"
+#' unit <- 1
 #'
 #' # The data range must be fewer than 180 days
-#' Start_Date <- "2023-01-01"
-#' End_Date <- Sys.Date()
+#' start_date <- "2023-01-01"
+#' end_date <- Sys.Date()
 #'
-#' Dir <- getwd()
-#' Plot_opt <- "All"
+#' save_dir <- tempdir()
+#' plot_opt <- "All"
 #'
 #' # Example without RFID_file (by default NA)
-#' dailyrep(User, Pass, Exp, Unit = 1, Start_Date, End_Date, Dir, Plot_opt)
-#'
+#' dailyrep(user, pass, exp, unit = 1, start_date, end_date, save_dir, plot_opt)
 #'
 #' @export dailyrep
 #'
@@ -50,43 +49,43 @@
 #' @import stringr
 #' @import utils
 
-utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "DIM", "Data"))
+utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "Gas_Data"))
 
-dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
-                     Dir = getwd(), Plot_opt = "CH4", RFID_file = NA) {
-
-
-
-
+dailyrep <- function(user, pass, exp = NA, unit, start_date, end_date = Sys.Date(),
+                     save_dir = getwd(), plot_opt = "CH4", RFID_file = NA) {
   # Ensure Unit is a comma-separated string
-  if (is.numeric(Unit)) {
+  if (is.numeric(unit)) {
     # Convert numeric to character
-    Unit <- as.character(Unit)
-  } else if (is.character(Unit)) {
+    unit <- as.character(unit)
+  } else if (is.character(unit)) {
     # If it's already a comma-separated string, keep it as is
-    if (grepl(",", Unit)) {
-      Unit <- Unit
+    if (grepl(",", unit)) {
+      unit <- unit
     } else {
       # If it's a single string without commas, keep it as is
-      Unit <- Unit
+      unit <- unit
     }
-  } else if (is.list(Unit) || is.vector(Unit)) {
+  } else if (is.list(unit) || is.vector(unit)) {
     # Convert lists or vectors to a single comma-separated string
-    Unit <- paste(unlist(Unit), collapse = ",")
+    unit <- paste(unlist(unit), collapse = ",")
   }
 
   # Ensure the final output is a single comma-separated string
-  Unit <- paste(Unit, collapse = ",")
+  unit <- paste(unit, collapse = ",")
+
+  # Check Date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
 
   # First Authenticate to receive token:
-  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
+  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
   httr::stop_for_status(req)
   TOK <- trimws(httr::content(req, as = "text"))
 
   # Now get data using the login token
   URL <- paste0(
-    "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", Unit,
-    "&st=", Start_Date, "&et=", End_Date, "%2012:00:00"
+    "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
+    "&st=", start_date, "&et=", end_date, "%2012:00:00"
   )
   print(URL)
 
@@ -126,12 +125,12 @@ dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
   )
 
   # Check if the directory exists, if not, create it
-  if (!dir.exists(Dir)) {
-    dir.create(Dir, recursive = TRUE)
+  if (!dir.exists(save_dir)) {
+    dir.create(save_dir, recursive = TRUE)
   }
 
   # Save GreenFeed data as a csv file in the specified directory
-  readr::write_excel_csv(df, file = paste0(Dir, "/", Exp, "_GFdata.csv"))
+  readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
 
 
   # Read file with the RFID in the study
@@ -166,9 +165,9 @@ dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
     dplyr::mutate(
       # Extract hours, minutes, and seconds from GoodDataDuration
       GoodDataDuration = round(
-        as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +  # Hours to minutes
-          as.numeric(substr(GoodDataDuration, 4, 5)) +      # Minutes
-          as.numeric(substr(GoodDataDuration, 7, 8)) / 60,  # Seconds to minutes
+        as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
+          as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+          as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
         2
       ),
       # 'HourOfDay' is a new col contains daytime (extract the time part from StartTime (HH:MM:SS))
@@ -194,7 +193,7 @@ dailyrep <- function(User, Pass, Exp, Unit, Start_Date, End_Date = Sys.Date(),
   # Create PDF report using Rmarkdown
   rmarkdown::render(
     input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
-    output_file = file.path(getwd(), paste0("/DailyReport_", Exp, ".pdf"))
+    output_file = file.path(save_dir, paste0("/DailyReport_", exp, ".pdf"))
   )
 }
 

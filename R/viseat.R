@@ -1,92 +1,131 @@
 #' @name viseat
-#' @title Process GreenFeed Visits
+#' @title Check GreenFeed Visits
 #'
-#' @description `viseat()` processes visits to the GreenFeed
+#' @description `viseat()` processes GreenFeed visits. Generate description of
+#'      animals not visiting the GreenFeed for the time period requested.
 #'
-#' @param Exp Study name
-#' @param Unit List of the unit number/s of the GreenFeed
-#' @param Start_Date Start date of the study
-#' @param End_Date End date of the study
-#' @param RFID_file The file that contains the RFID of the animals enrolled in the study
+#' @param file File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
+#' @param unit List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order
+#' @param start_date Start date of the study
+#' @param end_date End date of the study
+#' @param RFID_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
-#' @return Table with a summary of drops and visits to the GreenFeed unit/s
+#' @return A list with two data farmes, one with visits per day and one with visits per animal
 #'
 #' @examples
-#' \dontrun{
-#' Exp <- "Test_study"
-#' Unit <- list("577", "578")
-#' Start_Date <- "2023-01-01"
-#' End_Date <- "2023-04-01"
-#' RFID_file <- "/Users/RFID_file.csv"
+#' # You should provide the folder where is 'feedtimes' file.
+#' # it could be a list of files if you have data from multiple units to combine
+#' file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 #'
-#' viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
-#' }
+#' # If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+#' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
+#' RFIDs <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
+#'
+#' data <- viseat(file,
+#'   unit = 1,
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   RFID_file = RFIDs
+#' )
 #'
 #' @export viseat
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%
+#' @import ggplot2
 #' @import lubridate
 #' @import readr
 #' @import readxl
 #' @import utils
 
-utils::globalVariables(c("unit", "FeedTime", "CowTag", "Day", "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"))
+utils::globalVariables(c(
+  "FID", "FeedTime", "CowTag", "Date", "visits",
+  "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"
+))
 
-viseat <- function(Exp = NA, Unit = list(NA),
-                   Start_Date = NA, End_Date = NA, RFID_file = NA) {
-  # Open list of animal IDs in the study
-  if (tolower(tools::file_ext(RFID_file)) == "csv") {
-    CowsInExperiment <- readr::read_table(RFID_file, col_types = readr::cols(EID = readr::col_character()))
-  } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-    CowsInExperiment <- readxl::read_excel(RFID_file)
-    CowsInExperiment$EID <- as.character(CowsInExperiment$EID)
-  } else {
-    stop("Unsupported file format.")
-  }
+viseat <- function(file, unit, start_date, end_date, RFID_file = NA) {
+  # Check Date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
 
-  # Open GreenFeed feedtimes downloaded through C-Lock web interface
-  feedtimes_file_paths <- purrr::map_chr(Unit, function(u) {
-    # Construct the file path
-    file <- paste0(getwd(), "/data_", u, "_", Start_Date, "_", End_Date, "/feedtimes.csv")
+  # Read file with the RFID in the study
+  if (!is.na(RFID_file)) {
+    file_extension <- tolower(tools::file_ext(RFID_file))
 
-    # Check if the file exists
-    if (!file.exists(file)) {
-      stop(paste("File does not exist:", file))
+    if (file_extension == "csv") {
+      RFID_file <- readr::read_csv(RFID_file, col_types = readr::cols(.default = readr::col_character()))
+    } else if (file_extension %in% c("xls", "xlsx")) {
+      # Read all columns and then select the first two
+      RFID_file <- readxl::read_excel(RFID_file) %>%
+        dplyr::select(1:2) %>%
+        dplyr::mutate(across(everything(), as.character))
+    } else if (file_extension == "txt") {
+      RFID_file <- readr::read_table(RFID_file, col_types = readr::cols(.default = readr::col_character()))
+    } else {
+      stop("Unsupported file format.")
     }
 
-    return(file)
-  })
+    # Rename the columns if needed
+    names(RFID_file)[1:2] <- c("FarmName", "RFID")
+  } else {
+    message("The user must include an 'RFID_file' with VisualID and RFID.")
+  }
 
   # Read and bind feedtimes data
-  feedtimes <- dplyr::bind_rows(
-    purrr::map2_dfr(feedtimes_file_paths, Unit, function(file_path, unit) {
-      readr::read_csv(file_path) %>%
-        dplyr::mutate(unit = unit)
-    })
-  ) %>%
-    dplyr::relocate(unit, .before = FeedTime) %>%
+  df <- purrr::map2_dfr(file, unit, ~ {
+    readr::read_csv(.x) %>%
+      dplyr::mutate(FID = .y)
+  }) %>%
+    dplyr::relocate(FID, .before = FeedTime) %>%
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
 
 
-  # Get the animal IDs that were not visiting the GreenFeed during the study
-  message("Cows not visiting: ", paste(CowsInExperiment$FarmName[!(CowsInExperiment$EID %in% feedtimes$CowTag)], collapse = ", "))
+  # If RFID_file provided, filter and get animal ID not visiting the GreenFeed units
+  df <- df[df$CowTag %in% RFID_file$RFID, ]
+  noGFvisits <- RFID_file$FarmName[!(RFID_file$RFID %in% df$CowTag)]
 
-  # Get the number of drops and visits per day per cow
-  daily_visits <- feedtimes %>%
-    dplyr::inner_join(CowsInExperiment[, 1:2], by = c("CowTag" = "EID")) %>%
+  message(paste("Animal IDs not visiting GF:", paste(noGFvisits, collapse = ", ")))
+
+  # Plot the visits per unit
+  plotFID <- df %>%
+    dplyr::group_by(FID) %>%
+    dplyr::summarise(n = n()) %>%
+    ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    theme_classic() +
+    labs(
+      title = "TAG reads per unit",
+      x = "Units",
+      y = "Frequency",
+      fill = "Unit"
+    ) +
+    geom_text(aes(label = n),
+      vjust = 1.9,
+      color = "black",
+      position = position_dodge(0.9), size = 3.8
+    )
+  print(plotFID)
+
+  # Create a data frame with number of drops and visits per day per animal
+  daily_visits <- df %>%
+    dplyr::inner_join(RFID_file[, 1:2], by = c("CowTag" = "RFID")) %>%
     dplyr::mutate(
-      Day = as.character(as.Date(FeedTime)),
-      Time = round(lubridate::period_to_seconds(lubridate::hms(format(as.POSIXct(FeedTime), "%H:%M:%S"))) / 3600, 2)
+      # Convert FeedTime to POSIXct with the correct format
+      FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M", tz = "UTC"),
+      Date = as.character(as.Date(FeedTime)),
+      Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
     ) %>%
-    dplyr::relocate(Day, Time, FarmName, .after = unit) %>%
+    dplyr::relocate(Date, Time, FarmName, .after = unit) %>%
     dplyr::select(-FeedTime) %>%
-    # Number of drops per cow per day and per unit
-    dplyr::group_by(FarmName, Day) %>%
-    dplyr::summarise(ndrops = dplyr::n(), visits = max(CurrentPeriod))
+    # Number of drops per cow per day
+    dplyr::group_by(FarmName, Date) %>%
+    dplyr::summarise(
+      ndrops = dplyr::n(),
+      visits = max(CurrentPeriod)
+    )
 
-  # Get the number of drops and visits per cow
-  visits <- daily_visits %>%
+  # Calculate the number of drops and visits per animal
+  animal_visits <- daily_visits %>%
     dplyr::group_by(FarmName) %>%
     dplyr::summarise(
       total_drops = sum(ndrops),
@@ -96,5 +135,6 @@ viseat <- function(Exp = NA, Unit = list(NA),
     )
 
 
-  return(visits)
+  # Return a list of data frames
+  return(list(visits_per_unit = daily_visits, visits_per_animal = animal_visits))
 }

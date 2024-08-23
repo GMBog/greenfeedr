@@ -10,26 +10,28 @@ expected_url <- "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=1&s
 
 test_that("get_api_data correctly processes and saves data", {
   # Define test parameters
-  User <- "test_user"
-  Pass <- "test_pass"
-  Exp <- "StudyName"
-  Unit <- 1
-  Start_Date <- "2024-01-22"
-  End_Date <- "2024-03-08"
+  user <- "test_user"
+  pass <- "test_pass"
+  exp <- "StudyName"
+  unit <- 1
+  start_date <- "2024-01-22"
+  end_date <- "2024-03-08"
 
   # Use the extdata directory for the output file
-  Dir <- system.file("extdata", package = "greenfeedr")  # Use the extdata directory of the package
+  save_dir <- system.file("extdata", package = "greenfeedr") # Use the extdata directory of the package
 
   # Mock the API function to return the expected URL
-  mock_get_api_data <- function(User, Pass, Exp, Unit, Start_Date, End_Date, Dir) {
+  mock_get_api_data <- function(user, pass, exp, unit, start_date, end_date, save_dir) {
     # Construct the URL
-    url <- paste0("https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", Unit,
-                  "&st=", Start_Date, "&et=", End_Date, "%2012:00:00")
+    url <- paste0(
+      "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
+      "&st=", start_date, "&et=", end_date, "%2012:00:00"
+    )
     return(url)
   }
 
   # Generate the URL from the mock function
-  generated_url <- mock_get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+  generated_url <- mock_get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 
   # Check if the generated URL matches the expected URL
   expect_equal(generated_url, expected_url, info = "The generated URL does not match the expected URL.")
@@ -39,7 +41,7 @@ test_that("get_api_data correctly processes and saves data", {
   # result_df <- get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
 
   # Define the path to the output file
-  output_file_path <- file.path(Dir, paste0(Exp, "_GFdata.csv"))
+  output_file_path <- file.path(save_dir, paste0(exp, "_GFdata.csv"))
 
   # Check if the file is created
   expect_true(file.exists(output_file_path))

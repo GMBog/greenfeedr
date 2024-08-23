@@ -2,33 +2,39 @@
 % Please edit documentation in R/viseat.R
 \name{viseat}
 \alias{viseat}
-\title{Process GreenFeed Visits}
+\title{Check GreenFeed Visits}
 \arguments{
-\item{Exp}{Study name}
+\item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
-\item{Unit}{List of the unit number/s of the GreenFeed}
+\item{unit}{List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order}
 
-\item{Start_Date}{Start date of the study}
+\item{start_date}{Start date of the study}
 
-\item{End_Date}{End date of the study}
+\item{end_date}{End date of the study}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study}
+\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-Table with a summary of drops and visits to the GreenFeed unit/s
+A list with two data farmes, one with visits per day and one with visits per animal
 }
 \description{
-`viseat()` processes visits to the GreenFeed
+`viseat()` processes GreenFeed visits. Generate description of
+     animals not visiting the GreenFeed for the time period requested.
 }
 \examples{
-\dontrun{
-Exp <- "Test_study"
-Unit <- list("577", "578")
-Start_Date <- "2023-01-01"
-End_Date <- "2023-04-01"
-RFID_file <- "/Users/RFID_file.csv"
+# You should provide the folder where is 'feedtimes' file.
+# it could be a list of files if you have data from multiple units to combine
+file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
-viseat(Exp, Unit, Start_Date, End_Date, RFID_file)
-}
+# If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+# col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
+RFIDs <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
+
+data <- viseat(file,
+  unit = 1,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  RFID_file = RFIDs
+)
 
 }

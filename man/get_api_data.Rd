@@ -5,32 +5,32 @@
 \title{Download daily GreenFeed data using API}
 \usage{
 get_api_data(
-  User,
-  Pass,
-  Exp,
-  Unit,
-  Start_Date,
-  End_Date = Sys.Date(),
-  Dir = getwd()
+  user,
+  pass,
+  exp,
+  unit,
+  start_date,
+  end_date = Sys.Date(),
+  save_dir = getwd()
 )
 }
 \arguments{
-\item{User}{User name to log in to GreenFeed}
+\item{user}{User name to log in to the GreenFeed system}
 
-\item{Pass}{Password to log in to GreenFeed}
+\item{pass}{Password to log in to the GreenFeed system}
 
-\item{Exp}{Study name}
+\item{exp}{Study name}
 
-\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma.}
+\item{unit}{The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"}
 
-\item{Start_Date}{Start date of the study}
+\item{start_date}{Start date of the study}
 
-\item{End_Date}{End date of the study. If not specified, the current date will be used}
+\item{end_date}{End date of the study. By default the current date is used}
 
-\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
+\item{save_dir}{Directory to save the output file. By default the current working directory is used}
 }
 \value{
-A .csv file with daily data from GreenFeed unit(s)
+A Excel file with the daily data from GreenFeed unit(s)
 }
 \description{
 `get_api_data()` downloads daily data from GreenFeed unit(s)
@@ -42,24 +42,23 @@ A .csv file with daily data from GreenFeed unit(s)
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
-User <- Sys.getenv("API_USER")
-Pass <- Sys.getenv("API_PASS")
-Exp <- "StudyName"
-Unit <- "304,305" # Specify multiple units as a comma-separated string
-Start_Date <- "2023-01-01"
-End_Date <- Sys.Date()
-Dir <- getwd()
+user <- Sys.getenv("API_USER")
+pass <- Sys.getenv("API_PASS")
+exp <- "StudyName"
+start_date <- "2023-01-01"
+end_date <- Sys.Date()
+save_dir <- tempdir()
 
 # Example with multiple units as a comma-separated string
-get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+unit <- "304,305"
+get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 
 # Example with a single unit as a numeric value
-Unit <- 304
-get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+unit <- 304
+get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 
 # Example with units as a vector
-Unit <- c(304, 305)
-get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
-
+unit <- c(304, 305)
+get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 \dontshow{\}) # examplesIf}
 }

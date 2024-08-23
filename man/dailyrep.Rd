@@ -4,27 +4,27 @@
 \alias{dailyrep}
 \title{Download and Report Daily GreenFeed Data}
 \arguments{
-\item{User}{User name to log in to GreenFeed}
+\item{user}{User name to log in to the GreenFeed system}
 
-\item{Pass}{Password to log in to GreenFeed}
+\item{pass}{Password to log in to the GreenFeed system}
 
-\item{Exp}{Study name}
+\item{exp}{Study name}
 
-\item{Unit}{The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma}
+\item{unit}{The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"}
 
-\item{Start_Date}{Start date of the study}
+\item{start_date}{Start date of the study}
 
-\item{End_Date}{End date of the study. If not specified, the current date will be used}
+\item{end_date}{End date of the study. By default the current date is used}
 
-\item{Dir}{Directory to save the output file. If not specified, the current working directory will be used}
+\item{save_dir}{Directory to save the output file. By default the current working directory is used}
 
-\item{Plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. If not specified, only CH4 will be processed}
+\item{plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported}
 
-\item{RFID_file}{The file that contains the RFID of the animals in the study}
+\item{RFID_file}{File that contains RFID of the animals in the study}
 }
 \value{
-A .csv file with daily data from GreenFeed unit(s) and
-    a PDF report with a description of daily data
+A CSV file with daily data from GreenFeed unit(s) and
+    a PDF report with a description of the daily records
 }
 \description{
 `dailyrep()` downloads daily data using an application programming interface (API)
@@ -36,17 +36,19 @@ A .csv file with daily data from GreenFeed unit(s) and
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
-User <- Sys.getenv("API_USER")
-Pass <- Sys.getenv("API_PASS")
-Exp <- "StudyName"
-Unit <- 1
-Start_Date <- "2023-01-01"
-End_Date <- Sys.Date()
-Dir <- getwd()
-Plot_opt <- "All"
+user <- Sys.getenv("API_USER")
+pass <- Sys.getenv("API_PASS")
+exp <- "StudyName"
+unit <- 1
+
+# The data range must be fewer than 180 days
+start_date <- "2023-01-01"
+end_date <- Sys.Date()
+
+save_dir <- tempdir()
+plot_opt <- "All"
 
 # Example without RFID_file (by default NA)
-dailyrep(User, Pass, Exp, Unit, Start_Date, End_Date, Dir, Plot_opt)
-
+dailyrep(user, pass, exp, unit = 1, start_date, end_date, save_dir, plot_opt)
 \dontshow{\}) # examplesIf}
 }

@@ -6,34 +6,35 @@
 #'     This function handles data cleaning, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
-#' @param file File with GreenFeed data in daily or final format
-#' @param Start_Date Start date of the study
-#' @param End_Date End date of the study
-#' @param input_type Input data could be from daily or final report: "daily" or "final"
+#' @param file File with GreenFeed data
+#' @param start_date Start date of the study
+#' @param end_date End date of the study
+#' @param input_type Input data could be from daily or final report: daily or final
 #' @param param1 Number of records per day to be consider for analysis
 #' @param param2 Number of days with records per week to be consider for analysis
-#' @param min_time Minimum number of minutes for a records to be consider for analysis
+#' @param min_time Minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
-#' @return Datasets with GreenFeed processed data in a daily and weekly format
+#' @return Two data sets with daily and weekly processed GreenFeed data
 #'
 #' @examples
 #' file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 #' data1 <- process_gfdata(file1,
-#'                        Start_Date = "2024-05-13",
-#'                        input_type = "daily",
-#'                        param1 = 2,
-#'                        param2 = 3,
-#'                        min_time = 2)
+#'   input_type = "daily",
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   param1 = 2,
+#'   param2 = 3
+#' )
 #' head(data1)
 #'
 #' file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 #' data2 <- process_gfdata(file2,
-#'                        Start_Date = "2024-05-13",
-#'                        End_Date = "2024-05-25",
-#'                        input_type = "final",
-#'                        param1 = 2,
-#'                        param2 = 3,
-#'                        min_time = 2)
+#'   input_type = "final",
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   param1 = 2,
+#'   param2 = 3
+#' )
 #'
 #' head(data2)
 #'
@@ -45,18 +46,26 @@
 #' @importFrom stats weighted.mean
 #' @importFrom stats sd
 
-utils::globalVariables(c("EndTime", "CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay",
-                         "nDays", "nRecords", "TotalMin"))
+utils::globalVariables(c(
+  "EndTime", "CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay",
+  "nDays", "nRecords", "TotalMin"
+))
 
-process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(),
-                           input_type, param1, param2, min_time = 2) {
+process_gfdata <- function(file, input_type, start_date, end_date,
+                           param1, param2, min_time = 2) {
+  # Check Date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
 
   # Ensure param1 and param2 are defined
   if (missing(param1) || missing(param2)) {
-    stop("Please define 'param1' (minimum records per day) and 'param2' (minimum days per week).")
+    stop("Please define 'param1' (minimum records per day), 'param2' (minimum days per week), and min_time (minimum minutes per visit)")
   } else {
-    message(paste("Using param1 =", param1, "and param2 =", param2))
+    message(paste("Using param1 =", param1, ", param2 =", param2, ", min_time =", min_time))
   }
+
+  # Convert input_type to lowercase to ensure case-insensitivity
+  input_type <- tolower(input_type)
 
   # Ensure input_type is valid
   valid_inputs <- c("final", "daily")
@@ -68,7 +77,7 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(),
   process_file <- function(file, input_type) {
     if (input_type == "final") {
       # Read from Excel file
-      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
+      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 2), "text", rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
       names(df)[1:14] <- c(
         "RFID",
         "AnimalName",
@@ -96,13 +105,15 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(),
           day = as.Date(EndTime),
           # Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
-            as.numeric(substr(GoodDataDuration, 12, 13)) * 60 +  # Hours to minutes
-              as.numeric(substr(GoodDataDuration, 15, 16)) +      # Minutes
-              as.numeric(substr(GoodDataDuration, 18, 19)) / 60,  # Seconds to minutes
+            # as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
+            as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
+              # as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
+              as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+              # as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
+              as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
             2
+          )
         )
-      )
-
     } else {
       # Read from CSV file
       df <- readr::read_csv(file)
@@ -140,32 +151,23 @@ process_gfdata <- function(file, Start_Date, End_Date = Sys.Date(),
           day = as.Date(sub(" .*", "", df$EndTime), format = "%m/%d/%y"),
           # Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
-            as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +  # Hours to minutes
-              as.numeric(substr(GoodDataDuration, 4, 5)) +      # Minutes
-              as.numeric(substr(GoodDataDuration, 7, 8)) / 60,  # Seconds to minutes
+            as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
+              as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+              as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
             2
           ),
           # 'HourOfDay' is a new col that contains daytime (extract the time part from StartTime (HH:MM:SS))
           HourOfDay = round(
-            as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%H")) +  # Extract hours
-              as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%M")) / 60,  # Extract minutes and convert to fraction of an hour
+            as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%H")) + # Extract hours
+              as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%M")) / 60, # Extract minutes and convert to fraction of an hour
             2
           )
         )
-
-      }
-
+    }
   }
 
   # Combine all files into one data frame
   df <- do.call(rbind, lapply(file, process_file, input_type))
-
-  # Helper function to detect outlier records
-  filter_within_range <- function(x, out) {
-    mean_x <- mean(x, na.rm = TRUE)
-    sd_x <- sd(x, na.rm = TRUE)
-    x >= (mean_x - out * sd_x) & x <= (mean_x + out * sd_x)
-  }
 
   ## Computing weekly production of gases
   daily_df <- df %>%

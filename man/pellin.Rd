@@ -4,24 +4,45 @@
 \alias{pellin}
 \title{Process Pellet Intakes}
 \arguments{
-\item{Exp}{Study name}
+\item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
-\item{Unit}{List of the unit number(s) of the GreenFeed}
+\item{unit}{List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order}
 
 \item{gcup}{Grams of pellets per cup}
 
-\item{Start_Date}{Start date of the study}
+\item{start_date}{Start date of the study}
 
-\item{End_Date}{End date of the study}
+\item{end_date}{End date of the study}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study}
+\item{save_dir}{Directory where to save the resulting file with pellet intakes}
+
+\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-An Excel file with pellet intakes for all animals in the study
+An Excel file with pellet intakes for all animals and dates in the study
 }
 \description{
 `pellin()` processes the feedtimes file, including visits and food drops,
     to calculate pellet intakes per animal for the entire requested period.
     This function aggregates data to provide insights into the feeding behavior
     and pellet consumption of the animals during a study.
+}
+\examples{
+# You should provide the folder where is 'feedtimes' file.
+# it could be a list of files if you have data from multiple units to combine
+file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+
+# By default the function use 34g, but you should include the result obtained from the 10-drops test
+
+# If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+# col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
+
+pellin(file,
+  unit = 1,
+  gcup = 34,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  save_dir = tempdir()
+)
+
 }

@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 # greenfeedr <img src="man/figures/GFSticker.png" align="right" width="10%"/>
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of greenfeedr is to provide functions for downloading, processing, and reporting GreenFeed data
@@ -39,9 +40,8 @@ library(dplyr)
 This is a basic example which shows you how to work with GreenFeed files:
 
 ```{r example, message=FALSE, warning=FALSE}
-
 # Define file paths for example data
-## Example data contains 62 dairy cows from a study using one GreenFeed unit 
+## Example data contains 62 dairy cows from a study using one GreenFeed unit
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 
 # Here you can evaluate the use of different parameters to process the data
@@ -49,18 +49,22 @@ file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 
 # Run the function process_gfdata() and create two objects data11 and data12:
 data32 <- process_gfdata(file1,
-                        Start_Date = "2024-05-13",
-                        input_type = "daily",
-                        param1 = 2,
-                        param2 = 3,
-                        min_time = 2)
+  input_type = "daily",
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  param1 = 2,
+  param2 = 3,
+  min_time = 2
+)
 
 data43 <- process_gfdata(file1,
-                        Start_Date = "2024-05-13",
-                        input_type = "daily",
-                        param1 = 2,
-                        param2 = 4,
-                        min_time = 3)
+  input_type = "daily",
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  param1 = 2,
+  param2 = 4,
+  min_time = 3
+)
 
 # Then check the number of cows from each returned data sets:
 cat("If we use 3 days with records per week (=param2) and a minimum time of 2 minutes (=min_time), we keep: ", nrow(data32$daily_data), "in data")
@@ -71,20 +75,20 @@ cat("Ohhh that means we remove half of the cows in the study, due to the paramet
 # Now, let's check the difference between process daily and final data.
 ## First note that here we defined the End_Date because we want to process all data from a completed study for which received the final report from C-Lock.
 
-## Example data contains the final report from the same 62 dairy cows from a study using one GreenFeed unit 
+## Example data contains the final report from the same 62 dairy cows from a study using one GreenFeed unit
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
 # Run the function process_gfdata() and create one object finaldata:
 finaldata <- process_gfdata(file2,
-                        Start_Date = "2024-05-13",
-                        End_Date = "2024-05-25",
-                        input_type = "final",
-                        param1 = 2,
-                        param2 = 3,
-                        min_time = 2)
+  input_type = "final",
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  param1 = 2,
+  param2 = 3,
+  min_time = 2
+)
 
 head(finaldata)
-
 ```
 
 

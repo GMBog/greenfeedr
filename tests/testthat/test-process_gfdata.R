@@ -1,8 +1,7 @@
 test_that("process_gfdata works correctly", {
-
   # Define parameters for the test
-  Start_Date <- "2024-05-13"
-  End_Date <- "2024-05-25"
+  start_date <- "2024-05-13"
+  end_date <- "2024-05-25"
   input_type <- "final"
   param1 <- 2
   param2 <- 3
@@ -12,7 +11,7 @@ test_that("process_gfdata works correctly", {
   file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
   # Suppress warnings and run the function
-  result <- process_gfdata(file, Start_Date, End_Date, input_type, param1, param2, min_time)
+  result <- process_gfdata(file, input_type, start_date, end_date, param1, param2, min_time)
 
   # Check that the result is a list with two elements
   expect_type(result, "list")
@@ -38,5 +37,4 @@ test_that("process_gfdata works correctly", {
   expect_true(!is.na(mean(result$weekly_data$CH4GramsPerDay)))
   expect_true(!is.na(sd(result$weekly_data$CH4GramsPerDay)))
   expect_true(!is.na(sd(result$weekly_data$CH4GramsPerDay) / mean(result$weekly_data$CH4GramsPerDay) * 100))
-
 })

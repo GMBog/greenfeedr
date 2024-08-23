@@ -4,22 +4,22 @@
 \alias{process_gfdata}
 \title{Process Daily and Final GreenFeed Data}
 \arguments{
-\item{file}{File with GreenFeed data in daily or final format}
+\item{file}{File with GreenFeed data}
 
-\item{Start_Date}{Start date of the study}
+\item{start_date}{Start date of the study}
 
-\item{End_Date}{End date of the study}
+\item{end_date}{End date of the study}
 
-\item{input_type}{Input data could be from daily or final report: "daily" or "final"}
+\item{input_type}{Input data could be from daily or final report: daily or final}
 
 \item{param1}{Number of records per day to be consider for analysis}
 
 \item{param2}{Number of days with records per week to be consider for analysis}
 
-\item{min_time}{Minimum number of minutes for a records to be consider for analysis}
+\item{min_time}{Minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
 }
 \value{
-Datasets with GreenFeed processed data in a daily and weekly format
+Two data sets with daily and weekly processed GreenFeed data
 }
 \description{
 `process_gfdata()` processes and computes daily and weekly averages
@@ -30,21 +30,22 @@ Datasets with GreenFeed processed data in a daily and weekly format
 \examples{
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 data1 <- process_gfdata(file1,
-                       Start_Date = "2024-05-13",
-                       input_type = "daily",
-                       param1 = 2,
-                       param2 = 3,
-                       min_time = 2)
+  input_type = "daily",
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  param1 = 2,
+  param2 = 3
+)
 head(data1)
 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 data2 <- process_gfdata(file2,
-                       Start_Date = "2024-05-13",
-                       End_Date = "2024-05-25",
-                       input_type = "final",
-                       param1 = 2,
-                       param2 = 3,
-                       min_time = 2)
+  input_type = "final",
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  param1 = 2,
+  param2 = 3
+)
 
 head(data2)
 

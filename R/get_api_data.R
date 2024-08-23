@@ -7,37 +7,36 @@
 #'     unit identifiers, providing a structured data output for further analysis
 #'     or reporting.
 #'
-#' @param User User name to log in to GreenFeed
-#' @param Pass Password to log in to GreenFeed
-#' @param Exp Study name
-#' @param Unit The unit number(s) of the GreenFeed. If multiple units, they should be separated by a comma.
-#' @param Start_Date Start date of the study
-#' @param End_Date End date of the study. If not specified, the current date will be used
-#' @param Dir Directory to save the output file. If not specified, the current working directory will be used
+#' @param user User name to log in to the GreenFeed system
+#' @param pass Password to log in to the GreenFeed system
+#' @param exp Study name
+#' @param unit The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"
+#' @param start_date Start date of the study
+#' @param end_date End date of the study. By default the current date is used
+#' @param save_dir Directory to save the output file. By default the current working directory is used
 #'
-#' @return A .csv file with daily data from GreenFeed unit(s)
+#' @return A Excel file with the daily data from GreenFeed unit(s)
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
-#' User <- Sys.getenv("API_USER")
-#' Pass <- Sys.getenv("API_PASS")
-#' Exp <- "StudyName"
-#' Unit <- "304,305" # Specify multiple units as a comma-separated string
-#' Start_Date <- "2023-01-01"
-#' End_Date <- Sys.Date()
-#' Dir <- getwd()
+#' user <- Sys.getenv("API_USER")
+#' pass <- Sys.getenv("API_PASS")
+#' exp <- "StudyName"
+#' start_date <- "2023-01-01"
+#' end_date <- Sys.Date()
+#' save_dir <- tempdir()
 #'
 #' # Example with multiple units as a comma-separated string
-#' get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+#' unit <- "304,305"
+#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' # Example with a single unit as a numeric value
-#' Unit <- 304
-#' get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+#' unit <- 304
+#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' # Example with units as a vector
-#' Unit <- c(304, 305)
-#' get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
-#'
+#' unit <- c(304, 305)
+#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' @export get_api_data
 #'
@@ -45,31 +44,34 @@
 #' @import readr
 #' @import stringr
 
-get_api_data <- function(User, Pass, Exp, Unit,
-                         Start_Date, End_Date = Sys.Date(), Dir = getwd()) {
-
-  # Ensure Unit is a comma-separated string
-  if (is.numeric(Unit)) {
-    Unit <- as.character(Unit)
-  } else if (is.character(Unit)) {
-    if (grepl(",", Unit)) {
-      Unit <- strsplit(Unit, ",")[[1]]
+get_api_data <- function(user, pass, exp, unit,
+                         start_date, end_date = Sys.Date(), save_dir = getwd()) {
+  # Ensure unit is a comma-separated string
+  if (is.numeric(unit)) {
+    unit <- as.character(unit)
+  } else if (is.character(unit)) {
+    if (grepl(",", unit)) {
+      unit <- strsplit(unit, ",")[[1]]
     }
-  } else if (is.list(Unit) || is.vector(Unit)) {
-    Unit <- paste(Unit, collapse = ",")
+  } else if (is.list(unit) || is.vector(unit)) {
+    unit <- paste(unit, collapse = ",")
   }
+  # Check the format of unit because it will use in the URL
+  unit <- as.character(unit)
 
-  Unit <- as.character(Unit)
+  # Check date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
 
-  # First Authenticate to receive token:
-  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = User, pass = Pass))
+  # Authenticate to receive token
+  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
   httr::stop_for_status(req)
   TOK <- trimws(httr::content(req, as = "text"))
 
-  # Now get data using the login token
+  # Get data using the login token
   URL <- paste0(
-    "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", Unit,
-    "&st=", Start_Date, "&et=", End_Date, "%2012:00:00"
+    "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
+    "&st=", start_date, "&et=", end_date, "%2012:00:00"
   )
   print(URL)
 
@@ -80,33 +82,38 @@ get_api_data <- function(User, Pass, Exp, Unit,
   # Split the lines
   perline <- stringr::str_split(a, "\\n")[[1]]
 
-  # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
+  # Split the commas into a data frame, while getting rid of the "Parameters" line and the headers line
   df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
   df <- as.data.frame(df)
   colnames(df) <- c(
-    "FeederID", "AnimalName", "RFID", "StartTime", "EndTime", "GoodDataDuration",
-    "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay", "H2SGramsPerDay",
-    "AirflowLitersPerSec", "AirflowCf", "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
-    "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
+    "FeederID",
+    "AnimalName",
+    "RFID",
+    "StartTime",
+    "EndTime",
+    "GoodDataDuration",
+    "CO2GramsPerDay",
+    "CH4GramsPerDay",
+    "O2GramsPerDay",
+    "H2GramsPerDay",
+    "H2SGramsPerDay",
+    "AirflowLitersPerSec",
+    "AirflowCf",
+    "WindSpeedMetersPerSec",
+    "WindDirDeg",
+    "WindCf",
+    "WasInterrupted",
+    "InterruptingTags",
+    "TempPipeDegreesCelsius",
+    "IsPreliminary",
+    "RunTime"
   )
 
   # Check if the directory exists, if not, create it
-  if (!dir.exists(Dir)) {
-    dir.create(Dir, recursive = TRUE)
+  if (!dir.exists(save_dir)) {
+    dir.create(save_dir, recursive = TRUE)
   }
 
-  # Save your data as a datafile in csv format
-  name_file <- paste0(Dir, "/", Exp, "_GFdata.csv")
-  readr::write_excel_csv(df, file = name_file)
-}
-
-
-
-#' @title Check for API Credentials
-
-#' @description A function to check if the necessary API credentials are available in the environment.
-
-#' @export
-has_credentials <- function() {
-  !is.na(Sys.getenv("API_USER", unset = NA)) && !is.na(Sys.getenv("API_PASS", unset = NA))
+  # Save your data as a data file in .csv format
+  readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
 }
