@@ -8,8 +8,8 @@ Author: c(
     role = c("cre", "aut", "cph"),
     comment = c(ORCID = "0000-0003-3597-9426")))
 Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
-Description: Provides functions to download, process, and report daily GreenFeed data,
-    and process and report final GreenFeed data.
+Description: Provides functions for downloading, processing, and reporting daily GreenFeed data,
+    and for processing and reporting final GreenFeed data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
