@@ -6,7 +6,6 @@ output: pdf_document
 
 ```{r libraries, include=FALSE}
 library(dplyr)
-library(tidyverse)
 library(lubridate)
 library(ggplot2)
 library(RColorBrewer)
