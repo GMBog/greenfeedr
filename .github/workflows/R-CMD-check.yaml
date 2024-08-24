@@ -59,11 +59,12 @@ jobs:
           sudo tlmgr update --self --all || true
         shell: bash
 
-      - name: Install MiKTeX (for LaTeX) on Windows
+      - name: Reinstall TinyTeX (for LaTeX) on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
+          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
           Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
-          Rscript -e 'tinytex::install_tinytex(repository = "miktex")'
+          Rscript -e 'tinytex::install_tinytex()'
         shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
