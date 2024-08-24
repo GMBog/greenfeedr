@@ -59,8 +59,8 @@ jobs:
         run: |
           brew install --cask mactex
           sudo tlmgr update --self --all || true
-          eval "$(/usr/libexec/path_helper)"
-          sudo tlmgr install --reinstall collection-latex recommended
+          echo 'export PATH="/usr/texbin:$PATH"' >> ~/.bash_profile
+          source ~/.bash_profile
         shell: bash
 
       # Install MiKTeX for LaTeX on Windows
@@ -68,9 +68,16 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           choco install miktex
-          # Add MiKTeX to PATH
-          echo "##vso[task.setvariable variable=PATH]C:\\Program Files\\MiKTeX\\miktex\\bin\\x64;%PATH%"
-          echo "PATH updated to include MiKTeX binaries"
+          refreshenv
+          miktexsetup finish
+          initexmf --admin --update-fndb
+        shell: bash
+
+      # Check LaTeX installation
+      - name: Ensure LaTeX is available
+        run: |
+          pdflatex --version || echo "LaTeX is not installed correctly"
+        shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
         with:
