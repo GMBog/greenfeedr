@@ -53,24 +53,21 @@ jobs:
           R -e "install.packages('tinytex')"
           R -e "tinytex::install_tinytex()"
 
-      # Install MacTeX for LaTeX on macOS
-      - name: Install MacTeX (for LaTeX)
+      # Install TinyTeX for LaTeX on macOS
+      - name: Install TinyTeX (for LaTeX)
         if: matrix.config.os == 'macos-latest'
         run: |
-          brew install --cask mactex
+          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
           sudo tlmgr update --self --all || true
-          echo 'export PATH="/usr/texbin:$PATH"' >> ~/.bash_profile
-          source ~/.bash_profile
         shell: bash
 
-      # Install MiKTeX for LaTeX on Windows
-      - name: Install MiKTeX (for LaTeX)
+      # Install TinyTeX for LaTeX on Windows
+      - name: Install TinyTeX (for LaTeX)
         if: matrix.config.os == 'windows-latest'
         run: |
-          choco install miktex
-          refreshenv
-          miktexsetup finish
-          initexmf --admin --update-fndb
+          choco install r.project
+          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
+          tlmgr update --self --all || true
         shell: bash
 
       # Check LaTeX installation
