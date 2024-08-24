@@ -59,7 +59,7 @@ jobs:
           sudo tlmgr update --self --all || true
         shell: bash
 
-      - name: Install TinyTeX (for LaTeX)
+      - name: Install TinyTeX (for LaTeX) on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
           Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
@@ -71,7 +71,11 @@ jobs:
 
       - name: Ensure LaTeX is available
         run: |
-          where pdflatex || echo "LaTeX is not installed correctly"
+          if [[ $RUNNER_OS == 'Windows' ]]; then
+            where pdflatex || echo "LaTeX is not installed correctly"
+          else
+            which pdflatex || echo "LaTeX is not installed correctly"
+          fi
         shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
