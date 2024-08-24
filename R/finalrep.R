@@ -18,8 +18,6 @@
 #'
 #' @examples
 #' # Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
-#' # Define parameters:
-#' Experiment <- "StudyName"
 #'
 #' # Note that Unit could be numeric or character (It will use to print in the PDF)
 #'
@@ -33,7 +31,7 @@
 #' # The file structure should be: FarmName | RFID
 #'
 #' finalrep(
-#'   exp = Experiment,
+#'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
@@ -41,7 +39,7 @@
 #'   final_report = file,
 #'   plot_opt = "All",
 #'   RFID_file = NA
-#' )
+#'   )
 #'
 #' @export finalrep
 #'

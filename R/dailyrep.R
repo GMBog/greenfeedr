@@ -24,18 +24,19 @@
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
 #' user <- Sys.getenv("API_USER")
 #' pass <- Sys.getenv("API_PASS")
-#' exp <- "StudyName"
-#' unit <- 1
 #'
 #' # The data range must be fewer than 180 days
-#' start_date <- "2023-01-01"
-#' end_date <- Sys.Date()
-#'
-#' save_dir <- tempdir()
-#' plot_opt <- "All"
-#'
 #' # Example without RFID_file (by default NA)
-#' dailyrep(user, pass, exp, unit = 1, start_date, end_date, save_dir, plot_opt)
+#'
+#' dailyrep(user,
+#'          pass,
+#'          exp = "StudyName",
+#'          unit = 1,
+#'          start_date = "2023-01-01",
+#'          end_date = Sys.Date(),
+#'          save_dir = tempdir(),
+#'          plot_opt = "All"
+#'          )
 #'
 #' @export dailyrep
 #'
@@ -197,12 +198,3 @@ dailyrep <- function(user, pass, exp = NA, unit, start_date, end_date = Sys.Date
   )
 }
 
-
-#' @title Check for API Credentials
-
-#' @description A function to check if the necessary API credentials are available in the environment.
-
-#' @export
-has_credentials <- function() {
-  !is.na(Sys.getenv("API_USER", unset = NA)) && !is.na(Sys.getenv("API_PASS", unset = NA))
-}

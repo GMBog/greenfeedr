@@ -59,23 +59,11 @@ jobs:
           sudo tlmgr update --self --all || true
         shell: bash
 
-      - name: Install TinyTeX (for LaTeX) on Windows
+      - name: Install MiKTeX (for LaTeX) on Windows
         if: matrix.config.os == 'windows-latest'
         run: |
           Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
-          Rscript -e 'tinytex::install_tinytex(force = TRUE)'
-          Rscript -e 'tinytex::tlmgr_install("latexmk")'
-          Rscript -e 'tinytex::tlmgr_install(c("xcolor", "amsmath", "babel", "hyperref", "geometry", "graphicx", "grffile", "fancyhdr", "longtable", "wrapfig", "rotating", "ulem", "amsfonts", "capt-of", "fontenc", "textcomp", "amssymb", "appendix", "pdfpages", "booktabs"))'
-          Rscript -e 'tinytex::tlmgr_update()'
-        shell: bash
-
-      - name: Ensure LaTeX is available
-        run: |
-          if [[ $RUNNER_OS == 'Windows' ]]; then
-            where pdflatex || echo "LaTeX is not installed correctly"
-          else
-            which pdflatex || echo "LaTeX is not installed correctly"
-          fi
+          Rscript -e 'tinytex::install_tinytex(repository = "miktex")'
         shell: bash
 
       - uses: r-lib/actions/check-r-package@v2

@@ -4,7 +4,6 @@ date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output: pdf_document
 ---
 
-
 ```{r libraries, include=FALSE}
 library(dplyr)
 library(ggplot2)
