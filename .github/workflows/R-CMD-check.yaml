@@ -46,14 +46,12 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      # Install TinyTeX for LaTeX on Ubuntu
       - name: Install TinyTeX (for LaTeX)
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           R -e "install.packages('tinytex')"
           R -e "tinytex::install_tinytex()"
 
-      # Install TinyTeX for LaTeX on macOS
       - name: Install TinyTeX (for LaTeX)
         if: matrix.config.os == 'macos-latest'
         run: |
@@ -61,16 +59,16 @@ jobs:
           sudo tlmgr update --self --all || true
         shell: bash
 
-      # Install TinyTeX for LaTeX on Windows
       - name: Install TinyTeX (for LaTeX)
         if: matrix.config.os == 'windows-latest'
         run: |
-          choco install r.project --ignore-checksums
-          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/"); tinytex::install_tinytex()'
+          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
+          Rscript -e 'tinytex::install_tinytex(force = TRUE)'
+          Rscript -e 'tinytex::tlmgr_install("latexmk")'
+          Rscript -e 'tinytex::tlmgr_install(c("xcolor", "amsmath", "babel", "hyperref", "geometry", "graphicx", "grffile", "fancyhdr", "longtable", "wrapfig", "rotating", "ulem", "amsfonts", "capt-of", "fontenc", "textcomp", "amssymb", "appendix", "pdfpages", "booktabs"))'
           tlmgr update --self --all || true
         shell: bash
 
-      # Check LaTeX installation
       - name: Ensure LaTeX is available
         run: |
           pdflatex --version || echo "LaTeX is not installed correctly"
