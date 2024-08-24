@@ -2,11 +2,13 @@ Package: greenfeedr
 Type: Package
 Title: Process and Report GreenFeed Data
 Version: 0.1.0
-Author: c(
+Authors@R: 
+  c(
     person("Guillermo", "Martinez-Boggio", 
-    email = "guillermo.martinezboggio@wisc.edu", 
-    role = c("cre", "aut", "cph"),
-    comment = c(ORCID = "0000-0003-3597-9426")))
+           email = "guillermo.martinezboggio@wisc.edu", 
+           role = c("cre", "aut", "cph"),
+           comment = c(ORCID = "0000-0003-3597-9426"))
+    )
 Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
 Description: Provides functions for downloading, processing, and reporting daily GreenFeed data,
     and for processing and reporting final GreenFeed data.
@@ -32,6 +34,5 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-VignetteBuilder: knitr
 URL: https://github.com/GMBog/greenfeedr
 BugReports: https://github.com/GMBog/greenfeedr/issues
