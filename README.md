@@ -11,6 +11,10 @@
 The goal of greenfeedr is to provide functions for downloading,
 processing, and reporting GreenFeed data
 
+More complete information about how to use greenfeedr can be found in:
+…, but here you’ll find a brief overview of the functions and some
+examples to know how to process your data:
+
 ## Installation
 
 You can install the development version of greenfeedr from
@@ -21,125 +25,125 @@ You can install the development version of greenfeedr from
 pak::pak("GMBog/greenfeedr")
 ```
 
-## Example
-
 ``` r
 library(greenfeedr)
-library(ggplot2)
-library(dplyr)
 ```
 
-This is a basic example which shows you how to work with GreenFeed
-files:
+## Example
+
+Here we have an example data with 32 dairy cows from one study (45
+days).
+
+Note that with the finalized data (or Summarized Data) from GreenFeed
+system for our study, we need to process all daily records.
+
+First, we need to explore the number of records we have in our dataset.
+To that we use the function `process_gfdata()` and we can test different
+threshold values. The function includes 3 parameters: - param1 -
+param2 - min_time
+
+We can make an iterative process evaluating all possible combinations of
+parameters. Then, we define the parameters:
 
 ``` r
-# Define file paths for example data
-## Example data contains 62 dairy cows from a study using one GreenFeed unit
-file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+# Define the parameter space for param1 (i), param2 (j), and min_time (k):
+i <- seq(1, 3)
+j <- seq(3, 7)
+k <- seq(2, 5)
 
-# Here you can evaluate the use of different parameters to process the data
-# let's check the number of cows we retain when we use param2 = 3 or 4 and min_time = 2 or 3
-
-# Run the function process_gfdata() and create two objects data11 and data12:
-data32 <- process_gfdata(file1,
-  input_type = "daily",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3,
-  min_time = 2
-)
-#> [1] "CH4: 387.24 +- 67.37"
-#> [1] "CH4 CV = 17.4%"
-#> [1] "CO2: 11198.47 +- 1427.23"
-#> [1] "CO2 CV = 12.7%"
-#> [1] "O2: 7578.41 +- 917.46"
-#> [1] "O2 CV = 12.1%"
-#> [1] "H2: 0 +- 0"
-#> [1] "H2 CV = NaN%"
-
-data43 <- process_gfdata(file1,
-  input_type = "daily",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 4,
-  min_time = 3
-)
-#> [1] "CH4: 392.33 +- 121.81"
-#> [1] "CH4 CV = 31%"
-#> [1] "CO2: 10994.11 +- 2714.04"
-#> [1] "CO2 CV = 24.7%"
-#> [1] "O2: 7436.6 +- 1442.16"
-#> [1] "O2 CV = 19.4%"
-#> [1] "H2: 0 +- 0"
-#> [1] "H2 CV = NaN%"
-
-# Then check the number of cows from each returned data sets:
-cat("If we use 3 days with records per week (=param2) and a minimum time of 2 minutes (=min_time), we keep: ", nrow(data32$daily_data), "in data")
-#> If we use 3 days with records per week (=param2) and a minimum time of 2 minutes (=min_time), we keep:  62 in data
-cat("Otherwise, if we use 4 days with records per week (=param2) and a minimum time of 3 minutes (=min_time), we keep: ", nrow(data43$daily_data), "in data")
-#> Otherwise, if we use 4 days with records per week (=param2) and a minimum time of 3 minutes (=min_time), we keep:  35 in data
-cat("Ohhh that means we remove half of the cows in the study, due to the parameters defined in data processing")
-#> Ohhh that means we remove half of the cows in the study, due to the parameters defined in data processing
-
-
-# Now, let's check the difference between process daily and final data.
-## First note that here we defined the End_Date because we want to process all data from a completed study for which received the final report from C-Lock.
-
-## Example data contains the final report from the same 62 dairy cows from a study using one GreenFeed unit
-file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-
-# Run the function process_gfdata() and create one object finaldata:
-finaldata <- process_gfdata(file2,
-  input_type = "final",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3,
-  min_time = 2
-)
-#> [1] "CH4: 391.91 +- 58.87"
-#> [1] "CH4 CV = 15%"
-#> [1] "CO2: 11587.14 +- 1421.59"
-#> [1] "CO2 CV = 12.3%"
-#> [1] "O2: 7833.91 +- 877.7"
-#> [1] "O2 CV = 11.2%"
-#> [1] "H2: 0 +- 0"
-#> [1] "H2 CV = NaN%"
-
-head(finaldata)
-#> $daily_data
-#> # A tibble: 115 × 8
-#>    RFID           week     n minutes CH4GramsPerDay CO2GramsPerDay O2GramsPerDay
-#>    <chr>         <dbl> <int>   <dbl>          <dbl>          <dbl>         <dbl>
-#>  1 840003234513…     1     3    410.           269.          8608.         5690.
-#>  2 840003234513…     1     4    436.           422.         11723.         7573.
-#>  3 840003234513…     1     2    208.           429.         13552.         8868.
-#>  4 840003234513…     2     2    207.           333.         10756.         7803.
-#>  5 840003234513…     1     6    972.           410.         11449.         7801.
-#>  6 840003234513…     1     5    864.           229.          7370.         5008.
-#>  7 840003234513…     1     5    899.           440.         11472.         7198.
-#>  8 840003234513…     1     2    304.           404.         13632.         9279.
-#>  9 840003234513…     2     3    564.           415.         13117.         8453.
-#> 10 840003234513…     2     2    183.           278.         10094.         7279.
-#> # ℹ 105 more rows
-#> # ℹ 1 more variable: H2GramsPerDay <dbl>
-#> 
-#> $weekly_data
-#> # A tibble: 22 × 9
-#>    RFID             week nDays nRecords TotalMin CH4GramsPerDay CO2GramsPerDay
-#>    <chr>           <dbl> <int>    <int>    <dbl>          <dbl>          <dbl>
-#>  1 840003234513937     1     3        9    1053.           364.         10874.
-#>  2 840003234513944     1     4       18    3039.           367.         10514.
-#>  3 840003250681645     2     6       27    4660.           402.         13387.
-#>  4 840003250681648     2     4       25    4814.           336.         11106.
-#>  5 840003250681660     1     4       12    1966.           437.         11944.
-#>  6 840003250681660     2     3        7     846.           521.         15100.
-#>  7 840003250681661     1     3       14    2735.           368.         11316.
-#>  8 840003250681661     2     6       23    4287.           375.         12314.
-#>  9 840003250681680     1     3        9    1644.           452.         12286.
-#> 10 840003250681680     2     4       13    2214.           500.         13436.
-#> # ℹ 12 more rows
-#> # ℹ 2 more variables: O2GramsPerDay <dbl>, H2GramsPerDay <dbl>
+#Generate all combinations of i, j, and k
+param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 ```
+
+Note that we have 60 combinations of our 3 parameters.
+
+The next step, is to evaluate the function `process_gfdata()` with the
+set of parameters defined before.
+
+``` r
+# Helper function to call process_gfdata and extract relevant information
+process_and_summarize <- function(param1, param2, min_time) {
+  data <- process_gfdata(
+    file = system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"), 
+    input_type = "final",
+    start_date = "2024-05-13", 
+    end_date = "2024-05-25", 
+    param1 = param1, 
+    param2 = param2, 
+    min_time = min_time
+  )
+  
+  # Extract daily_data and weekly_data
+  daily_data <- data$daily_data
+  weekly_data <- data$weekly_data
+  
+  # Calculate the required metrics
+  records_d <- nrow(daily_data)
+  cows_d <- length(unique(daily_data$RFID))
+  
+  mean_dCH4 <- mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
+  sd_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE)
+  CV_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE) / mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
+  mean_dCO2 <- mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
+  sd_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE)
+  CV_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE) / mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
+  
+  records_w <- nrow(weekly_data)
+  cows_w <- length(unique(weekly_data$RFID))
+  
+  mean_wCH4 <- mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
+  sd_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE) 
+  CV_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
+  mean_wCO2 <- mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
+  sd_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE)
+  CV_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
+  
+  # Return a summary row
+  return(data.frame(
+    param1 = param1,
+    param2 = param2,
+    min_time = min_time,
+    
+    records_d = records_d,
+    cows_d = cows_d,
+    mean_dCH4 = round(mean_dCH4, 1),
+    sd_dCH4 = round(sd_dCH4, 1),
+    CV_dCH4 = round(CV_dCH4, 2),
+    mean_dCO2 = round(mean_dCO2, 1),
+    sd_dCO2 = round(sd_dCO2, 1),
+    CV_dCO2 = round(CV_dCO2, 2),
+    
+    records_w = records_w,
+    cows_w = cows_w,
+    mean_wCH4 = round(mean_wCH4, 1),
+    sd_wCH4 = round(sd_wCH4, 1),
+    CV_wCH4 = round(CV_wCH4, 2),
+    mean_wCO2 = round(mean_wCO2, 1),
+    sd_wCO2 = round(sd_wCO2, 1),
+    CV_wCO2 = round(CV_wCO2, 2)
+  ))
+}
+```
+
+We computed the Pearson correlations between parameters and records,
+mean and CV of CH4.
+
+    #> Daily data:
+    #>           param1 param2 min_time records_d cows_d mean_dCH4 CV_dCH4
+    #> param1      1.00      0     0.00     -0.62  -0.71     -0.77   -0.75
+    #> param2      0.00      1     0.00      0.00   0.00      0.00    0.00
+    #> min_time    0.00      0     1.00     -0.74  -0.65     -0.28   -0.25
+    #> records_d  -0.62      0    -0.74      1.00   0.90      0.55    0.66
+    #> cows_d     -0.71      0    -0.65      0.90   1.00      0.82    0.80
+    #> mean_dCH4  -0.77      0    -0.28      0.55   0.82      1.00    0.75
+    #> CV_dCH4    -0.75      0    -0.25      0.66   0.80      0.75    1.00
+
+    #> Weekly data:
+    #>           param1 param2 min_time records_w cows_w mean_wCH4 CV_wCH4
+    #> param1      1.00  -0.25    -0.35     -0.30  -0.29     -0.53   -0.05
+    #> param2     -0.25   1.00    -0.24     -0.37  -0.33     -0.11   -0.08
+    #> min_time   -0.35  -0.24     1.00     -0.45  -0.47      0.49   -0.21
+    #> records_w  -0.30  -0.37    -0.45      1.00   0.98      0.11    0.23
+    #> cows_w     -0.29  -0.33    -0.47      0.98   1.00      0.12    0.27
+    #> mean_wCH4  -0.53  -0.11     0.49      0.11   0.12      1.00   -0.46
+    #> CV_wCH4    -0.05  -0.08    -0.21      0.23   0.27     -0.46    1.00

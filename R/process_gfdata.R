@@ -77,7 +77,7 @@ process_gfdata <- function(file, input_type, start_date, end_date,
   process_file <- function(file, input_type) {
     if (input_type == "final") {
       # Read from Excel file
-      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 2), "text", rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
+      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
       names(df)[1:14] <- c(
         "RFID",
         "AnimalName",
@@ -105,12 +105,12 @@ process_gfdata <- function(file, input_type, start_date, end_date,
           day = as.Date(EndTime),
           # Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
-            # as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
-            as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
-              # as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
-              as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
-              # as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
-              as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
+             as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
+            #as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
+             as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
+            #as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+             as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
+            #as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
             2
           )
         )
