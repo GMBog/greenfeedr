@@ -66,12 +66,19 @@ jobs:
           Rscript -e 'tinytex::install_tinytex(force = TRUE)'
           Rscript -e 'tinytex::tlmgr_install("latexmk")'
           Rscript -e 'tinytex::tlmgr_install(c("xcolor", "amsmath", "babel", "hyperref", "geometry", "graphicx", "grffile", "fancyhdr", "longtable", "wrapfig", "rotating", "ulem", "amsfonts", "capt-of", "fontenc", "textcomp", "amssymb", "appendix", "pdfpages", "booktabs"))'
-          tlmgr update --self --all || true
+          Rscript -e 'tinytex::tlmgr_update()'
+        shell: bash
+
+      - name: Test Minimal LaTeX Document
+        run: |
+          echo '\documentclass{article}\begin{document}Hello, World!\end{document}' > test.tex
+          pdflatex test.tex
+          pdflatex test.tex
         shell: bash
 
       - name: Ensure LaTeX is available
         run: |
-          pdflatex --version || echo "LaTeX is not installed correctly"
+          where pdflatex || echo "LaTeX is not installed correctly"
         shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
