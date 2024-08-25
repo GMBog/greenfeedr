@@ -13,7 +13,7 @@
 greenfeedr provides a set of functions that help you work with GreenFeed
 data:
 
-- `get_api_data()` downloads GreenFeed data using API.
+- `get_gfdata()` downloads GreenFeed data using API.
 - `report_gfdata()` downloads and generates markdown reports of daily
   and final GreenFeed data.
 - `process_gfdata()` processes and averages daily or final GreenFeed

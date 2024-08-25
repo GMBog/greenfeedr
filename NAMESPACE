@@ -2,7 +2,7 @@
 
 export(ensure_date_format)
 export(filter_within_range)
-export(get_api_data)
+export(get_gfdata)
 export(has_credentials)
 export(pellin)
 export(process_gfdata)

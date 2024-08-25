@@ -1,7 +1,7 @@
-#' @name get_api_data
+#' @name get_gfdata
 #' @title Download daily GreenFeed data using API
 #'
-#' @description `get_api_data()` downloads daily data from GreenFeed unit(s)
+#' @description `get_gfdata()` downloads daily data from GreenFeed unit(s)
 #'     using an application programming interface (API). This function
 #'     retrieves data based on specified parameters such as date range and
 #'     unit identifiers, providing a structured data output for further analysis
@@ -28,23 +28,23 @@
 #'
 #' # Example with multiple units as a comma-separated string
 #' unit <- "304,305"
-#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
+#' get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' # Example with a single unit as a numeric value
 #' unit <- 304
-#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
+#' get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' # Example with units as a vector
 #' unit <- c(304, 305)
-#' get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
+#' get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
-#' @export get_api_data
+#' @export get_gfdata
 #'
 #' @import httr
 #' @import readr
 #' @import stringr
 
-get_api_data <- function(user, pass, exp, unit,
+get_gfdata <- function(user, pass, exp, unit,
                          start_date, end_date = Sys.Date(), save_dir = getwd()) {
   # Ensure unit is a comma-separated string
   if (is.numeric(unit)) {
