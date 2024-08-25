@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="15%"/>
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="16%"/>
 
 <!-- badges: start -->
 
@@ -22,8 +22,7 @@ data:
 - `pellin()` process pellet intakes from GreenFeed units.
 - `viseat()` process GreenFeed visits.
 
-These all use the same daily and final data from GreenFeed system to
-provide a wide range of opportunities to data processing.
+Most of these use the same daily and final data from GreenFeed system.
 
 ## Citation
 
@@ -68,7 +67,8 @@ k <- seq(2, 5)
 param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 ```
 
-Note that we have 60 combinations of our 3 parameters.
+Note that we have 60 combinations of the 3 parameters (param1, param2,
+and min_time).
 
 The next step, is to evaluate the function `process_gfdata()` with the
 set of parameters defined before.
@@ -138,8 +138,36 @@ process_and_summarize <- function(param1, param2, min_time) {
 }
 ```
 
-We computed the Pearson correlations between parameters and records,
-mean and CV of CH4.
+The results are place in a data frame with the following structure:
+
+``` r
+head(data)
+#>   param1 param2 min_time records_d cows_d mean_dCH4 sd_dCH4 CV_dCH4 mean_dCO2
+#> 1      1      3        2       184     25     380.3   110.5    0.29   11426.1
+#> 2      2      3        2       116     20     380.9    85.0    0.22   11445.8
+#> 3      3      3        2        75     19     373.3    87.0    0.23   11386.8
+#> 4      1      4        2       184     25     380.3   110.5    0.29   11426.1
+#> 5      2      4        2       116     20     380.9    85.0    0.22   11445.8
+#> 6      3      4        2        75     19     373.3    87.0    0.23   11386.8
+#>   sd_dCO2 CV_dCO2 records_w cows_w mean_wCH4 sd_wCH4 CV_wCH4 mean_wCO2 sd_wCO2
+#> 1  2527.9    0.22        33     19     382.4    54.7    0.14   11480.2  1422.1
+#> 2  2069.2    0.18        22     15     392.5    58.6    0.15   11615.0  1415.7
+#> 3  2174.8    0.19        12     10     377.1    62.1    0.16   11428.8  1392.8
+#> 4  2527.9    0.22        25     15     389.8    50.3    0.13   11674.6  1259.1
+#> 5  2069.2    0.18        17     14     380.4    51.4    0.14   11347.5  1250.7
+#> 6  2174.8    0.19         6      5     359.4    41.9    0.12   11310.2  1595.7
+#>   CV_wCO2
+#> 1    0.12
+#> 2    0.12
+#> 3    0.12
+#> 4    0.11
+#> 5    0.11
+#> 6    0.14
+```
+
+Also, it is possible to compute Pearson correlations between the
+different parameters and number of records, and/or the gas production
+average.
 
     #> Daily data:
     #>           param1 param2 min_time records_d cows_d mean_dCH4 CV_dCH4
@@ -160,3 +188,13 @@ mean and CV of CH4.
     #> cows_w     -0.29  -0.33    -0.47      0.98   1.00      0.12    0.27
     #> mean_wCH4  -0.53  -0.11     0.49      0.11   0.12      1.00   -0.46
     #> CV_wCH4    -0.05  -0.08    -0.21      0.23   0.27     -0.46    1.00
+
+That gives the user an idea of what are the pros and cons of being more
+or less conservative when processing GreenFeed data for analysis. In
+general, the more conservative the parameters are, the fewer records are
+retained in the data.
+
+## Getting help
+
+If you encounter a clear bug, please file an issue with a minimal
+reproducible example on [GitHub](https://github.com/GMBog/greenfeedr).
