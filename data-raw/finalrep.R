@@ -41,7 +41,7 @@
 #'   RFID_file = NA
 #'   )
 #'
-#' @export finalrep
+#' @export
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

@@ -38,7 +38,7 @@
 #'          plot_opt = "All"
 #'          )
 #'
-#' @export dailyrep
+#' @export
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%

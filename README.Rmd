@@ -23,8 +23,7 @@ knitr::opts_chunk$set(
 greenfeedr provides a set of functions that help you work with GreenFeed data:
 
 * `get_api_data()` downloads GreenFeed data using API.
-* `dailyrep()` downloads and generates PDF reports of daily GreenFeed data.
-* `finalrep()` generates PDF reports of final GreenFeed data.
+* `report_gfdata()` downloads and generates markdown reports of daily and final GreenFeed data.
 * `process_gfdata()` processes and averages daily or final GreenFeed data.
 * `pellin()` process pellet intakes from GreenFeed units.
 * `viseat()` process GreenFeed visits.
