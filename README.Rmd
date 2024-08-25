@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="20%"/>
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="12%"/>
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="20%"/>
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="12%"/>
 
 <!-- badges: start -->
 
