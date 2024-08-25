@@ -1,19 +1,33 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="10%"/>
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="30%"/>
 
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of greenfeedr is to provide functions for downloading,
-processing, and reporting GreenFeed data
+## Overview
 
-More complete information about how to use greenfeedr can be found in:
-…, but here you’ll find a brief overview of the functions and some
-examples to know how to process your data:
+greenfeedr provides a set of functions that help you work with GreenFeed
+data:
+
+- `get_api_data()` downloads GreenFeed data using API.
+- `dailyrep()` downloads and generates PDF reports of daily GreenFeed
+  data.
+- `finalrep()` generates PDF reports of final GreenFeed data.
+- `process_gfdata()` processes and averages daily or final GreenFeed
+  data.
+- `pellin()` process pellet intakes from GreenFeed units.
+- `viseat()` process GreenFeed visits.
+
+These all use the same daily and final data from GreenFeed system to
+provide a wide range of opportunities to data processing.
+
+## Citation
+
+More complete information about how to use greenfeedr can be found in: …
 
 ## Installation
 
@@ -25,14 +39,13 @@ You can install the development version of greenfeedr from
 pak::pak("GMBog/greenfeedr")
 ```
 
+## Usage
+
 ``` r
 library(greenfeedr)
 ```
 
-## Example
-
-Here we have an example data with 32 dairy cows from one study (45
-days).
+Here we present an example of how to use `process_gfdata()`:
 
 Note that with the finalized data (or Summarized Data) from GreenFeed
 system for our study, we need to process all daily records.

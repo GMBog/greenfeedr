@@ -2,9 +2,9 @@
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^README\.Rmd$
-^LICENSE\.md$
 ^data-raw$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
 ^\.github$
+^LICENSE\.md$
