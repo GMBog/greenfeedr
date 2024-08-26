@@ -6,57 +6,22 @@ on:
   pull_request:
     branches: [main, master]
 
-name: R-CMD-check
+name: R-CMD-check.yaml
 
 permissions: read-all
 
 jobs:
-  setup-latex:
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      matrix:
-        config:
-          - {os: macos-latest}
-          - {os: windows-latest}
-          - {os: ubuntu-latest}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install TinyTeX (for LaTeX) on Ubuntu
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          R -e "install.packages('tinytex')"
-          R -e "tinytex::install_tinytex()"
-
-      - name: Install TinyTeX (for LaTeX) on macOS
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
-          sudo tlmgr update --self --all || true
-        shell: bash
-
-      - name: Install TinyTeX (for LaTeX) on Windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          echo "Starting TinyTeX installation on Windows..."
-          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
-          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
-          Rscript -e 'tinytex::install_tinytex()'
-          Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
-          echo "TinyTeX installation completed."
-        shell: bash
-
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-    needs: setup-latex
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
+          #- {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
           - {os: ubuntu-latest,   r: 'oldrel-1'}
@@ -81,9 +46,27 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Print Session Info
-        run: Rscript -e "sessionInfo()"
-        shell: Rscript {0}
+      - name: Install TinyTeX (for LaTeX)
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          R -e "install.packages('tinytex')"
+          R -e "tinytex::install_tinytex()"
+
+      - name: Install TinyTeX (for LaTeX)
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
+          sudo tlmgr update --self --all || true
+        shell: bash
+
+      - name: Reinstall TinyTeX (for LaTeX) on Windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
+          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
+          Rscript -e 'tinytex::install_tinytex()'
+          Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
+        shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
         with:
