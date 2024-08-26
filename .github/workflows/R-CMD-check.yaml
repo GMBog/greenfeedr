@@ -20,7 +20,6 @@ jobs:
 
       - name: Install TinyTeX (for LaTeX)
         run: |
-          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
           Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
           Rscript -e 'tinytex::install_tinytex()'
           Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
