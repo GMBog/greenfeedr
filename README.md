@@ -13,13 +13,13 @@
 greenfeedr provides a set of functions that help you work with GreenFeed
 data:
 
-- `get_gfdata()` downloads GreenFeed data using API.
+- `get_gfdata()` downloads GreenFeed data via API.
 - `report_gfdata()` downloads and generates markdown reports of daily
   and final GreenFeed data.
 - `process_gfdata()` processes and averages daily or final GreenFeed
   data.
-- `pellin()` process pellet intakes from GreenFeed units.
-- `viseat()` process GreenFeed visits.
+- `pellin()` processes pellet intakes from GreenFeed units.
+- `viseat()` processes GreenFeed visits.
 
 Most of these use the same daily and final data from GreenFeed system.
 
@@ -51,20 +51,15 @@ all the daily records obtained.
 
 The data looks like:
 
-``` r
-file <- read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(file)[1:6]
-#> # A tibble: 6 × 6
-#>   RFID                 `Farm Name`   FID `Start Time`        `End Time`         
-#>   <chr>                <chr>       <dbl> <dttm>              <dttm>             
-#> 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31
-#> 2 0000000008400032506… 0000000008…     1 2024-05-13 10:25:44 2024-05-13 10:32:40
-#> 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19
-#> 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14
-#> 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52
-#> 6 0000000008400032345… 0000000008…     1 2024-05-13 14:59:14 2024-05-13 15:11:50
-#> # ℹ 1 more variable: `Good Data Duration` <dttm>
-```
+    #> # A tibble: 5 × 6
+    #>   RFID                 `Farm Name`   FID `Start Time`        `End Time`         
+    #>   <chr>                <chr>       <dbl> <dttm>              <dttm>             
+    #> 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31
+    #> 2 0000000008400032506… 0000000008…     1 2024-05-13 10:25:44 2024-05-13 10:32:40
+    #> 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19
+    #> 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14
+    #> 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52
+    #> # ℹ 1 more variable: `Good Data Duration` <dttm>
 
 The first step is to investigate the total number of records, records
 per day, and days with records per week we have in our GreenFeed data.

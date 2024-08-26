@@ -22,11 +22,11 @@ knitr::opts_chunk$set(
 
 greenfeedr provides a set of functions that help you work with GreenFeed data:
 
-* `get_gfdata()` downloads GreenFeed data using API.
+* `get_gfdata()` downloads GreenFeed data via API.
 * `report_gfdata()` downloads and generates markdown reports of daily and final GreenFeed data.
 * `process_gfdata()` processes and averages daily or final GreenFeed data.
-* `pellin()` process pellet intakes from GreenFeed units.
-* `viseat()` process GreenFeed visits.
+* `pellin()` processes pellet intakes from GreenFeed units.
+* `viseat()` processes GreenFeed visits.
 
 Most of these use the same daily and final data from GreenFeed system.
 
@@ -61,9 +61,9 @@ Note that we received from C-Lock Inc. the finalized data (or Summarized Data) f
 
 The data looks like:
 
-```{r data, message = FALSE}
+```{r data, echo = FALSE, message = FALSE}
 file <- read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(file)[1:6]
+head(file, n=5)[1:6]
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 

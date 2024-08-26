@@ -43,7 +43,7 @@
 #' @import readr
 #' @import stringr
 
-get_gfdata <- function(user, pass, exp, unit,
+get_gfdata <- function(user, pass, exp = NA , unit,
                        start_date, end_date = Sys.Date(), save_dir = getwd()) {
   # Ensure unit is a comma-separated string
   if (is.numeric(unit)) {
