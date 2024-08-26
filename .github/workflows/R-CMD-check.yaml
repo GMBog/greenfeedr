@@ -11,21 +11,6 @@ name: R-CMD-check.yaml
 permissions: read-all
 
 jobs:
-  install-tinytex-windows:
-    runs-on: windows-latest
-    name: Install TinyTeX on Windows
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install TinyTeX (for LaTeX)
-        run: |
-          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
-          Rscript -e 'tinytex::install_tinytex()'
-          Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
-        shell: bash
-
-
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
@@ -36,7 +21,7 @@ jobs:
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
+          #- {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
           - {os: ubuntu-latest,   r: 'oldrel-1'}
@@ -72,6 +57,15 @@ jobs:
         run: |
           Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
           sudo tlmgr update --self --all || true
+        shell: bash
+
+      - name: Reinstall TinyTeX (for LaTeX) on Windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
+          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
+          Rscript -e 'tinytex::install_tinytex()'
+          Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
         shell: bash
 
       - uses: r-lib/actions/check-r-package@v2
