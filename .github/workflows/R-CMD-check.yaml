@@ -68,6 +68,15 @@ jobs:
           Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
         shell: bash
 
+      - name: Save LaTeX Logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: latex-logs
+          path: |
+            **/*.log
+            **/*.tex
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
