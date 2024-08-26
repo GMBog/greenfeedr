@@ -1,31 +1,32 @@
-
 # Reports and Figures for JDS Communications
 # Example with dairy cow data
 
 load_all()
 
 ## Create the daily report
-dailyrep(user = "wattiaux",
-         pass = "greenfeed",
-         exp = "Example data",
-         unit = 579,
-         start_date = "2024-01-22",
-         end_date = "2024-02-18",
-         save_dir = "/Users/GuillermoMartinez/Downloads/",
-         plot_opt = c("CH4","CO2"),
-         RFID_file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/FP695_EID.csv"
-         )
+dailyrep(
+  user = "wattiaux",
+  pass = "greenfeed",
+  exp = "Example data",
+  unit = 579,
+  start_date = "2024-01-22",
+  end_date = "2024-02-18",
+  save_dir = "/Users/GuillermoMartinez/Downloads/",
+  plot_opt = c("CH4", "CO2"),
+  RFID_file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/FP695_EID.csv"
+)
 
 ## Create the final report
-finalrep(exp = "Example data",
-         unit = 579,
-         start_date = "2024-01-22",
-         end_date = "2024-03-08",
-         save_dir = "/Users/GuillermoMartinez/Downloads/",
-         final_report = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/GreenFeed_Summarized_Data_579_2024_01_22_to_2024_03_08.xlsx",
-         plot_opt = c("All"),
-         RFID_file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/FP695_EID.csv"
-         )
+finalrep(
+  exp = "Example data",
+  unit = 579,
+  start_date = "2024-01-22",
+  end_date = "2024-03-08",
+  save_dir = "/Users/GuillermoMartinez/Downloads/",
+  final_report = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/GreenFeed_Summarized_Data_579_2024_01_22_to_2024_03_08.xlsx",
+  plot_opt = c("All"),
+  RFID_file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/FP695_EID.csv"
+)
 
 
 ## Figures ######################################################################
@@ -33,18 +34,18 @@ finalrep(exp = "Example data",
 library(ggplot2)
 library(patchwork)
 
-#Figure 1: in PPT
-#Figure 2: Final report plots
-##First run the function finalrep by hand and remove outliers for methane (-999)
+# Figure 1: in PPT
+# Figure 2: Final report plots
+## First run the function finalrep by hand and remove outliers for methane (-999)
 
-df <- df[df$CH4GramsPerDay != -999,]
-df <- df[df$H2GramsPerDay != -999,]
+df <- df[df$CH4GramsPerDay != -999, ]
+df <- df[df$H2GramsPerDay != -999, ]
 
-##Change cowID to include in plots
+## Change cowID to include in plots
 newIDs <- paste0("Cow", 1:32)
 newIDs
 
-#A) Total number of records per animal
+# A) Total number of records per animal
 plotA <- df %>%
   dplyr::mutate(day = as.Date(EndTime)) %>%
   dplyr::group_by(!!sym(group_var), day) %>%
@@ -62,21 +63,24 @@ plotA <- df %>%
   labs(
     title = "A)", x = "", y = "Total Records"
   ) +
-  scale_x_discrete(labels = newIDs) +  # Apply custom x-axis labels
+  scale_x_discrete(labels = newIDs) + # Apply custom x-axis labels
   theme_classic() +
   theme(
     plot.title = element_text(size = 11, face = "bold", family = "Times New Roman"),
     axis.text.x = element_text(angle = 45, hjust = 1.05, size = 5, family = "Times New Roman"),
     axis.text.y = element_text(angle = 0, size = 6, family = "Times New Roman"),
     axis.title.y = element_text(size = 8, face = "bold", family = "Times New Roman"),
-    legend.position = "none") +
-  geom_text(aes(label = n), vjust = -0.5, color = "black",
-            position = position_dodge(width = 0.9), size = 1.1) +
+    legend.position = "none"
+  ) +
+  geom_text(aes(label = n),
+    vjust = -0.5, color = "black",
+    position = position_dodge(width = 0.9), size = 1.1
+  ) +
   coord_cartesian(ylim = c(0, 200)) +
-  scale_y_continuous(breaks = seq(0, 200, 20), expand = c(0.02,0))
+  scale_y_continuous(breaks = seq(0, 200, 20), expand = c(0.02, 0))
 
 
-#B) Percentage of Total Records
+# B) Percentage of Total Records
 plotB <- df %>%
   dplyr::mutate(AMPM = case_when(
     HourOfDay >= 22 ~ "10PM-4AM",
@@ -99,7 +103,7 @@ plotB <- df %>%
     y = "Percentage of Total Records",
     fill = "Time-Windows:"
   ) +
-  scale_x_discrete(labels = newIDs) +  # Apply custom x-axis labels
+  scale_x_discrete(labels = newIDs) + # Apply custom x-axis labels
   theme_classic() +
   theme(
     plot.title = element_text(size = 11, face = "bold", family = "Times New Roman"),
@@ -109,16 +113,19 @@ plotB <- df %>%
     legend.title = element_text(size = 7, family = "Times New Roman"),
     legend.text = element_text(size = 6, family = "Times New Roman"),
     legend.position = "top",
-    legend.key.size = unit(0.2, "cm"),  # Adjust size of legend keys
-    legend.box.spacing = unit(0, "cm"),  # Reduce space between legend and plot
+    legend.key.size = unit(0.2, "cm"), # Adjust size of legend keys
+    legend.box.spacing = unit(0, "cm"), # Reduce space between legend and plot
     legend.spacing.x = unit(0.5, "cm"),
-    legend.spacing.y = unit(0.5, "cm")) +
+    legend.spacing.y = unit(0.5, "cm")
+  ) +
   scale_fill_brewer(palette = "BrBG") +
-  scale_y_continuous(breaks = c(0, 0.25, 0.50, 0.75, 1),
-                     labels = c("0%", "25%", "50%", "75%", "100%"), expand = c(0.01, 0.01))
+  scale_y_continuous(
+    breaks = c(0, 0.25, 0.50, 0.75, 1),
+    labels = c("0%", "25%", "50%", "75%", "100%"), expand = c(0.01, 0.01)
+  )
 
 
-#C) Gas distribution thorughout the day
+# C) Gas distribution thorughout the day
 generate_combined_plot <- function(df, plot_opt) {
   # Convert to lowercase to avoid case sensitivity issues
   plot_opt <- tolower(plot_opt)
@@ -149,8 +156,8 @@ generate_combined_plot <- function(df, plot_opt) {
       legend.title = element_text(size = 7, family = "Times New Roman"),
       legend.text = element_text(size = 6, family = "Times New Roman"),
       legend.position = "top",
-      legend.key.size = unit(0.2, "cm"),  # Adjust size of legend keys
-      legend.box.spacing = unit(0, "cm"),  # Reduce space between legend and plot
+      legend.key.size = unit(0.2, "cm"), # Adjust size of legend keys
+      legend.box.spacing = unit(0, "cm"), # Reduce space between legend and plot
       legend.spacing.x = unit(0.5, "cm"),
       legend.spacing.y = unit(0.5, "cm")
     ) +
@@ -207,24 +214,24 @@ generate_combined_plot <- function(df, plot_opt) {
 plotC <- generate_combined_plot(df, plot_opt)
 
 
-#D) Variability of methane production per animal
+# D) Variability of methane production per animal
 plotD <- df %>%
   dplyr::mutate(day = as.Date(EndTime)) %>%
   dplyr::group_by(!!sym(group_var), day) %>%
   dplyr::summarise(daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE)) %>%
   ggplot(aes(x = reorder(!!sym(group_var), -daily_CH4), y = daily_CH4, color = daily_CH4)) +
-    geom_boxplot(fatten = NULL, outlier.shape = NA) +
-    stat_summary(
-      fun = mean, geom = "errorbar",
-      aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7,
-      color = "black", linetype = "solid"
-    ) +
-    labs(
-      title = "D)",
-      x = "",
-      y = "Methane emissions (g/d)"
-    ) +
-  scale_x_discrete(labels = newIDs) +  # Apply custom x-axis labels
+  geom_boxplot(fatten = NULL, outlier.shape = NA) +
+  stat_summary(
+    fun = mean, geom = "errorbar",
+    aes(ymax = ..y.., ymin = ..y..), width = 0.75, size = 0.7,
+    color = "black", linetype = "solid"
+  ) +
+  labs(
+    title = "D)",
+    x = "",
+    y = "Methane emissions (g/d)"
+  ) +
+  scale_x_discrete(labels = newIDs) + # Apply custom x-axis labels
   theme_classic() +
   theme(
     plot.title = element_text(size = 11, face = "bold", family = "Times New Roman"),
@@ -234,10 +241,11 @@ plotD <- df %>%
     legend.title = element_text(size = 7, family = "Times New Roman"),
     legend.text = element_text(size = 6, family = "Times New Roman")
   ) +
-  coord_cartesian(ylim = c(0, 800)) + scale_y_continuous(breaks = seq(0, 800, 100))
+  coord_cartesian(ylim = c(0, 800)) +
+  scale_y_continuous(breaks = seq(0, 800, 100))
 
 
-tiff("~/Downloads/Figure2.tiff", units="cm", width=20, height=13, res=300)
+tiff("~/Downloads/Figure2.tiff", units = "cm", width = 20, height = 13, res = 300)
 
 combined_plot <- (plotA | plotB) / (plotC | plotD)
 combined_plot
@@ -248,14 +256,15 @@ dev.off()
 
 
 ## Process all data from the study
-data <- process_gfdata(file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/GreenFeed_Summarized_Data_579_2024_01_22_to_2024_03_08.xlsx",
-                       input_type = "final",
-                       start_date = "2024-01-22",
-                       end_date = "2024-03-08",
-                       param1 = 2,
-                       param2 = 4,
-                       min_time = 2
-                       )
+data <- process_gfdata(
+  file = "/Users/GuillermoMartinez/GreenFeed_UW/Methane/Studies/FP695/GreenFeed_Summarized_Data_579_2024_01_22_to_2024_03_08.xlsx",
+  input_type = "final",
+  start_date = "2024-01-22",
+  end_date = "2024-03-08",
+  param1 = 2,
+  param2 = 4,
+  min_time = 2
+)
 
 
 library(purrr)
@@ -312,7 +321,6 @@ process_and_summarize <- function(param1, param2, min_time) {
     param1 = param1,
     param2 = param2,
     min_time = min_time,
-
     records_d = records_d,
     cows_d = cows_d,
     mean_dCH4 = round(mean_dCH4, 1),
@@ -321,7 +329,6 @@ process_and_summarize <- function(param1, param2, min_time) {
     mean_dCO2 = round(mean_dCO2, 1),
     sd_dCO2 = round(sd_dCO2, 1),
     CV_dCO2 = round(CV_dCO2, 2),
-
     records_w = records_w,
     cows_w = cows_w,
     mean_wCH4 = round(mean_wCH4, 1),
@@ -339,20 +346,14 @@ data <- param_combinations %>%
 
 openxlsx::write.xlsx(data, file = "~/Downloads/results_param.xlsx")
 
-#data <- readxl::read_excel("~/Downloads/results_param.xlsx")
+# data <- readxl::read_excel("~/Downloads/results_param.xlsx")
 
 # Calculate Pearson correlations between parameters and means
 ## Note that based on the correlations the factor that reduce more the records in min_time
-dcorrelations <- round(cor(data[, c("param1", "param2", "min_time", "records_d", "cows_d", "mean_dCH4", "CV_dCH4")], use = "complete.obs"),2)
+dcorrelations <- round(cor(data[, c("param1", "param2", "min_time", "records_d", "cows_d", "mean_dCH4", "CV_dCH4")], use = "complete.obs"), 2)
 dcorrelations
-wcorrelations <- round(cor(data[, c("param1", "param2", "min_time", "records_w", "cows_w", "mean_wCH4", "CV_wCH4")], use = "complete.obs"),2)
+wcorrelations <- round(cor(data[, c("param1", "param2", "min_time", "records_w", "cows_w", "mean_wCH4", "CV_wCH4")], use = "complete.obs"), 2)
 wcorrelations
 
 # Extract results for different min_time
-mintime2 <- data[data$min_time == 2,]
-
-
-
-
-
-
+mintime2 <- data[data$min_time == 2, ]

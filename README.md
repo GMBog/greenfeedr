@@ -39,22 +39,44 @@ pak::pak("GMBog/greenfeedr")
 
 ## Usage
 
+Here we present an example of how to use `process_gfdata()`:
+
 ``` r
 library(greenfeedr)
 ```
 
-Here we present an example of how to use `process_gfdata()`:
+Note that we received from C-Lock Inc. the finalized data (or Summarized
+Data) from our study using GreenFeed system. So, now we need to process
+all the daily records obtained.
 
-Note that with the finalized data (or Summarized Data) from GreenFeed
-system for our study, we need to process all daily records.
+The data looks like:
 
-First, we need to explore the number of records we have in our dataset.
-To that we use the function `process_gfdata()` and we can test different
-threshold values. The function includes 3 parameters: - param1 -
-param2 - min_time
+``` r
+file <- read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
+head(file)[1:6]
+#> # A tibble: 6 × 6
+#>   RFID                 `Farm Name`   FID `Start Time`        `End Time`         
+#>   <chr>                <chr>       <dbl> <dttm>              <dttm>             
+#> 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31
+#> 2 0000000008400032506… 0000000008…     1 2024-05-13 10:25:44 2024-05-13 10:32:40
+#> 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19
+#> 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14
+#> 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52
+#> 6 0000000008400032345… 0000000008…     1 2024-05-13 14:59:14 2024-05-13 15:11:50
+#> # ℹ 1 more variable: `Good Data Duration` <dttm>
+```
+
+The first step is to investigate the total number of records, records
+per day, and days with records per week we have in our GreenFeed data.
+
+To do this we will use the `process_gfdata()` function and test 3
+threshold values that will define the records we will retain for further
+analysis. Note that the function includes 3 parameters: - param1 =
+number of records per day - param2 = number of days with records per
+week - min_time - minimum duration of a record
 
 We can make an iterative process evaluating all possible combinations of
-parameters. Then, we define the parameters:
+parameters. Then, we define the parameters as follows:
 
 ``` r
 # Define the parameter space for param1 (i), param2 (j), and min_time (k):
@@ -62,60 +84,59 @@ i <- seq(1, 3)
 j <- seq(3, 7)
 k <- seq(2, 5)
 
-#Generate all combinations of i, j, and k
+# Generate all combinations of i, j, and k
 param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 ```
 
-Note that we have 60 combinations of the 3 parameters (param1, param2,
-and min_time).
+Interestingly, we have 60 combinations of our 3 parameters (param1,
+param2, and min_time).
 
 The next step, is to evaluate the function `process_gfdata()` with the
-set of parameters defined before.
+defined set of parameters.
 
 ``` r
 # Helper function to call process_gfdata and extract relevant information
 process_and_summarize <- function(param1, param2, min_time) {
   data <- process_gfdata(
-    file = system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"), 
+    file = system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"),
     input_type = "final",
-    start_date = "2024-05-13", 
-    end_date = "2024-05-25", 
-    param1 = param1, 
-    param2 = param2, 
+    start_date = "2024-05-13",
+    end_date = "2024-05-25",
+    param1 = param1,
+    param2 = param2,
     min_time = min_time
   )
-  
+
   # Extract daily_data and weekly_data
   daily_data <- data$daily_data
   weekly_data <- data$weekly_data
-  
+
   # Calculate the required metrics
   records_d <- nrow(daily_data)
   cows_d <- length(unique(daily_data$RFID))
-  
+
   mean_dCH4 <- mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
   sd_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE)
   CV_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE) / mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
   mean_dCO2 <- mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
   sd_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE)
   CV_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE) / mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
-  
+
   records_w <- nrow(weekly_data)
   cows_w <- length(unique(weekly_data$RFID))
-  
+
   mean_wCH4 <- mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
-  sd_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE) 
+  sd_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE)
   CV_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
   mean_wCO2 <- mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
   sd_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE)
   CV_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
-  
+
   # Return a summary row
   return(data.frame(
     param1 = param1,
     param2 = param2,
     min_time = min_time,
-    
     records_d = records_d,
     cows_d = cows_d,
     mean_dCH4 = round(mean_dCH4, 1),
@@ -124,7 +145,6 @@ process_and_summarize <- function(param1, param2, min_time) {
     mean_dCO2 = round(mean_dCO2, 1),
     sd_dCO2 = round(sd_dCO2, 1),
     CV_dCO2 = round(CV_dCO2, 2),
-    
     records_w = records_w,
     cows_w = cows_w,
     mean_wCH4 = round(mean_wCH4, 1),
@@ -137,7 +157,8 @@ process_and_summarize <- function(param1, param2, min_time) {
 }
 ```
 
-The results are place in a data frame with the following structure:
+Finally, the results from our function will be placed in a data frame
+with the following structure:
 
 ``` r
 head(data)

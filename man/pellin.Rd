@@ -4,7 +4,7 @@
 \alias{pellin}
 \title{Process GreenFeed Pellet Intakes}
 \arguments{
-\item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
+\item{file_path}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
 \item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
 
@@ -16,7 +16,7 @@
 
 \item{save_dir}{Directory where to save the resulting file with pellet intakes}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
+\item{rfid_file}{The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
 An Excel file with pellet intakes for all animals and dates of the requested period
@@ -35,15 +35,15 @@ file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
 # By default the function use 34g, but you should include the result obtained from the 10-drops test
 
-# If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+# If the user include an rfid file, the structure should be in col1 the farmname or visualID, and
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 
 pellin(file,
-       unit = 1,
-       gcup = 34,
-       start_date = "2024-05-13",
-       end_date = "2024-05-25",
-       save_dir = tempdir()
-      )
+  unit = 1,
+  gcup = 34,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  save_dir = tempdir()
+)
 
 }

@@ -16,56 +16,57 @@
 #' @param input_type Input data could be from daily or final report: daily or final
 #' @param save_dir Directory to save the output file. By default the current working directory is used
 #' @param plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported
-#' @param RFID_file File that contains RFID of the animals in the study
-#' @param file List of files with final report from GreenFeed
+#' @param rfid_file File that contains RFID of the animals in the study
+#' @param file_path List of files with final report from GreenFeed
 #'
 #' @return An Excel file with daily data from GreenFeed unit(s) and
 #'     a markdown report with a description of the daily or final records
 #'
 #' @examplesIf has_credentials()
-#' #Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+#' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
 #' user <- Sys.getenv("API_USER")
 #' pass <- Sys.getenv("API_PASS")
 #'
-#' #The data range must be fewer than 180 days
-#' #Example without RFID_file (by default NA)
+#' # The data range must be fewer than 180 days
+#' # Example without rfid_file (by default NA)
 #'
 #' report_gfdata(user,
-#'               pass,
-#'               exp = "StudyName",
-#'               unit = 1,
-#'               start_date = "2023-01-01",
-#'               end_date = Sys.Date(),
-#'               input_type = "daily",
-#'               save_dir = tempdir(),
-#'               plot_opt = "All"
-#'               )
+#'   pass,
+#'   exp = "StudyName",
+#'   unit = 1,
+#'   start_date = "2023-01-01",
+#'   end_date = Sys.Date(),
+#'   input_type = "daily",
+#'   save_dir = tempdir(),
+#'   plot_opt = "All"
+#' )
 #'
 #' @examples
-#' #Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
-#' #Note that Unit could be numeric or character (It will use to print in the PDF)
+#' # Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
+#' # Note that Unit could be numeric or character (It will use to print in the PDF)
 #'
-#' #File is a list of reports from C-Lock inc.
-#' #it could be one or multiples depend on the number of units
+#' # File is a list of reports from C-Lock inc.
+#' # it could be one or multiples depend on the number of units
 #' file <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 #'
-#' #By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases
+#' # By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases
 #'
-#' #Is it possible to include a file with Farm IDs to use in the reports
-#' #The file structure should be: FarmName | RFID
+#' # Is it possible to include a file with Farm IDs to use in the reports
+#' # The file structure should be: FarmName | RFID
 #'
-#' report_gfdata(user = NA,
-#'               pass = NA,
-#'               exp = "StudyName",
-#'               unit = 1,
-#'               start_date = "2024-05-13",
-#'               end_date = "2024-05-25",
-#'               input_type = "final",
-#'               save_dir = tempdir(),
-#'               plot_opt = "All",
-#'               RFID_file = NA,
-#'               file = file
-#'               )
+#' report_gfdata(
+#'   user = NA,
+#'   pass = NA,
+#'   exp = "StudyName",
+#'   unit = 1,
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   input_type = "final",
+#'   save_dir = tempdir(),
+#'   plot_opt = "All",
+#'   rfid_file = NA,
+#'   file_path = file
+#' )
 #'
 #' @export report_gfdata
 #'
@@ -82,7 +83,7 @@
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "Gas_Data"))
 
 report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
-                     input_type, save_dir = getwd(), plot_opt = "CH4", RFID_file = NA, file) {
+                          input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NA, file_path) {
   # Ensure Unit is a comma-separated string
   if (is.numeric(unit)) {
     # Convert numeric to character
@@ -118,7 +119,6 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
 
 
   if (input_type == "daily") {
-
     # First Authenticate to receive token:
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
     httr::stop_for_status(req)
@@ -175,21 +175,21 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
     readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
 
 
-    # Read file with the RFID in the study
-    if (!is.na(RFID_file)) {
-      if (tolower(tools::file_ext(RFID_file)) == "csv") {
-        RFID_file <- readr::read_table(RFID_file, col_types = readr::cols(FarmName = readr::col_character(), RFID = readr::col_character()))
-      } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-        RFID_file <- readxl::read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
+    # Read file with the rfid in the study
+    if (!is.na(rfid_file)) {
+      if (tolower(tools::file_ext(rfid_file)) == "csv") {
+        rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(FarmName = readr::col_character(), RFID = readr::col_character()))
+      } else if (tolower(tools::file_ext(rfid_file)) %in% c("xls", "xlsx")) {
+        rfid_file <- readxl::read_excel(rfid_file, col_types = c("text", "text", "numeric", "text"))
       } else {
         stop("Unsupported file format.")
       }
     }
 
     # Create a function to conditionally perform inner join
-    conditional_inner_join <- function(df, RFID_file) {
-      if (nrow(RFID_file) > 0) {
-        inner_join(df, RFID_file, by = "RFID")
+    conditional_inner_join <- function(df, rfid_file) {
+      if (nrow(rfid_file) > 0) {
+        inner_join(df, rfid_file, by = "RFID")
       } else {
         df
       }
@@ -200,22 +200,22 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
       # Remove "unknown IDs" and leading zeros from RFID col
       dplyr::filter(RFID != "unknown") %>%
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-      # Conditionally perform the inner_join if RFID_file exists
-      conditional_inner_join(RFID_file) %>%
+      # Conditionally perform the inner_join if rfid_file exists
+      conditional_inner_join(rfid_file) %>%
       dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
       # Change columns format
       dplyr::mutate(
         # Extract hours, minutes, and seconds from GoodDataDuration
         GoodDataDuration = round(
           as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
-          as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
-          as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
+            as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+            as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
           2
         ),
         # 'HourOfDay' is a new col contains daytime (extract the time part from StartTime (HH:MM:SS))
         HourOfDay = round(
           as.numeric(substr(substr(StartTime, 12, 19), 1, 2)) +
-          as.numeric(substr(substr(StartTime, 12, 19), 4, 5)) / 60,
+            as.numeric(substr(substr(StartTime, 12, 19), 4, 5)) / 60,
           2
         )
       ) %>%
@@ -223,9 +223,9 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
       dplyr::filter(AirflowLitersPerSec >= 25)
 
 
-    # If RFID file is provided, process it for the PDF report
-    if (nrow(RFID_file) > 0) {
-      RFID_file <- RFID_file %>%
+    # If rfid file is provided, process it for the PDF report
+    if (nrow(rfid_file) > 0) {
+      rfid_file <- rfid_file %>%
         dplyr::mutate(
           # 'Data' col is a binary (YES = animal has records, NO = animal has no records)
           Gas_Data = ifelse(RFID %in% df$RFID, "Yes", "No")
@@ -238,10 +238,9 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
       output_file = file.path(save_dir, paste0("/DailyReport_", exp, ".pdf"))
     )
   } else {
-
     # Function to read and process each file
-    process_file <- function(file) {
-      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
+    process_file <- function(file_path) {
+      df <- readxl::read_excel(file_path, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
       names(df)[1:14] <- c(
         "RFID",
         "AnimalName",
@@ -285,22 +284,22 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
     }
 
     # Combine all final report files into one data frame
-    df <- do.call(rbind, lapply(file, process_file))
+    df <- do.call(rbind, lapply(file_path, process_file))
 
     # Read file with the RFID in the study
-    if (!is.na(RFID_file)) {
-      if (tolower(tools::file_ext(RFID_file)) == "csv") {
-        RFID_file <- readr::read_table(RFID_file, col_types = readr::cols(FarmName = readr::col_character(), RFID = readr::col_character()))
-      } else if (tolower(tools::file_ext(RFID_file)) %in% c("xls", "xlsx")) {
-        RFID_file <- readxl::read_excel(RFID_file, col_types = c("text", "text", "numeric", "text"))
+    if (!is.na(rfid_file)) {
+      if (tolower(tools::file_ext(rfid_file)) == "csv") {
+        rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(FarmName = readr::col_character(), RFID = readr::col_character()))
+      } else if (tolower(tools::file_ext(rfid_file)) %in% c("xls", "xlsx")) {
+        rfid_file <- readxl::read_excel(rfid_file, col_types = c("text", "text", "numeric", "text"))
       } else {
         stop("Unsupported file format.")
       }
     }
 
-    # If RFID file is provided then perform inner join
-    if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
-      df <- dplyr::inner_join(df, RFID_file, by = "RFID")
+    # If rfid file is provided then perform inner join
+    if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
+      df <- dplyr::inner_join(df, rfid_file, by = "RFID")
     }
 
     # Create PDF report using Rmarkdown
@@ -309,5 +308,4 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
       output_file = file.path(save_dir, paste0("FinalReport_", exp, ".pdf"))
     )
   }
-
 }

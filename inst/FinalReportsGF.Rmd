@@ -15,7 +15,7 @@ library(ggplot2)
 
 ## Experimental days: `r floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") +1))` days
 
-**Number of animals with gas records: `r if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) { paste0(nrow(dplyr::semi_join(RFID_file, df, by = "RFID")), " out of ", nrow(RFID_file)) } else { length(unique(df$RFID)) }`**
+**Number of animals with gas records: `r if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) { paste0(nrow(dplyr::semi_join(rfid_file, df, by = "RFID")), " out of ", nrow(rfid_file)) } else { length(unique(df$RFID)) }`**
 
 
 \newpage
@@ -139,7 +139,7 @@ print(plot_combined)
 
 ```{r Data per day, message=FALSE, warning=FALSE, echo=FALSE, fig.height=4, fig.width=7}
 # Assuming RFIDfile is provided or not, set the grouping variable
-group_var <- if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) "FarmName" else "RFID"
+group_var <- if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) "FarmName" else "RFID"
 
 # Determine the order of FarmName or RFID based on daily_CH4
 farmname_order <- df %>%

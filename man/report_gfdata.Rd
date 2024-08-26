@@ -22,9 +22,9 @@
 
 \item{plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported}
 
-\item{RFID_file}{File that contains RFID of the animals in the study}
+\item{rfid_file}{File that contains RFID of the animals in the study}
 
-\item{file}{List of files with final report from GreenFeed}
+\item{file_path}{List of files with final report from GreenFeed}
 }
 \value{
 An Excel file with daily data from GreenFeed unit(s) and
@@ -39,47 +39,48 @@ An Excel file with daily data from GreenFeed unit(s) and
 }
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-#Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+# Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
 user <- Sys.getenv("API_USER")
 pass <- Sys.getenv("API_PASS")
 
-#The data range must be fewer than 180 days
-#Example without RFID_file (by default NA)
+# The data range must be fewer than 180 days
+# Example without rfid_file (by default NA)
 
 report_gfdata(user,
-              pass,
-              exp = "StudyName",
-              unit = 1,
-              start_date = "2023-01-01",
-              end_date = Sys.Date(),
-              input_type = "daily",
-              save_dir = tempdir(),
-              plot_opt = "All"
-              )
+  pass,
+  exp = "StudyName",
+  unit = 1,
+  start_date = "2023-01-01",
+  end_date = Sys.Date(),
+  input_type = "daily",
+  save_dir = tempdir(),
+  plot_opt = "All"
+)
 \dontshow{\}) # examplesIf}
-#Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
-#Note that Unit could be numeric or character (It will use to print in the PDF)
+# Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
+# Note that Unit could be numeric or character (It will use to print in the PDF)
 
-#File is a list of reports from C-Lock inc.
-#it could be one or multiples depend on the number of units
+# File is a list of reports from C-Lock inc.
+# it could be one or multiples depend on the number of units
 file <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 
-#By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases
+# By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases
 
-#Is it possible to include a file with Farm IDs to use in the reports
-#The file structure should be: FarmName | RFID
+# Is it possible to include a file with Farm IDs to use in the reports
+# The file structure should be: FarmName | RFID
 
-report_gfdata(user = NA,
-              pass = NA,
-              exp = "StudyName",
-              unit = 1,
-              start_date = "2024-05-13",
-              end_date = "2024-05-25",
-              input_type = "final",
-              save_dir = tempdir(),
-              plot_opt = "All",
-              RFID_file = NA,
-              file = file
-              )
+report_gfdata(
+  user = NA,
+  pass = NA,
+  exp = "StudyName",
+  unit = 1,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  input_type = "final",
+  save_dir = tempdir(),
+  plot_opt = "All",
+  rfid_file = NA,
+  file_path = file
+)
 
 }

@@ -39,7 +39,7 @@
 #'   final_report = file,
 #'   plot_opt = "All",
 #'   RFID_file = NA
-#'   )
+#' )
 #'
 #' @export
 #'

@@ -4,7 +4,7 @@
 \alias{viseat}
 \title{Check GreenFeed Visits}
 \arguments{
-\item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
+\item{file_path}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
 \item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
 
@@ -12,7 +12,7 @@
 
 \item{end_date}{End date of the study}
 
-\item{RFID_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
+\item{rfid_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
 A list with two data farmes, one with visits per day and one with visits per animal
@@ -29,13 +29,13 @@ file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
 # If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
-RFIDs <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
+RFIDs <- system.file("extdata", "rfid_file.txt", package = "greenfeedr")
 
 data <- viseat(file,
-               unit = 1,
-               start_date = "2024-05-13",
-               end_date = "2024-05-25",
-               RFID_file = RFIDs
-               )
+  unit = 1,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  rfid_file = RFIDs
+)
 
 }

@@ -7,13 +7,13 @@
 #'     This function aggregates data to provide insights into the feeding behavior
 #'     and pellet consumption of the animals during a study.
 #'
-#' @param file File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
+#' @param file_path File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
 #' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
 #' @param gcup Grams of pellets per cup. By default 34 grams, but users should provide the grams based on the 10-drops test
 #' @param start_date Start date of the study
 #' @param end_date End date of the study
 #' @param save_dir Directory where to save the resulting file with pellet intakes
-#' @param RFID_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
+#' @param rfid_file The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
 #' @return An Excel file with pellet intakes for all animals and dates of the requested period
 #'
@@ -24,16 +24,16 @@
 #'
 #' # By default the function use 34g, but you should include the result obtained from the 10-drops test
 #'
-#' # If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+#' # If the user include an rfid file, the structure should be in col1 the farmname or visualID, and
 #' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 #'
 #' pellin(file,
-#'        unit = 1,
-#'        gcup = 34,
-#'        start_date = "2024-05-13",
-#'        end_date = "2024-05-25",
-#'        save_dir = tempdir()
-#'       )
+#'   unit = 1,
+#'   gcup = 34,
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   save_dir = tempdir()
+#' )
 #'
 #' @export pellin
 #'
@@ -51,8 +51,8 @@ utils::globalVariables(c(
   "MassFoodDrop", "Date", "RFID", "pellintakes", "FarmName"
 ))
 
-pellin <- function(file, unit, gcup = 34, start_date, end_date,
-                   save_dir = getwd(), RFID_file = NA) {
+pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
+                   save_dir = getwd(), rfid_file = NA) {
   message("Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.")
 
   # Check Date format
@@ -60,28 +60,30 @@ pellin <- function(file, unit, gcup = 34, start_date, end_date,
   end_date <- ensure_date_format(end_date)
 
   # Read file with the RFID in the study
-  if (!is.na(RFID_file)) {
-    file_extension <- tolower(tools::file_ext(RFID_file))
+  if (!is.na(rfid_file)) {
+    file_extension <- tolower(tools::file_ext(rfid_file))
 
     if (file_extension == "csv") {
-      RFID_file <- readr::read_csv(RFID_file, col_types = readr::cols(.default = readr::col_character()))
+      rfid_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
     } else if (file_extension %in% c("xls", "xlsx")) {
       # Read all columns and then select the first two
-      RFID_file <- readxl::read_excel(RFID_file) %>%
+      rfid_file <- readxl::read_excel(rfid_file) %>%
         dplyr::select(1:2) %>%
         dplyr::mutate(across(everything(), as.character))
+    } else if (file_extension == "txt") {
+      rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
     } else {
       stop("Unsupported file format.")
     }
 
     # Rename the columns if needed
-    names(RFID_file)[1:2] <- c("FarmName", "RFID")
+    names(rfid_file)[1:2] <- c("FarmName", "RFID")
   } else {
-    message("It is recommended to include an 'RFID_file' that contains the relevant columns.")
+    message("It is recommended to include an 'rfid_file' that contains the relevant columns.")
   }
 
   # Read and bind feedtimes data
-  df <- purrr::map2_dfr(file, unit, ~ {
+  df <- purrr::map2_dfr(file_path, unit, ~ {
     readr::read_csv(.x) %>%
       dplyr::mutate(FID = .y)
   }) %>%
@@ -89,10 +91,10 @@ pellin <- function(file, unit, gcup = 34, start_date, end_date,
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
 
 
-  # If RFID_file provided, filter and get animal ID not visiting the GreenFeed units
-  if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
-    df <- df[df$CowTag %in% RFID_file$RFID, ]
-    noGFvisits <- RFID_file$FarmName[!(RFID_file$RFID %in% df$CowTag)]
+  # If rfid_file provided, filter and get animal ID not visiting the GreenFeed units
+  if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
+    df <- df[df$CowTag %in% rfid_file$RFID, ]
+    noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]
     message(paste("Animal ID not visting GF: ", noGFvisits))
   }
 
@@ -139,8 +141,8 @@ pellin <- function(file, unit, gcup = 34, start_date, end_date,
   pellintakes$MassFoodDrop[is.na(pellintakes$MassFoodDrop)] <- 0
 
   # Adding the Farm name to the AP intakes
-  if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
-    pellintakes <- RFID_file[, 1:2] %>%
+  if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
+    pellintakes <- rfid_file[, 1:2] %>%
       dplyr::inner_join(pellintakes, by = c("RFID" = "CowTag"))
     names(pellintakes) <- c("FarmName", "RFID", "Date", "Intake_AP_kg")
   } else {
@@ -157,18 +159,18 @@ pellin <- function(file, unit, gcup = 34, start_date, end_date,
     dplyr::mutate(Date = as.Date(Date))
 
 
-  if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
+  if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(FarmName, RFID))
   } else {
     df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(RFID))
   }
 
   # Add cows without visits to the units
-  if (!is.null(RFID_file) && is.data.frame(RFID_file) && nrow(RFID_file) > 0) {
+  if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     grid_cows_missing <- expand.grid(
       Date = unique(df$Date),
-      FarmName = RFID_file$FarmName[RFID_file$FarmName %in% noGFvisits],
-      RFID = RFID_file$RFID[RFID_file$FarmName %in% noGFvisits],
+      FarmName = rfid_file$FarmName[rfid_file$FarmName %in% noGFvisits],
+      RFID = rfid_file$RFID[rfid_file$FarmName %in% noGFvisits],
       Intake_AP_kg = NA
     )
 

@@ -44,7 +44,7 @@
 #' @import stringr
 
 get_gfdata <- function(user, pass, exp, unit,
-                         start_date, end_date = Sys.Date(), save_dir = getwd()) {
+                       start_date, end_date = Sys.Date(), save_dir = getwd()) {
   # Ensure unit is a comma-separated string
   if (is.numeric(unit)) {
     unit <- as.character(unit)

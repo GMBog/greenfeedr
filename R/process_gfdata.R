@@ -6,7 +6,7 @@
 #'     This function handles data filtering, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
-#' @param file File with GreenFeed data. It could be daily or final data
+#' @param file_path File with GreenFeed data. It could be daily or final data
 #' @param start_date Start date of the study
 #' @param end_date End date of the study
 #' @param input_type Input file with data. It could be from daily or final report
@@ -19,22 +19,22 @@
 #' @examples
 #' file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 #' data1 <- process_gfdata(file1,
-#'                         input_type = "daily",
-#'                         start_date = "2024-05-13",
-#'                         end_date = "2024-05-25",
-#'                         param1 = 2,
-#'                         param2 = 3
-#'                         )
+#'   input_type = "daily",
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   param1 = 2,
+#'   param2 = 3
+#' )
 #' head(data1)
 #'
 #' file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 #' data2 <- process_gfdata(file2,
-#'                         input_type = "final",
-#'                         start_date = "2024-05-13",
-#'                         end_date = "2024-05-25",
-#'                         param1 = 2,
-#'                         param2 = 3
-#'                         )
+#'   input_type = "final",
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-25",
+#'   param1 = 2,
+#'   param2 = 3
+#' )
 #'
 #' head(data2)
 #'
@@ -51,7 +51,7 @@ utils::globalVariables(c(
   "nDays", "nRecords", "TotalMin"
 ))
 
-process_gfdata <- function(file, start_date, end_date, input_type,
+process_gfdata <- function(file_path, start_date, end_date, input_type,
                            param1, param2, min_time = 2) {
   # Check Date format
   start_date <- ensure_date_format(start_date)
@@ -74,10 +74,10 @@ process_gfdata <- function(file, start_date, end_date, input_type,
   }
 
   # Function to read and process each file
-  process_file <- function(file, input_type) {
+  process_file <- function(file_path, input_type) {
     if (input_type == "final") {
       # Read from Excel file
-      df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
+      df <- readxl::read_excel(file_path, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
       names(df)[1:14] <- c(
         "RFID",
         "AnimalName",
@@ -105,18 +105,18 @@ process_gfdata <- function(file, start_date, end_date, input_type,
           day = as.Date(EndTime),
           # Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
-             as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
-            #as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
-             as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
-            #as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
-             as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
-            #as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
+            as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
+              # as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
+              as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
+              # as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
+              as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
+            # as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
             2
           )
         )
     } else {
       # Read from CSV file
-      df <- readr::read_csv(file)
+      df <- readr::read_csv(file_path)
       names(df) <- c(
         "FeederID",
         "AnimalName",
@@ -167,7 +167,7 @@ process_gfdata <- function(file, start_date, end_date, input_type,
   }
 
   # Combine all files into one data frame
-  df <- do.call(rbind, lapply(file, process_file, input_type))
+  df <- do.call(rbind, lapply(file_path, process_file, input_type))
 
   ## Computing weekly production of gases
   daily_df <- df %>%

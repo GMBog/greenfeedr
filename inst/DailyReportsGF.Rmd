@@ -20,14 +20,14 @@ library(stringr)
 
 ## Experimental days: `r floor(as.numeric(difftime(max(df$StartTime), min(as.Date(df$StartTime)), units = "days") +1))` days
 
-**Number of animals with gas records: `r if ((nrow(RFID_file) > 0)) { paste0(nrow(dplyr::semi_join(RFID_file, df, by = "RFID")), " out of ", nrow(RFID_file)) } else { length(unique(df$RFID)) }`**
+**Number of animals with gas records: `r if ((nrow(rfid_file) > 0)) { paste0(nrow(dplyr::semi_join(rfid_file, df, by = "RFID")), " out of ", nrow(rfid_file)) } else { length(unique(df$RFID)) }`**
 
 
 ```{r Summary, message=FALSE, echo=FALSE}
-if (nrow(RFID_file) > 0) {
-  kbl(RFID_file, "simple")
+if (nrow(rfid_file) > 0) {
+  kbl(rfid_file, "simple")
 } else {
-  print("The 'RFID_file' is not provided.")
+  print("The 'rfid_file' is not provided.")
 }
 ```
 
@@ -94,7 +94,7 @@ plot2
 
 ```{r Data per cow, message=FALSE, warning=FALSE, echo=FALSE, fig.height=4, fig.width=7}
 # Assuming RFIDfile is provided or not, set the grouping variable
-group_var <- if (nrow(RFID_file) > 0) "FarmName" else "RFID"
+group_var <- if (nrow(rfid_file) > 0) "FarmName" else "RFID"
 
 # Determine the order of FarmName or RFID based on daily_CH4
 farmname_order <- df %>%

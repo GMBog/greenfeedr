@@ -29,14 +29,14 @@
 #' # Example without RFID_file (by default NA)
 #'
 #' dailyrep(user,
-#'          pass,
-#'          exp = "StudyName",
-#'          unit = 1,
-#'          start_date = "2023-01-01",
-#'          end_date = Sys.Date(),
-#'          save_dir = tempdir(),
-#'          plot_opt = "All"
-#'          )
+#'   pass,
+#'   exp = "StudyName",
+#'   unit = 1,
+#'   start_date = "2023-01-01",
+#'   end_date = Sys.Date(),
+#'   save_dir = tempdir(),
+#'   plot_opt = "All"
+#' )
 #'
 #' @export
 #'
@@ -197,4 +197,3 @@ dailyrep <- function(user, pass, exp = NA, unit, start_date, end_date = Sys.Date
     output_file = file.path(save_dir, paste0("/DailyReport_", exp, ".pdf"))
   )
 }
-
