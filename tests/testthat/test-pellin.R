@@ -1,8 +1,8 @@
 # Define paths to example files in the extdata directory
 feedtimes_file <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
-rfid_file <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
+rfid_file <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
-RFID_file <- read_table(rfid_file, col_types = cols(RFID = col_character()))
+RFID_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
 
 # Test if pellin processes data correctly
 test_that("pellin processes data correctly", {

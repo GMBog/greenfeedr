@@ -1,8 +1,27 @@
 # Define the paths to the files in the package's extdata directory
 feedtimes_file <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
-rfid_file <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
+rfid_file <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
 # Tests
+test_that("viseat handles unsupported file formats", {
+  # Create a dummy unsupported file
+  unsupported_file <- tempfile(fileext = ".docx")
+  writeLines(c("dummy data"), unsupported_file)
+
+  expect_error(
+    {
+      result <- viseat(
+        file_path = feedtimes_file,
+        unit = 1,
+        start_date = "2024-05-13",
+        end_date = "2024-05-25",
+        rfid_file = unsupported_file
+      )
+    },
+    "Unsupported file format."
+  )
+})
+
 test_that("viseat returns a list with the correct structure", {
   result <- viseat(
     file_path = feedtimes_file,
