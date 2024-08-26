@@ -7,7 +7,7 @@
 get_gfdata(
   user,
   pass,
-  exp,
+  exp = NA,
   unit,
   start_date,
   end_date = Sys.Date(),

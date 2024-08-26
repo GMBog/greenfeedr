@@ -29,7 +29,7 @@ file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
 # If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
-RFIDs <- system.file("extdata", "rfid_file.txt", package = "greenfeedr")
+RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
 data <- viseat(file,
   unit = 1,
