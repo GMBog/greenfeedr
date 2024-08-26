@@ -4,13 +4,13 @@
 \alias{process_gfdata}
 \title{Process Daily and Final GreenFeed Data}
 \arguments{
-\item{file}{File with GreenFeed data}
+\item{file}{File with GreenFeed data. It could be daily or final data}
 
 \item{start_date}{Start date of the study}
 
 \item{end_date}{End date of the study}
 
-\item{input_type}{Input data could be from daily or final report: daily or final}
+\item{input_type}{Input file with data. It could be from daily or final report}
 
 \item{param1}{Number of records per day to be consider for analysis}
 
@@ -19,33 +19,33 @@
 \item{min_time}{Minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
 }
 \value{
-Two data sets with daily and weekly processed GreenFeed data
+Two data frames with daily and weekly processed GreenFeed data
 }
 \description{
 `process_gfdata()` processes and computes daily and weekly averages
-    for daily and final GreenFeed data, organizing it into structured datasets.
-    This function handles data cleaning, aggregation, and summarization to facilitate
+    for daily and final GreenFeed data, organizing it into two data sets.
+    This function handles data filtering, aggregation, and summarization to facilitate
     further analysis and reporting.
 }
 \examples{
 file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 data1 <- process_gfdata(file1,
-  input_type = "daily",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3
-)
+                        input_type = "daily",
+                        start_date = "2024-05-13",
+                        end_date = "2024-05-25",
+                        param1 = 2,
+                        param2 = 3
+                        )
 head(data1)
 
 file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 data2 <- process_gfdata(file2,
-  input_type = "final",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3
-)
+                        input_type = "final",
+                        start_date = "2024-05-13",
+                        end_date = "2024-05-25",
+                        param1 = 2,
+                        param2 = 3
+                        )
 
 head(data2)
 

@@ -8,9 +8,9 @@
 
 \item{pass}{Password to log in to the GreenFeed system}
 
-\item{exp}{Study name}
+\item{exp}{Study name or other study identifier. It is used as the file name to report the data}
 
-\item{unit}{The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"}
+\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
 
 \item{start_date}{Start date of the study}
 
@@ -31,11 +31,11 @@ An Excel file with daily data from GreenFeed unit(s) and
     a markdown report with a description of the daily or final records
 }
 \description{
-`report_gfdata()` generates markdown reports of daily and final data.
-    If option "daily" is used, data is retrieve from C-Lock server using an application programming interface (API)
-    and generates a markdown report to check correct functionality of GreenFeed unit(s).
-    But, if option "final" is used, final data retrieved from C-Lock web interface should be provided to
-    generates a markdown report to evaluate the data obtained from the study.
+`report_gfdata()` generates markdown reports of daily and final GreenFeed data.
+    If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
+    and generates a markdown report to with number of animals, records, and gas production of the ongoing study.
+    But, if option "final" is used, final data should be provided to generates a markdown report
+    to evaluate all GreenFeed data obtained from the finalized study.
 }
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

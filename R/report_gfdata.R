@@ -1,16 +1,16 @@
 #' @name report_gfdata
 #' @title Download and Report GreenFeed Data
 #'
-#' @description `report_gfdata()` generates markdown reports of daily and final data.
-#'     If option "daily" is used, data is retrieve from C-Lock server using an application programming interface (API)
-#'     and generates a markdown report to check correct functionality of GreenFeed unit(s).
-#'     But, if option "final" is used, final data retrieved from C-Lock web interface should be provided to
-#'     generates a markdown report to evaluate the data obtained from the study.
+#' @description `report_gfdata()` generates markdown reports of daily and final GreenFeed data.
+#'     If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
+#'     and generates a markdown report to with number of animals, records, and gas production of the ongoing study.
+#'     But, if option "final" is used, final data should be provided to generates a markdown report
+#'     to evaluate all GreenFeed data obtained from the finalized study.
 #'
 #' @param user User name to log in to the GreenFeed system
 #' @param pass Password to log in to the GreenFeed system
-#' @param exp Study name
-#' @param unit The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"
+#' @param exp Study name or other study identifier. It is used as the file name to report the data
+#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
 #' @param start_date Start date of the study
 #' @param end_date End date of the study. By default the current date is used
 #' @param input_type Input data could be from daily or final report: daily or final
@@ -83,19 +83,6 @@ utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec",
 
 report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
                      input_type, save_dir = getwd(), plot_opt = "CH4", RFID_file = NA, file) {
-  # Convert input_type to lowercase to ensure case-insensitivity
-  input_type <- tolower(input_type)
-
-  # Ensure input_type is valid
-  valid_inputs <- c("final", "daily")
-  if (!(input_type %in% valid_inputs)) {
-    stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
-  }
-
-  # Check Date format
-  start_date <- ensure_date_format(start_date)
-  end_date <- ensure_date_format(end_date)
-
   # Ensure Unit is a comma-separated string
   if (is.numeric(unit)) {
     # Convert numeric to character
@@ -115,6 +102,19 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
 
   # Ensure the final output is a single comma-separated string
   unit <- paste(unit, collapse = ",")
+
+  # Check Date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
+
+  # Convert input_type to lowercase to ensure case-insensitivity
+  input_type <- tolower(input_type)
+
+  # Ensure input_type is valid
+  valid_inputs <- c("final", "daily")
+  if (!(input_type %in% valid_inputs)) {
+    stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
+  }
 
 
   if (input_type == "daily") {

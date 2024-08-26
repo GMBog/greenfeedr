@@ -1,11 +1,12 @@
 #' @name viseat
 #' @title Check GreenFeed Visits
 #'
-#' @description `viseat()` processes GreenFeed visits. Generate description of
-#'      animals not visiting the GreenFeed for the time period requested.
+#' @description `viseat()` processes GreenFeed visits and food drops.
+#'      This function generates a list of animals not visiting the GreenFeed and
+#'      a description of animals visiting the system for the requested period.
 #'
 #' @param file File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
-#' @param unit List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order
+#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
 #' @param start_date Start date of the study
 #' @param end_date End date of the study
 #' @param RFID_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
@@ -13,7 +14,7 @@
 #' @return A list with two data farmes, one with visits per day and one with visits per animal
 #'
 #' @examples
-#' # You should provide the folder where is 'feedtimes' file.
+#' # You should provide the 'feedtimes' files.
 #' # it could be a list of files if you have data from multiple units to combine
 #' file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 #'
@@ -22,11 +23,11 @@
 #' RFIDs <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
 #'
 #' data <- viseat(file,
-#'   unit = 1,
-#'   start_date = "2024-05-13",
-#'   end_date = "2024-05-25",
-#'   RFID_file = RFIDs
-#' )
+#'                unit = 1,
+#'                start_date = "2024-05-13",
+#'                end_date = "2024-05-25",
+#'                RFID_file = RFIDs
+#'                )
 #'
 #' @export viseat
 #'

@@ -8,7 +8,7 @@ test_file_path <- system.file("extdata", "perline.txt", package = "greenfeedr")
 # Expected URL based on parameters
 expected_url <- "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=1&st=2024-01-22&et=2024-03-08%2012:00:00"
 
-test_that("get_api_data correctly processes and saves data", {
+test_that("get_gfdata correctly processes and saves data", {
   # Define test parameters
   user <- "test_user"
   pass <- "test_pass"
@@ -21,7 +21,7 @@ test_that("get_api_data correctly processes and saves data", {
   save_dir <- system.file("extdata", package = "greenfeedr") # Use the extdata directory of the package
 
   # Mock the API function to return the expected URL
-  mock_get_api_data <- function(user, pass, exp, unit, start_date, end_date, save_dir) {
+  mock_get_gfdata <- function(user, pass, exp, unit, start_date, end_date, save_dir) {
     # Construct the URL
     url <- paste0(
       "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
@@ -31,14 +31,14 @@ test_that("get_api_data correctly processes and saves data", {
   }
 
   # Generate the URL from the mock function
-  generated_url <- mock_get_api_data(user, pass, exp, unit, start_date, end_date, save_dir)
+  generated_url <- mock_get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 
   # Check if the generated URL matches the expected URL
   expect_equal(generated_url, expected_url, info = "The generated URL does not match the expected URL.")
 
   # Run the function and check the output
-  # Note: In your real test, replace the mock function with the actual call to get_api_data
-  # result_df <- get_api_data(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
+  # Note: In your real test, replace the mock function with the actual call to get_gfdata
+  # result_df <- get_gfdata(User, Pass, Exp, Unit, Start_Date, End_Date, Dir)
 
   # Define the path to the output file
   output_file_path <- file.path(save_dir, paste0(exp, "_GFdata.csv"))

@@ -1,21 +1,20 @@
 #' @name get_gfdata
-#' @title Download daily GreenFeed data using API
+#' @title Download Daily GreenFeed Data via API
 #'
-#' @description `get_gfdata()` downloads daily data from GreenFeed unit(s)
-#'     using an application programming interface (API). This function
-#'     retrieves data based on specified parameters such as date range and
-#'     unit identifiers, providing a structured data output for further analysis
-#'     or reporting.
+#' @description `get_gfdata()` downloads from C-Lock server daily GreenFeed data
+#'     via an application programming interface (API). This function
+#'     retrieves data based on specified parameters such as login information,
+#'     date range and units, providing an Excel file with GreenFeed data.
 #'
 #' @param user User name to log in to the GreenFeed system
 #' @param pass Password to log in to the GreenFeed system
-#' @param exp Study name
-#' @param unit The unit number(s) of the GreenFeed. If multiple units, they could be in a vector, list, or character as "1,2"
+#' @param exp Study name or other study identifier. It is used as the file name to save the data
+#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
 #' @param start_date Start date of the study
 #' @param end_date End date of the study. By default the current date is used
 #' @param save_dir Directory to save the output file. By default the current working directory is used
 #'
-#' @return A Excel file with the daily data from GreenFeed unit(s)
+#' @return An Excel file with daily data from GreenFeed unit(s)
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.

@@ -2,13 +2,13 @@
 % Please edit documentation in R/pellin.R
 \name{pellin}
 \alias{pellin}
-\title{Process Pellet Intakes}
+\title{Process GreenFeed Pellet Intakes}
 \arguments{
 \item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
-\item{unit}{List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order}
+\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
 
-\item{gcup}{Grams of pellets per cup}
+\item{gcup}{Grams of pellets per cup. By default 34 grams, but users should provide the grams based on the 10-drops test}
 
 \item{start_date}{Start date of the study}
 
@@ -19,16 +19,17 @@
 \item{RFID_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-An Excel file with pellet intakes for all animals and dates in the study
+An Excel file with pellet intakes for all animals and dates of the requested period
 }
 \description{
-`pellin()` processes the feedtimes file, including visits and food drops,
-    to calculate pellet intakes per animal for the entire requested period.
+`pellin()` processes the feedtimes file from GreenFeed system,
+    including visits and food drops across a specific period, and it is used
+    to calculate pellet intakes per animal from all units.
     This function aggregates data to provide insights into the feeding behavior
     and pellet consumption of the animals during a study.
 }
 \examples{
-# You should provide the folder where is 'feedtimes' file.
+# You should provide the 'feedtimes' file provided by C-Lock.
 # it could be a list of files if you have data from multiple units to combine
 file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
@@ -38,11 +39,11 @@ file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 
 pellin(file,
-  unit = 1,
-  gcup = 34,
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  save_dir = tempdir()
-)
+       unit = 1,
+       gcup = 34,
+       start_date = "2024-05-13",
+       end_date = "2024-05-25",
+       save_dir = tempdir()
+      )
 
 }

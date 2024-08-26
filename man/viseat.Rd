@@ -6,7 +6,7 @@
 \arguments{
 \item{file}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
-\item{unit}{List of the unit number(s) of the GreenFeed. If multiple files are provided, units should be in the same order}
+\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
 
 \item{start_date}{Start date of the study}
 
@@ -18,11 +18,12 @@
 A list with two data farmes, one with visits per day and one with visits per animal
 }
 \description{
-`viseat()` processes GreenFeed visits. Generate description of
-     animals not visiting the GreenFeed for the time period requested.
+`viseat()` processes GreenFeed visits and food drops.
+     This function generates a list of animals not visiting the GreenFeed and
+     a description of animals visiting the system for the requested period.
 }
 \examples{
-# You should provide the folder where is 'feedtimes' file.
+# You should provide the 'feedtimes' files.
 # it could be a list of files if you have data from multiple units to combine
 file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
@@ -31,10 +32,10 @@ file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 RFIDs <- system.file("extdata", "RFID_file.txt", package = "greenfeedr")
 
 data <- viseat(file,
-  unit = 1,
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  RFID_file = RFIDs
-)
+               unit = 1,
+               start_date = "2024-05-13",
+               end_date = "2024-05-25",
+               RFID_file = RFIDs
+               )
 
 }
