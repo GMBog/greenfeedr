@@ -66,16 +66,8 @@ jobs:
           Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
           Rscript -e 'tinytex::install_tinytex()'
           Rscript -e 'tinytex::tlmgr_install(c("latexmk", "pdftex", "xetex", "luatex"))'
+          Rscript -e 'tinytex::reinstall_tinytex()'
         shell: bash
-
-      - name: Save LaTeX Logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: latex-logs
-          path: |
-            **/*.log
-            **/*.tex
 
       - uses: r-lib/actions/check-r-package@v2
         with:
