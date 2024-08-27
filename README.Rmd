@@ -36,7 +36,7 @@ More complete information about how to use greenfeedr can be found in: ...
 
 ## Cheat Sheet
 
-<a href="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.pdf"><img src="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.png" width="480" height="410"/></a>
+<a href="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.pdf"><img src="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.png" width="470" height="360"/></a>
 
 ## Installation
 
