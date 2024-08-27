@@ -34,6 +34,11 @@ Most of these use the same daily and final data from GreenFeed system.
 
 More complete information about how to use greenfeedr can be found in: ...
 
+## Cheat Sheet
+
+<a href="https://github.com/GMBog/greenfeedr/blob/main/docs/Cheatsheet.pdf"><img src="https://raw.githubusercontent.com/GMBog/greenfeedr/main/docs/cheatsheet_thumbnail.png" width="630" height="252"/></a>
+
+
 ## Installation
 
 You can install the development version of greenfeedr from [GitHub](https://github.com/GMBog/greenfeedr) with:
