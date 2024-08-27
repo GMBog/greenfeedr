@@ -148,7 +148,7 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
         dplyr::filter(CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0) %>%
         # Change columns format
         dplyr::mutate(
-          day = as.Date(sub(" .*", "", df$EndTime), format = "%m/%d/%y"),
+          day = as.Date(sub(" .*", "", EndTime), format = "%m/%d/%y"),
           # Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
             as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
