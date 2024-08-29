@@ -15,10 +15,9 @@ Authors@R:
 Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
 Description: The package provides functions for downdloading, processing, and reporting GreenFeed data. The
     GreenFeed system generates large amount of daily data that could be overwhelming for users.
-    So, the first step is to retrieve data from C-Lock system so use `get_api_data()` to download through API.
-    Also, other function such as `dailyrep()` allows to download and report daily data from GreenFeed.
-    The `finalrep()` reports final data, so it is useful to check the results at the end of the GreenFeed study,
-    and the function `process_gfdata()` process daily or final data for further analysis. Two more functions as
+    So, the first step is to retrieve data from C-Lock system so use `get_gfdata()` to download via API.
+    Also, other function such as `report_gfdata()` allows to download and report daily and final data from GreenFeed.
+    The function `process_gfdata()` process daily or final data for further analysis. Two more functions as
     `pellin()` and `viseat()` helps for processing and checking pellet intakes and visits to the GreenFeed.
 License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
