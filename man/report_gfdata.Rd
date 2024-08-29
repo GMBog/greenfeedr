@@ -27,8 +27,8 @@
 \item{file_path}{List of files with final report from GreenFeed}
 }
 \value{
-An Excel file with daily data from GreenFeed unit(s) and
-    a markdown report with a description of the daily or final records
+An Excel file with daily data from GreenFeed system and
+    a R-markdown report with a description of the daily or final records
 }
 \description{
 `report_gfdata()` generates markdown reports of daily and final GreenFeed data.

@@ -19,7 +19,7 @@
 \item{rfid_file}{The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-An Excel file with pellet intakes for all animals and dates of the requested period
+An Excel file with pellet intakes for all animals and days of the requested period
 }
 \description{
 `pellin()` processes the feedtimes file from GreenFeed system,

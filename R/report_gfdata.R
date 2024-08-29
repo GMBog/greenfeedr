@@ -19,8 +19,8 @@
 #' @param rfid_file File that contains RFID of the animals in the study
 #' @param file_path List of files with final report from GreenFeed
 #'
-#' @return An Excel file with daily data from GreenFeed unit(s) and
-#'     a markdown report with a description of the daily or final records
+#' @return An Excel file with daily data from GreenFeed system and
+#'     a R-markdown report with a description of the daily or final records
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.

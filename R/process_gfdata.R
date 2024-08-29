@@ -13,7 +13,7 @@
 #' @param param2 Number of days with records per week to be consider for analysis
 #' @param min_time Minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
-#' @return Two data frames with daily and weekly processed GreenFeed data
+#' @return A list of two data frames with daily and weekly processed GreenFeed data
 #'
 #' @examples
 #' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
@@ -82,15 +82,16 @@ process_gfdata <- function(data, start_date, end_date,
         dplyr::mutate(
           day = as.Date(EndTime),
           ## Extract hours, minutes, and seconds from GoodDataDuration
-          GoodDataDuration = round(
-            as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
-              # as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
-              as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
-              # as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
-              as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
-            # as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
-            2
-          )
+          GoodDataDuration = case_when(
+            nchar(GoodDataDuration) == 8 ~ as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # HH:MM:SS format
+              as.numeric(substr(GoodDataDuration, 4, 5)) +
+              as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
+            nchar(GoodDataDuration) > 8 ~ as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # YYYY-MM-DD HH:MM:SS format
+              as.numeric(substr(GoodDataDuration, 15, 16)) +
+              as.numeric(substr(GoodDataDuration, 18, 19)) / 60,
+            TRUE ~ NA_real_
+          ),
+          GoodDataDuration = round(GoodDataDuration, 2)
         )
     } else {
       names(data) <- c(

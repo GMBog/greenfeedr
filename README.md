@@ -55,7 +55,7 @@ all the daily records obtained.
 
 The data looks like:
 
-    #> # A tibble: 5 × 6
+    #> # A tibble: 5 × 5
     #>   RFID                 `Farm Name`   FID `Start Time`        `End Time`         
     #>   <chr>                <chr>       <dbl> <dttm>              <dttm>             
     #> 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31
@@ -63,16 +63,21 @@ The data looks like:
     #> 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19
     #> 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14
     #> 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52
-    #> # ℹ 1 more variable: `Good Data Duration` <dttm>
 
 The first step is to investigate the total number of records, records
 per day, and days with records per week we have in our GreenFeed data.
 
 To do this we will use the `process_gfdata()` function and test 3
 threshold values that will define the records we will retain for further
-analysis. Note that the function includes 3 parameters: - param1 =
-number of records per day - param2 = number of days with records per
-week - min_time - minimum duration of a record
+analysis. Note that the function includes 3 parameters: - **`param1`**:
+The number of records per day. - This parameter controls the minimum
+number of records that must be present for each day in the dataset to be
+considered valid. - **`param2`**: The number of days with records per
+week. - This parameter ensures that a minimum number of days within a
+week have valid records to be included in the analysis. -
+**`min_time`**: The minimum duration of a record. - This parameter
+specifies the minimum time threshold for each record to be considered
+valid.
 
 We can make an iterative process evaluating all possible combinations of
 parameters. Then, we define the parameters as follows:

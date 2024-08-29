@@ -17,7 +17,7 @@
 \item{min_time}{Minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
 }
 \value{
-Two data frames with daily and weekly processed GreenFeed data
+A list of two data frames with daily and weekly processed GreenFeed data
 }
 \description{
 `process_gfdata()` processes and computes daily and weekly averages

@@ -15,7 +15,7 @@
 \item{rfid_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-A list with two data farmes, one with visits per day and one with visits per animal
+A list with two data frames with visits per day and one with visits per animal
 }
 \description{
 `viseat()` processes GreenFeed visits and food drops.

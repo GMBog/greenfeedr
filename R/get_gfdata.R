@@ -14,7 +14,7 @@
 #' @param end_date End date of the study. By default the current date is used
 #' @param save_dir Directory to save the output file. By default the current working directory is used
 #'
-#' @return An Excel file with daily data from GreenFeed unit(s)
+#' @return An Excel file with daily data from GreenFeed system
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.

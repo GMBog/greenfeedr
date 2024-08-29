@@ -15,7 +15,7 @@
 #' @param save_dir Directory where to save the resulting file with pellet intakes
 #' @param rfid_file The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
-#' @return An Excel file with pellet intakes for all animals and dates of the requested period
+#' @return An Excel file with pellet intakes for all animals and days of the requested period
 #'
 #' @examples
 #' # You should provide the 'feedtimes' file provided by C-Lock.

@@ -11,7 +11,7 @@
 #' @param end_date End date of the study
 #' @param rfid_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
-#' @return A list with two data farmes, one with visits per day and one with visits per animal
+#' @return A list with two data frames with visits per day and one with visits per animal
 #'
 #' @examples
 #' # You should provide the 'feedtimes' files.

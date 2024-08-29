@@ -67,15 +67,18 @@ The data looks like:
 
 ```{r data, echo = FALSE, message = FALSE}
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(finaldata, n = 5)[1:6]
+head(finaldata, n = 5)[1:5]
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 
 
 To do this we will use the `process_gfdata()` function and test 3 threshold values that will define the records we will retain for further analysis. Note that the function includes 3 parameters:
-  - param1 = number of records per day
-  - param2 = number of days with records per week
-  - min_time - minimum duration of a record
+- **`param1`**: The number of records per day. 
+ - This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.
+- **`param2`**: The number of days with records per week. 
+ - This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis.
+- **`min_time`**: The minimum duration of a record. 
+ - This parameter specifies the minimum time threshold for each record to be considered valid.
 
 We can make an iterative process evaluating all possible combinations of parameters. Then, we define the parameters as follows:
 
