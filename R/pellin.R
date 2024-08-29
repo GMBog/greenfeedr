@@ -59,32 +59,17 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
-  # Read file with the RFID in the study
-  if (!is.na(rfid_file)) {
-    file_extension <- tolower(tools::file_ext(rfid_file))
+  # Process the rfid data
+  rfid_file <- process_rfid_data(rfid_file)
 
-    if (file_extension == "csv") {
-      rfid_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
-    } else if (file_extension %in% c("xls", "xlsx")) {
-      # Read all columns and then select the first two
-      rfid_file <- readxl::read_excel(rfid_file) %>%
-        dplyr::select(1:2) %>%
-        dplyr::mutate(across(everything(), as.character))
-    } else if (file_extension == "txt") {
-      rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
-    } else {
-      stop("Unsupported file format.")
-    }
-
-    # Rename the columns if needed
-    names(rfid_file)[1:2] <- c("FarmName", "RFID")
-  } else {
-    message("It is recommended to include an 'rfid_file' that contains the relevant columns.")
+  if (is.null(rfid_file)) {
+    message("RFID data could not be processed. Exiting function.")
+    return(NULL)
   }
 
   # Read and bind feedtimes data
   df <- purrr::map2_dfr(file_path, unit, ~ {
-    readr::read_csv(.x) %>%
+    readr::read_csv(.x, show_col_types = FALSE) %>%
       dplyr::mutate(FID = .y)
   }) %>%
     dplyr::relocate(FID, .before = FeedTime) %>%
@@ -95,20 +80,20 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df[df$CowTag %in% rfid_file$RFID, ]
     noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]
-    message(paste("Animal ID not visting GF: ", noGFvisits))
+    message("Animal ID not visting GreenFeed: ", paste(noGFvisits, collapse = ", "))
   }
 
   # Create a table with visit day and time and calculate drops per animal/FID/day
   number_drops <- df %>%
     dplyr::mutate(
-      # Convert FeedTime to POSIXct with the correct format
+      ## Convert FeedTime to POSIXct with the correct format
       FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M", tz = "UTC"),
       Date = as.character(as.Date(FeedTime)),
       Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
     ) %>%
     dplyr::relocate(Date, Time, .before = FID) %>%
     dplyr::select(-FeedTime) %>%
-    # Calculate drops per animal/FID/day
+    ## Calculate drops per animal/FID/day
     dplyr::group_by(CowTag, FID, Date) %>%
     dplyr::summarise(
       ndrops = dplyr::n(),
@@ -125,61 +110,71 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
   pellintakes <- number_drops %>%
     dplyr::left_join(grams_df, by = "FID") %>%
     dplyr::mutate(MassFoodDrop = ndrops * gcup) %>%
-    # Create a table with alfalfa pellets (AP) intakes in kg
+    ## Create a table with alfalfa pellets (AP) intakes in kg
     dplyr::group_by(CowTag, Date) %>%
-    dplyr::summarise(MassFoodDrop = sum(MassFoodDrop) / 1000) # Divided by 1000 to transform mass in kg
+    ## MassFoodDrop divided by 1000 to transform g in kg
+    dplyr::summarise(MassFoodDrop = sum(MassFoodDrop) / 1000)
 
-  # Create a grid with all unique combinations of Date and CowTag
-  grid <- expand.grid(
+
+  # Animals with visits:
+  ## Create a grid with all unique combinations of dates and IDs
+  grid_visits <- expand.grid(
     Date = unique(pellintakes$Date),
     CowTag = unique(pellintakes$CowTag)
   )
 
-  # Create a table with all animals
-  ## We merge pellintakes file with the grid and then we replace 'NA' with 0
-  pellintakes <- merge(pellintakes, grid, all = TRUE)
+  ## Merge pellet intakes with our 'grid' and set MassFoodDrop to 0 for days without visits
+  pellintakes <- merge(pellintakes, grid_visits, all = TRUE)
   pellintakes$MassFoodDrop[is.na(pellintakes$MassFoodDrop)] <- 0
 
-  # Adding the Farm name to the AP intakes
+  ## Adding the farm name (if rfid_file is provided) to the pellet intakes file
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     pellintakes <- rfid_file[, 1:2] %>%
       dplyr::inner_join(pellintakes, by = c("RFID" = "CowTag"))
-    names(pellintakes) <- c("FarmName", "RFID", "Date", "Intake_AP_kg")
+    names(pellintakes) <- c("FarmName", "RFID", "Date", "PIntake_kg")
   } else {
-    names(pellintakes) <- c("RFID", "Date", "Pellin_kg")
+    names(pellintakes) <- c("RFID", "Date", "PIntake_kg")
   }
 
 
-  # Create a sequence of dates from the start date to the end date of the study
+  # Animals without visits:
+  ## Create a sequence of dates from the start date to the end date of the study
   all_dates <- seq(as.Date(start_date), as.Date(end_date), by = "day")
 
-  # Create file with pellet intakes in kg
+  ## Create file with pellet intakes in kg within the specified date range
   df <- pellintakes %>%
     dplyr::filter(Date >= start_date & Date <= end_date) %>%
     dplyr::mutate(Date = as.Date(Date))
 
-
+  # Add missing dates for each RFID (and FarmName if available)
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(FarmName, RFID))
   } else {
     df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(RFID))
   }
 
-  # Add cows without visits to the units
+
+  # Include in the pellet intakes file animals without visits
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
-    grid_cows_missing <- expand.grid(
+    ## Create all possible combinations of date and RFID for animals without visits
+    grid_missing <- expand.grid(
       Date = unique(df$Date),
-      FarmName = rfid_file$FarmName[rfid_file$FarmName %in% noGFvisits],
       RFID = rfid_file$RFID[rfid_file$FarmName %in% noGFvisits],
-      Intake_AP_kg = NA
+      PIntake_kg = 0
     )
 
-    df <- rbind(df, grid_cows_missing)
+    ## Add the corresponding FarmName for each RFID
+    grid_missing$FarmName <- rfid_file$FarmName[match(grid_missing$RFID, rfid_file$RFID)]
+
+    ## Combine data with cows visiting and not visiting
+    df <- rbind(df, grid_missing)
   }
 
 
-  # Export a table with the amount of kg of pellets for a specific period!
+  # Save pellet intakes as a csv file with kg of pellets for the period requested
   readr::write_excel_csv(df,
     file = paste0(save_dir, "/Pellet_Intakes_", start_date, "_", end_date, ".csv")
   )
+
+  message("Processing complete.")
 }

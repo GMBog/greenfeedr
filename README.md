@@ -91,14 +91,14 @@ Interestingly, we have 60 combinations of our 3 parameters (param1,
 param2, and min_time).
 
 The next step, is to evaluate the function `process_gfdata()` with the
-defined set of parameters.
+defined set of parameters. Note that the function can handle as argument
+a file path to the data files or the data as data frame.
 
 ``` r
 # Helper function to call process_gfdata and extract relevant information
 process_and_summarize <- function(param1, param2, min_time) {
   data <- process_gfdata(
-    file = system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"),
-    input_type = "final",
+    data = finaldata,
     start_date = "2024-05-13",
     end_date = "2024-05-25",
     param1 = param1,

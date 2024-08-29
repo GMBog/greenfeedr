@@ -2,16 +2,16 @@ test_that("process_gfdata works correctly", {
   # Define parameters for the test
   start_date <- "2024-05-13"
   end_date <- "2024-05-25"
-  input_type <- "final"
   param1 <- 2
   param2 <- 3
   min_time <- 2
 
   # Use a small sample of GreenFeed data for testing purposes
   file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+  data <- read_excel(file)
 
   # Suppress warnings and run the function
-  result <- process_gfdata(file, start_date, end_date, input_type, param1, param2, min_time)
+  result <- process_gfdata(data, start_date, end_date, param1, param2, min_time)
 
   # Check that the result is a list with two elements
   expect_type(result, "list")

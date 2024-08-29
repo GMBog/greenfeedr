@@ -59,3 +59,58 @@ filter_within_range <- function(v, cutoff) {
   sd_v <- sd(v, na.rm = TRUE)
   v >= (mean_v - cutoff * sd_v) & v <= (mean_v + cutoff * sd_v)
 }
+
+
+#' @name process_rfid_data
+#' @title Process RFID Data
+#'
+#' @description `process_rfid_data()` processes RFID data from animals in the study.
+#'
+#' @param rfid_file Path or data frame containing RFID data.
+#'
+#' @export
+process_rfid_data <- function(rfid_file) {
+  # Standardize column names function
+  standardize_columns <- function(df) {
+    if (ncol(df) < 2) {
+      stop("The data frame must contain at least two columns.")
+    }
+    names(df)[1:2] <- c("FarmName", "RFID")
+    df <- df %>%
+      dplyr::mutate(across(1:2, as.character))
+    return(df)
+  }
+
+  if (is.data.frame(rfid_file)) {
+    if (!is.data.frame(rfid_file)) {
+      stop("The 'rfid_file' parameter must be a data.frame.")
+    }
+    rfid_file <- standardize_columns(rfid_file)
+  } else if (is.character(rfid_file) && file.exists(rfid_file)) {
+    file_extension <- tolower(tools::file_ext(rfid_file))
+    tryCatch(
+      {
+        if (file_extension == "csv") {
+          rfid_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
+        } else if (file_extension %in% c("xls", "xlsx")) {
+          rfid_file <- readxl::read_excel(rfid_file) %>%
+            dplyr::select(1:2) %>%
+            dplyr::mutate(across(everything(), as.character))
+        } else if (file_extension == "txt") {
+          rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
+        } else {
+          stop("Unsupported file format.")
+        }
+        rfid_file <- standardize_columns(rfid_file)
+      },
+      error = function(e) {
+        stop("An error occurred while reading the file: ", e$message)
+      }
+    )
+  } else {
+    message("No valid data provided. Please include a valid 'rfid_file' parameter.")
+    return(NULL)
+  }
+
+  return(rfid_file)
+}

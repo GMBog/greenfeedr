@@ -4,13 +4,11 @@
 \alias{process_gfdata}
 \title{Process Daily and Final GreenFeed Data}
 \arguments{
-\item{file_path}{File with GreenFeed data. It could be daily or final data}
+\item{data}{Data frame with daily or finalized GreenFeed data}
 
 \item{start_date}{Start date of the study}
 
 \item{end_date}{End date of the study}
-
-\item{input_type}{Input file with data. It could be from daily or final report}
 
 \item{param1}{Number of records per day to be consider for analysis}
 
@@ -28,25 +26,15 @@ Two data frames with daily and weekly processed GreenFeed data
     further analysis and reporting.
 }
 \examples{
-file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
-data1 <- process_gfdata(file1,
-  input_type = "daily",
+file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+data <- readr::read_csv(file)
+
+gf_data <- process_gfdata(data,
   start_date = "2024-05-13",
   end_date = "2024-05-25",
   param1 = 2,
   param2 = 3
 )
-head(data1)
-
-file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-data2 <- process_gfdata(file2,
-  input_type = "final",
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3
-)
-
-head(data2)
+head(gf_data)
 
 }

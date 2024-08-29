@@ -49,27 +49,12 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
-  # Read file with the RFID in the study
-  if (!is.na(rfid_file)) {
-    file_extension <- tolower(tools::file_ext(rfid_file))
+  # Process the rfid data
+  rfid_file <- process_rfid_data(rfid_file)
 
-    if (file_extension == "csv") {
-      rfid_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
-    } else if (file_extension %in% c("xls", "xlsx")) {
-      # Read all columns and then select the first two
-      rfid_file <- readxl::read_excel(rfid_file) %>%
-        dplyr::select(1:2) %>%
-        dplyr::mutate(across(everything(), as.character))
-    } else if (file_extension == "txt") {
-      rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
-    } else {
-      stop("Unsupported file format.")
-    }
-
-    # Rename the columns if needed
-    names(rfid_file)[1:2] <- c("FarmName", "RFID")
-  } else {
-    message("The user must include an 'rfid_file' with VisualID and RFID.")
+  if (is.null(rfid_file)) {
+    message("RFID data could not be processed. Exiting function.")
+    return(NULL)
   }
 
   # Read and bind feedtimes data

@@ -6,10 +6,9 @@
 #'     This function handles data filtering, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
-#' @param file_path File with GreenFeed data. It could be daily or final data
+#' @param data Data frame with daily or finalized GreenFeed data
 #' @param start_date Start date of the study
 #' @param end_date End date of the study
-#' @param input_type Input file with data. It could be from daily or final report
 #' @param param1 Number of records per day to be consider for analysis
 #' @param param2 Number of days with records per week to be consider for analysis
 #' @param min_time Minimum number of minutes for a records to be consider for analysis. By default min_time is 2
@@ -17,26 +16,16 @@
 #' @return Two data frames with daily and weekly processed GreenFeed data
 #'
 #' @examples
-#' file1 <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
-#' data1 <- process_gfdata(file1,
-#'   input_type = "daily",
+#' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+#' data <- readr::read_csv(file)
+#'
+#' gf_data <- process_gfdata(data,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
 #'   param1 = 2,
 #'   param2 = 3
 #' )
-#' head(data1)
-#'
-#' file2 <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
-#' data2 <- process_gfdata(file2,
-#'   input_type = "final",
-#'   start_date = "2024-05-13",
-#'   end_date = "2024-05-25",
-#'   param1 = 2,
-#'   param2 = 3
-#' )
-#'
-#' head(data2)
+#' head(gf_data)
 #'
 #' @export process_gfdata
 #'
@@ -51,9 +40,9 @@ utils::globalVariables(c(
   "nDays", "nRecords", "TotalMin"
 ))
 
-process_gfdata <- function(file_path, start_date, end_date, input_type,
+process_gfdata <- function(data, start_date, end_date,
                            param1, param2, min_time = 2) {
-  # Check Date format
+  # Check date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
@@ -64,21 +53,10 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
     message(paste("Using param1 =", param1, ", param2 =", param2, ", min_time =", min_time))
   }
 
-  # Convert input_type to lowercase to ensure case-insensitivity
-  input_type <- tolower(input_type)
-
-  # Ensure input_type is valid
-  valid_inputs <- c("final", "daily")
-  if (!(input_type %in% valid_inputs)) {
-    stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
-  }
-
   # Function to read and process each file
-  process_file <- function(file_path, input_type) {
-    if (input_type == "final") {
-      # Read from Excel file
-      df <- readxl::read_excel(file_path, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), rep("text", 3), rep("numeric", 4)))
-      names(df)[1:14] <- c(
+  process_data <- function(data) {
+    if (ncol(data) >= 25) {
+      names(data)[1:14] <- c(
         "RFID",
         "AnimalName",
         "FeederID",
@@ -95,15 +73,15 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
         "AirflowCf"
       )
 
-      df <- df %>%
-        # Remove leading zeros from RFID col to match with IDs
+      data <- data %>%
+        ## Remove leading zeros from RFID col to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        # Remove records with negative values. Note that O2 and H2 it is greater or equal because some units don't have sensors
+        ## Remove records with negative values. Note that O2 and H2 it is greater or equal because some units don't have sensors
         dplyr::filter(CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0) %>%
-        # Change columns format
+        ## Change columns format
         dplyr::mutate(
           day = as.Date(EndTime),
-          # Extract hours, minutes, and seconds from GoodDataDuration
+          ## Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
             as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
               # as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
@@ -115,9 +93,7 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
           )
         )
     } else {
-      # Read from CSV file
-      df <- readr::read_csv(file_path)
-      names(df) <- c(
+      names(data) <- c(
         "FeederID",
         "AnimalName",
         "RFID",
@@ -141,22 +117,25 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
         "RunTime"
       )
 
-      df <- df %>%
-        # Remove leading zeros from RFID col to match with IDs
+      data <- data %>%
+        ## Remove leading zeros from RFID col to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        # Remove records with negative values. Note that O2 and H2 are greater or equal because some units don't have sensors
+        ## Remove records with negative values. Note that O2 and H2 are greater or equal because some units don't have sensors
         dplyr::filter(CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0) %>%
-        # Change columns format
+        ## Change columns format
         dplyr::mutate(
-          day = as.Date(sub(" .*", "", EndTime), format = "%m/%d/%y"),
-          # Extract hours, minutes, and seconds from GoodDataDuration
+          ## Create a column with date
+          day = parse_date_time(sub(" .*", "", StartTime),
+            orders = c("Y-m-d", "m/d/y", "d/m/y", "y/m/d", "d-b-Y", "b/d/Y", "m/d/Y", "Y/m/d", "Ymd", "mdy")
+          ),
+          ## Extract hours, minutes, and seconds from GoodDataDuration
           GoodDataDuration = round(
             as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # Hours to minutes
               as.numeric(substr(GoodDataDuration, 4, 5)) + # Minutes
               as.numeric(substr(GoodDataDuration, 7, 8)) / 60, # Seconds to minutes
             2
           ),
-          # 'HourOfDay' is a new col that contains daytime (extract the time part from StartTime (HH:MM:SS))
+          ## Create a column that contains daytime (extract the time part from StartTime (HH:MM:SS))
           HourOfDay = round(
             as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%H")) + # Extract hours
               as.numeric(format(as.POSIXct(StartTime, format = "%m/%d/%y %H:%M"), "%M")) / 60, # Extract minutes and convert to fraction of an hour
@@ -166,19 +145,25 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
     }
   }
 
-  # Combine all files into one data frame
-  df <- do.call(rbind, lapply(file_path, process_file, input_type))
+  # Combine files into one data frame
+  df <- process_data(data)
 
-  ## Computing weekly production of gases
+  # Computing daily production of gases
   daily_df <- df %>%
     dplyr::filter(
+      ## Filter by outlier records
       dplyr::if_all(
         c(CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay),
         ~ filter_within_range(.x, 2.5)
       ),
-      GoodDataDuration >= min_time
+      ## Filter by minimum time of records
+      GoodDataDuration >= min_time,
+      ## Filter by start and end of study
+      day >= start_date & day <= end_date
     ) %>%
+    ## Group by animal and date
     dplyr::group_by(RFID, day) %>%
+    ## Compute weighted mean of all gases
     dplyr::summarise(
       n = n(),
       across(
@@ -189,13 +174,18 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
       minutes = sum(GoodDataDuration, na.rm = TRUE),
       .groups = "drop"
     ) %>%
+    ## Filter by number of records per day (=param1)
     dplyr::filter(n >= param1) %>%
+    ## Compute week based on the minimum date
     dplyr::mutate(week = floor(as.numeric(difftime(day, min(day), units = "weeks"))) + 1) %>%
-    dplyr::select(RFID, week, n, minutes, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
+    ## Select columns
+    dplyr::select(RFID, week, day, n, minutes, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
-
+  # Computing weekly production of gases
   weekly_df <- daily_df %>%
+    ## Group by animal and week
     dplyr::group_by(RFID, week) %>%
+    ## Compute number of days with records, total records and minutes, and the weighted mean of all gases
     dplyr::summarise(
       nDays = n(),
       nRecords = sum(n),
@@ -207,11 +197,13 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
       ),
       .groups = "drop" # Un-group after summarizing
     ) %>%
-    dplyr::filter(nDays >= param2) %>% # Filter out weeks with less than "param2" days
+    ## Filter by number of days with records (=param2)
+    dplyr::filter(nDays >= param2) %>%
+    ## Select columns
     dplyr::select(RFID, week, nDays, nRecords, TotalMin, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
 
-  ### Description of mean, sd, and CV for weekly gases
+  # Description of mean, sd, and CV for weekly gases
   print(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
   print(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
@@ -226,5 +218,8 @@ process_gfdata <- function(file_path, start_date, end_date, input_type,
 
 
   # Return a list of data frames
-  return(list(daily_data = daily_df, weekly_data = weekly_df))
+  return(list(
+    daily_data = daily_df,
+    weekly_data = weekly_df
+  ))
 }

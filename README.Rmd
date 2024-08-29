@@ -66,8 +66,8 @@ Note that we received from C-Lock Inc. the finalized data (or Summarized Data) f
 The data looks like:
 
 ```{r data, echo = FALSE, message = FALSE}
-file <- read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(file, n=5)[1:6]
+finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
+head(finaldata, n = 5)[1:6]
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 
@@ -91,14 +91,13 @@ param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 
 Interestingly, we have `r nrow(param_combinations)` combinations of our 3 parameters (param1, param2, and min_time).
 
-The next step, is to evaluate the function `process_gfdata()` with the defined set of parameters.
+The next step, is to evaluate the function `process_gfdata()` with the defined set of parameters. Note that the function can handle as argument a file path to the data files or the data as data frame.
 
 ```{r Example}
 # Helper function to call process_gfdata and extract relevant information
 process_and_summarize <- function(param1, param2, min_time) {
   data <- process_gfdata(
-    file = system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"),
-    input_type = "final",
+    data = finaldata,
     start_date = "2024-05-13",
     end_date = "2024-05-25",
     param1 = param1,
