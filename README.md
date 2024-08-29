@@ -49,8 +49,9 @@ Here we present an example of how to use `process_gfdata()`:
 library(greenfeedr)
 ```
 
-Note that we received the finalized data (or Summarized Data) for our study using GreenFeed
-from C-Lock Inc. So, now we need to process all the daily records obtained.
+Note that we received the finalized data (or Summarized Data) for our
+study using GreenFeed from C-Lock Inc. So, now we need to process all
+the daily records obtained.
 
 The data looks like:
 
