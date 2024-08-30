@@ -18,3 +18,22 @@ A logical vector of the same length as `v`, where each element is `TRUE` if the 
 `filter_within_range()` is a helper function to detect
     outliers in data using the mean and sd
 }
+\examples{
+# Sample data
+data <- c(10, 12, 14, 15, 20, 25, 30, 100)
+
+# Detect values within 2.5 standard deviations from the mean
+filter_within_range(data, cutoff = 2.5)
+
+# Result:
+# [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+# Explanation: All values fall within 2.5 standard deviations from the mean.
+
+# Detect values within 1 standard deviation from the mean
+filter_within_range(data, cutoff = 1)
+
+# Result:
+# [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE FALSE
+# Explanation: All values except 100 fall within 1 standard deviation from the mean.
+
+}

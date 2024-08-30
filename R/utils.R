@@ -5,6 +5,22 @@
 #'     if the necessary API credentials are available in the environment.
 #'
 #' @return A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise.
+#' @examples
+#' # Example 1: When environment variables are set
+#' Sys.setenv(API_USER = "my_username", API_PASS = "my_password")
+#' has_credentials()
+#' # Expected output: TRUE
+#'
+#' # Example 2: When one or both environment variables are not set
+#' Sys.unsetenv("API_USER")
+#' Sys.unsetenv("API_PASS")
+#' has_credentials()
+#' # Expected output: FALSE
+#'
+#' # Clean up by removing environment variables
+#' Sys.unsetenv("API_USER")
+#' Sys.unsetenv("API_PASS")
+#'
 #' @export
 has_credentials <- function() {
   !is.na(Sys.getenv("API_USER", unset = NA)) && !is.na(Sys.getenv("API_PASS", unset = NA))
@@ -21,6 +37,19 @@ has_credentials <- function() {
 #' @param date_input Date included as input.
 #'
 #' @return A character string representing the date in 'YYYY-MM-DD' format.
+#' @examples
+#' # Example of correct date formats
+#' ensure_date_format("2024-08-30") # "2024-08-30"
+#' ensure_date_format("08/30/2024") # "2024-08-30"
+#' ensure_date_format("30/08/2024") # "2024-08-30"
+#'
+#' # Example of incorrect date formats
+#' tryCatch({
+#'   ensure_date_format("Aug-30")
+#' }, error = function(e) {
+#'   message(e$message)
+#' })
+#'
 #' @export
 ensure_date_format <- function(date_input) {
   # Attempt to parse the input into a Date object
@@ -56,6 +85,24 @@ ensure_date_format <- function(date_input) {
 #' @param cutoff A threshold or cutoff value that defines the range (e.g., 2.5)
 #'
 #' @return A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
+#' @examples
+#' # Sample data
+#' data <- c(10, 12, 14, 15, 20, 25, 30, 100)
+#'
+#' # Detect values within 2.5 standard deviations from the mean
+#' filter_within_range(data, cutoff = 2.5)
+#'
+#' # Result:
+#' # [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
+#' # Explanation: All values fall within 2.5 standard deviations from the mean.
+#'
+#' # Detect values within 1 standard deviation from the mean
+#' filter_within_range(data, cutoff = 1)
+#'
+#' # Result:
+#' # [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE FALSE
+#' # Explanation: All values except 100 fall within 1 standard deviation from the mean.
+#'
 #' @export
 filter_within_range <- function(v, cutoff) {
   mean_v <- mean(v, na.rm = TRUE)
@@ -72,6 +119,27 @@ filter_within_range <- function(v, cutoff) {
 #' @param rfid_file Path or data frame containing RFID data.
 #'
 #' @return A data frame with standardized column names (`FarmName` and `RFID`). If the input is invalid or if no valid data is provided, the function returns `NULL`.
+#'
+#' @examples
+#' # Example with a data frame
+#' df <- data.frame(
+#'   V1 = c("Farm1", "Farm2", "Farm3"),
+#'   V2 = c("12345", "67890", "54321")
+#' )
+#' processed_df <- process_rfid_data(df)
+#' print(processed_df)
+#'
+#' # Example with invalid input
+#' invalid_data <- process_rfid_data(NULL)
+#' # Expected output: message "RFID is NA. It is recommended to include it." and NULL
+#' print(invalid_data)
+#'
+#' # Example with unsupported file format
+#' # Assuming 'rfid_data.docx' is an unsupported file format
+#' # invalid_file <- process_rfid_data("path/to/rfid_data.docx")
+#' # Expected output: error message "Unsupported file format."
+#' # print(invalid_file)
+#'
 #' @export
 process_rfid_data <- function(rfid_file) {
   # Standardize column names function
@@ -87,7 +155,7 @@ process_rfid_data <- function(rfid_file) {
 
   # Check if rfid_file is NA
   if (is.null(rfid_file)) {
-    message("RFID is NA. It is recommended to include it.")
+    message("RFID is NULL. It is recommended to include it.")
     return(NULL)
   }
 

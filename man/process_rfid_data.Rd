@@ -15,3 +15,24 @@ A data frame with standardized column names (`FarmName` and `RFID`). If the inpu
 \description{
 `process_rfid_data()` processes RFID data from animals in the study.
 }
+\examples{
+# Example with a data frame
+df <- data.frame(
+  V1 = c("Farm1", "Farm2", "Farm3"),
+  V2 = c("12345", "67890", "54321")
+)
+processed_df <- process_rfid_data(df)
+print(processed_df)
+
+# Example with invalid input
+invalid_data <- process_rfid_data(NULL)
+# Expected output: message "RFID is NA. It is recommended to include it." and NULL
+print(invalid_data)
+
+# Example with unsupported file format
+# Assuming 'rfid_data.docx' is an unsupported file format
+# invalid_file <- process_rfid_data("path/to/rfid_data.docx")
+# Expected output: error message "Unsupported file format."
+# print(invalid_file)
+
+}

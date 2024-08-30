@@ -17,3 +17,17 @@ A character string representing the date in 'YYYY-MM-DD' format.
     If the format is wrong 'NA' an error message is printed, else it will
     formatted the date in the correct way (YYYY-MM-DD).
 }
+\examples{
+# Example of correct date formats
+ensure_date_format("2024-08-30") # "2024-08-30"
+ensure_date_format("08/30/2024") # "2024-08-30"
+ensure_date_format("30/08/2024") # "2024-08-30"
+
+# Example of incorrect date formats
+tryCatch({
+  ensure_date_format("Aug-30")
+}, error = function(e) {
+  message(e$message)
+})
+
+}

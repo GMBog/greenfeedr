@@ -44,7 +44,7 @@ This function does not return any value. It saves the downloaded data as a CSV f
 user <- Sys.getenv("API_USER")
 pass <- Sys.getenv("API_PASS")
 exp <- "StudyName"
-start_date <- "2023-01-01"
+start_date <- "2024-01-01"
 end_date <- Sys.Date()
 save_dir <- tempdir()
 
