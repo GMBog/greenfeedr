@@ -8,7 +8,9 @@
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
 ![GitHub All
 Releases](https://img.shields.io/github/downloads/GMBog/greenfeedr/total?color=blue&label=GitHub%20Downloads)
-<!-- badges: end --> \## Overview
+<!-- badges: end -->
+
+## Overview
 
 greenfeedr provides a set of functions that help you work with GreenFeed
 data:
@@ -55,7 +57,7 @@ the daily records obtained.
 
 The data looks like:
 
-    #> # A tibble: 5 × 5
+    #> # A tibble: 5 × 25
     #>   RFID                 `Farm Name`   FID `Start Time`        `End Time`         
     #>   <chr>                <chr>       <dbl> <dttm>              <dttm>             
     #> 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31
@@ -63,6 +65,13 @@ The data looks like:
     #> 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19
     #> 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14
     #> 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52
+    #> # ℹ 20 more variables: `Good Data Duration` <dttm>, `Hour Of Day` <dbl>,
+    #> #   `CO2 Massflow (g/d)` <dbl>, `CH4 Massflow (g/d)` <dbl>,
+    #> #   `O2 Massflow (g/d)` <dbl>, `H2 Massflow (g/d)` <dbl>,
+    #> #   `H2S Massflow (g/d)` <dbl>, `Average Airflow (L/s)` <dbl>,
+    #> #   `Airflow CF` <dbl>, `Average Wind Speed (m/s)` <dbl>,
+    #> #   `Average Wind Direction (deg)` <dbl>, `Wind CF` <dbl>,
+    #> #   `Was Interrupted` <lgl>, `Interrupting Tags` <chr>, …
 
 The first step is to investigate the total number of records, records
 per day, and days with records per week we have in our GreenFeed data.

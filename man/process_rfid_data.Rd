@@ -9,6 +9,9 @@ process_rfid_data(rfid_file)
 \arguments{
 \item{rfid_file}{Path or data frame containing RFID data.}
 }
+\value{
+A data frame with standardized column names (`FarmName` and `RFID`). If the input is invalid or if no valid data is provided, the function returns `NULL`.
+}
 \description{
 `process_rfid_data()` processes RFID data from animals in the study.
 }

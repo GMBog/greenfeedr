@@ -6,7 +6,10 @@
 \usage{
 has_credentials()
 }
+\value{
+A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise.
+}
 \description{
 `has_credentials()` is a helper function to check
-    if the necessary API credentials are available in the environment
+    if the necessary API credentials are available in the environment.
 }

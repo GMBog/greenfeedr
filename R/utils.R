@@ -2,8 +2,9 @@
 #' @title Check for API Credentials
 #'
 #' @description `has_credentials()` is a helper function to check
-#'     if the necessary API credentials are available in the environment
+#'     if the necessary API credentials are available in the environment.
 #'
+#' @return A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise.
 #' @export
 has_credentials <- function() {
   !is.na(Sys.getenv("API_USER", unset = NA)) && !is.na(Sys.getenv("API_PASS", unset = NA))
@@ -15,10 +16,11 @@ has_credentials <- function() {
 #'
 #' @description `ensure_date_format()` is a helper function to check date format.
 #'     If the format is wrong 'NA' an error message is printed, else it will
-#'     formatted the date in the correct way (YYYY-MM-DD)
+#'     formatted the date in the correct way (YYYY-MM-DD).
 #'
-#' @param date_input Date included as input
+#' @param date_input Date included as input.
 #'
+#' @return A character string representing the date in 'YYYY-MM-DD' format.
 #' @export
 ensure_date_format <- function(date_input) {
   # Attempt to parse the input into a Date object
@@ -53,6 +55,7 @@ ensure_date_format <- function(date_input) {
 #' @param v A vector with data
 #' @param cutoff A threshold or cutoff value that defines the range (e.g., 2.5)
 #'
+#' @return A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
 #' @export
 filter_within_range <- function(v, cutoff) {
   mean_v <- mean(v, na.rm = TRUE)
@@ -68,6 +71,7 @@ filter_within_range <- function(v, cutoff) {
 #'
 #' @param rfid_file Path or data frame containing RFID data.
 #'
+#' @return A data frame with standardized column names (`FarmName` and `RFID`). If the input is invalid or if no valid data is provided, the function returns `NULL`.
 #' @export
 process_rfid_data <- function(rfid_file) {
   # Standardize column names function
@@ -81,12 +85,20 @@ process_rfid_data <- function(rfid_file) {
     return(df)
   }
 
+  # Check if rfid_file is NA
+  if (is.null(rfid_file)) {
+    message("RFID is NA. It is recommended to include it.")
+    return(NULL)
+  }
+
+  # Check if rfid_file is a data frame
   if (is.data.frame(rfid_file)) {
-    if (!is.data.frame(rfid_file)) {
-      stop("The 'rfid_file' parameter must be a data.frame.")
-    }
     rfid_file <- standardize_columns(rfid_file)
-  } else if (is.character(rfid_file) && file.exists(rfid_file)) {
+    return(rfid_file)
+  }
+
+  # Check if rfid_file is a file path
+  if (is.character(rfid_file) && file.exists(rfid_file)) {
     file_extension <- tolower(tools::file_ext(rfid_file))
     tryCatch(
       {
@@ -102,15 +114,15 @@ process_rfid_data <- function(rfid_file) {
           stop("Unsupported file format.")
         }
         rfid_file <- standardize_columns(rfid_file)
+        return(rfid_file)
       },
       error = function(e) {
         stop("An error occurred while reading the file: ", e$message)
       }
     )
-  } else {
-    message("No valid data provided. Please include a valid 'rfid_file' parameter.")
-    return(NULL)
   }
 
-  return(rfid_file)
+  # If none of the conditions are met
+  message("No valid data provided. Please include a valid 'rfid_file' parameter.")
+  return(NULL)
 }

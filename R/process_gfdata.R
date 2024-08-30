@@ -13,7 +13,9 @@
 #' @param param2 Number of days with records per week to be consider for analysis
 #' @param min_time Minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
-#' @return A list of two data frames with daily and weekly processed GreenFeed data
+#' @return A list of two data frames:
+#'   \item{daily_data}{Data frame with daily processed GreenFeed data}
+#'   \item{weekly_data}{Data frame with weekly processed GreenFeed data}
 #'
 #' @examples
 #' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
@@ -223,4 +225,6 @@ process_gfdata <- function(data, start_date, end_date,
     daily_data = daily_df,
     weekly_data = weekly_df
   ))
+
+  message("List with data sets created.")
 }

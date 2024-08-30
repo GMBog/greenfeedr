@@ -15,7 +15,9 @@
 \item{rfid_file}{The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
 }
 \value{
-A list with two data frames with visits per day and one with visits per animal
+A list of two data frames:
+  \item{visits_per_unit}{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
+  \item{visits_per_animal}{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
 }
 \description{
 `viseat()` processes GreenFeed visits and food drops.

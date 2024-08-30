@@ -30,7 +30,7 @@ get_gfdata(
 \item{save_dir}{Directory to save the output file. By default the current working directory is used}
 }
 \value{
-An Excel file with daily data from GreenFeed system
+This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
 }
 \description{
 `get_gfdata()` downloads from C-Lock server daily GreenFeed data

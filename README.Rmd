@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
 ![GitHub All Releases](https://img.shields.io/github/downloads/GMBog/greenfeedr/total?color=blue&label=GitHub%20Downloads)
 <!-- badges: end -->
+
 ## Overview
 
 greenfeedr provides a set of functions that help you work with GreenFeed data:
@@ -67,7 +68,7 @@ The data looks like:
 
 ```{r data, echo = FALSE, message = FALSE}
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(finaldata, n = 5)[1:5]
+head(finaldata, n = 5)
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 

@@ -19,8 +19,7 @@
 #' @param rfid_file File that contains RFID of the animals in the study
 #' @param file_path List of files with final report from GreenFeed
 #'
-#' @return An Excel file with daily data from GreenFeed system and
-#'     a R-markdown report with a description of the daily or final records
+#' @return A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
@@ -83,7 +82,7 @@
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "Gas_Data"))
 
 report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
-                          input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NA, file_path) {
+                          input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL, file_path) {
   # Ensure Unit is a comma-separated string
   if (is.numeric(unit)) {
     ## Convert numeric to character
@@ -178,14 +177,9 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
     # Process the rfid data
     rfid_file <- process_rfid_data(rfid_file)
 
-    if (is.null(rfid_file)) {
-      message("RFID data could not be processed. Exiting function.")
-      return(NULL)
-    }
-
     # Create a function to conditionally perform inner join
     conditional_inner_join <- function(df, rfid_file) {
-      if (nrow(rfid_file) > 0) {
+      if (!is.null(rfid_file) && nrow(rfid_file) > 0) {
         inner_join(df, rfid_file, by = "RFID")
       } else {
         df
@@ -221,7 +215,7 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
 
 
     # If rfid file is provided, process it for the PDF report
-    if (nrow(rfid_file) > 0) {
+    if (!is.null(rfid_file) && nrow(rfid_file) > 0) {
       rfid_file <- rfid_file %>%
         dplyr::mutate(
           ## 'Data' col is a binary (YES = animal has records, NO = animal has no records)
@@ -286,11 +280,6 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
     # Process the rfid data
     rfid_file <- process_rfid_data(rfid_file)
 
-    if (is.null(rfid_file)) {
-      message("RFID data could not be processed. Exiting function.")
-      return(NULL)
-    }
-
     # If rfid file is provided then perform inner join
     if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
       df <- dplyr::inner_join(df, rfid_file, by = "RFID")
@@ -302,4 +291,6 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
       output_file = file.path(save_dir, paste0("FinalReport_", exp, ".pdf"))
     )
   }
+
+  message("Report created and saved to ", save_dir)
 }

@@ -15,7 +15,8 @@
 #' @param save_dir Directory where to save the resulting file with pellet intakes
 #' @param rfid_file The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
-#' @return An Excel file with pellet intakes for all animals and days of the requested period
+#' @return An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.
+#'     The file is named "Pellet_Intakes_YYYY-MM-DD_YYYY-MM-DD.csv".
 #'
 #' @examples
 #' # You should provide the 'feedtimes' file provided by C-Lock.
@@ -52,7 +53,7 @@ utils::globalVariables(c(
 ))
 
 pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
-                   save_dir = getwd(), rfid_file = NA) {
+                   save_dir = getwd(), rfid_file = NULL) {
   message("Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.")
 
   # Check Date format
@@ -61,11 +62,6 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
 
   # Process the rfid data
   rfid_file <- process_rfid_data(rfid_file)
-
-  if (is.null(rfid_file)) {
-    message("RFID data could not be processed. Exiting function.")
-    return(NULL)
-  }
 
   # Read and bind feedtimes data
   df <- purrr::map2_dfr(file_path, unit, ~ {
@@ -176,5 +172,5 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
     file = paste0(save_dir, "/Pellet_Intakes_", start_date, "_", end_date, ".csv")
   )
 
-  message("Processing complete.")
+  message("Pellet intakes file created and saved to ", save_dir)
 }

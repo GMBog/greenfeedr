@@ -11,6 +11,9 @@ filter_within_range(v, cutoff)
 
 \item{cutoff}{A threshold or cutoff value that defines the range (e.g., 2.5)}
 }
+\value{
+A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
+}
 \description{
 `filter_within_range()` is a helper function to detect
     outliers in data using the mean and sd

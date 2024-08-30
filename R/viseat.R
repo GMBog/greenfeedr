@@ -11,7 +11,10 @@
 #' @param end_date End date of the study
 #' @param rfid_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
 #'
-#' @return A list with two data frames with visits per day and one with visits per animal
+#' @return A list of two data frames:
+#'   \item{visits_per_unit}{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
+#'   \item{visits_per_animal}{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
+#'
 #'
 #' @examples
 #' # You should provide the 'feedtimes' files.
@@ -123,4 +126,6 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
 
   # Return a list of data frames
   return(list(visits_per_unit = daily_visits, visits_per_animal = animal_visits))
+
+  message("Processing complete.")
 }

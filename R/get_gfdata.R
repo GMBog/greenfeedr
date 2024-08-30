@@ -14,7 +14,7 @@
 #' @param end_date End date of the study. By default the current date is used
 #' @param save_dir Directory to save the output file. By default the current working directory is used
 #'
-#' @return An Excel file with daily data from GreenFeed system
+#' @return This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
@@ -115,4 +115,6 @@ get_gfdata <- function(user, pass, exp = NA, unit,
 
   # Save your data as a data file in .csv format
   readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
+
+  message("Downloading complete.")
 }
