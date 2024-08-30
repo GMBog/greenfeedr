@@ -61,6 +61,26 @@
     <p>A character string representing the date in 'YYYY-MM-DD' format.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example of correct date formats</span></span></span>
+<span class="r-in"><span><span class="fu">ensure_date_format</span><span class="op">(</span><span class="st">"2024-08-30"</span><span class="op">)</span> <span class="co"># "2024-08-30"</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-08-30"</span>
+<span class="r-in"><span><span class="fu">ensure_date_format</span><span class="op">(</span><span class="st">"08/30/2024"</span><span class="op">)</span> <span class="co"># "2024-08-30"</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-08-30"</span>
+<span class="r-in"><span><span class="fu">ensure_date_format</span><span class="op">(</span><span class="st">"30/08/2024"</span><span class="op">)</span> <span class="co"># "2024-08-30"</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-08-30"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example of incorrect date formats</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">ensure_date_format</span><span class="op">(</span><span class="st">"Aug-30"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">message</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Error processing date: Invalid date format. Please provide a recognizable date format.</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
