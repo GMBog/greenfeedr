@@ -1,10 +1,10 @@
 #' @name report_gfdata
 #' @title Download and Report GreenFeed Data
 #'
-#' @description `report_gfdata()` generates markdown reports of daily and final GreenFeed data.
+#' @description Generates PDF reports of daily and final GreenFeed data.
 #'     If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
-#'     and generates a markdown report to with number of animals, records, and gas production of the ongoing study.
-#'     But, if option "final" is used, final data should be provided to generates a markdown report
+#'     and generates a PDF report to with number of animals, records, and gas production of the ongoing study.
+#'     But, if option "final" is used, final data should be provided to generates a PDF report
 #'     to evaluate all GreenFeed data obtained from the finalized study.
 #'
 #' @param user User name to log in to the GreenFeed system

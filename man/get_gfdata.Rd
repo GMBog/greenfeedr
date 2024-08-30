@@ -33,9 +33,9 @@ get_gfdata(
 This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
 }
 \description{
-`get_gfdata()` downloads from C-Lock server daily GreenFeed data
-    via an application programming interface (API). This function
-    retrieves data based on specified parameters such as login information,
+Downloads from C-Lock Inc. server daily GreenFeed data
+    via an application programming interface (API).
+    Retrieves data based on specified parameters such as login information,
     date range and units, providing an Excel file with GreenFeed data.
 }
 \examples{

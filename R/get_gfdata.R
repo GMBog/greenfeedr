@@ -1,9 +1,9 @@
 #' @name get_gfdata
 #' @title Download Daily GreenFeed Data via API
 #'
-#' @description `get_gfdata()` downloads from C-Lock server daily GreenFeed data
-#'     via an application programming interface (API). This function
-#'     retrieves data based on specified parameters such as login information,
+#' @description Downloads from C-Lock Inc. server daily GreenFeed data
+#'     via an application programming interface (API).
+#'     Retrieves data based on specified parameters such as login information,
 #'     date range and units, providing an Excel file with GreenFeed data.
 #'
 #' @param user User name to log in to the GreenFeed system

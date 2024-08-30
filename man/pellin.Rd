@@ -23,10 +23,10 @@ An Excel file with pellet intakes for all animals and days within the specified 
     The file is named "Pellet_Intakes_YYYY-MM-DD_YYYY-MM-DD.csv".
 }
 \description{
-`pellin()` processes the feedtimes file from GreenFeed system,
+Processes the feedtimes file from GreenFeed system,
     including visits and food drops across a specific period, and it is used
     to calculate pellet intakes per animal from all units.
-    This function aggregates data to provide insights into the feeding behavior
+    Aggregates data to provide insights into the feeding behavior
     and pellet consumption of the animals during a study.
 }
 \examples{

@@ -15,8 +15,7 @@ filter_within_range(v, cutoff)
 A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
 }
 \description{
-`filter_within_range()` is a helper function to detect
-    outliers in data using the mean and sd
+Helper function to detect outliers using the mean and sd
 }
 \examples{
 # Sample data

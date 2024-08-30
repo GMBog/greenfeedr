@@ -30,10 +30,10 @@
 A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.
 }
 \description{
-`report_gfdata()` generates markdown reports of daily and final GreenFeed data.
+Generates PDF reports of daily and final GreenFeed data.
     If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
-    and generates a markdown report to with number of animals, records, and gas production of the ongoing study.
-    But, if option "final" is used, final data should be provided to generates a markdown report
+    and generates a PDF report to with number of animals, records, and gas production of the ongoing study.
+    But, if option "final" is used, final data should be provided to generates a PDF report
     to evaluate all GreenFeed data obtained from the finalized study.
 }
 \examples{

@@ -1,9 +1,9 @@
 #' @name process_gfdata
 #' @title Process Daily and Final GreenFeed Data
 #'
-#' @description `process_gfdata()` processes and computes daily and weekly averages
+#' @description Processes and computes daily and weekly averages
 #'     for daily and final GreenFeed data, organizing it into two data sets.
-#'     This function handles data filtering, aggregation, and summarization to facilitate
+#'     Handles data filtering, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
 #' @param data Data frame with daily or finalized GreenFeed data

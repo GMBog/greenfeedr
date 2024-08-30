@@ -22,9 +22,9 @@ A list of two data frames:
   \item{weekly_data}{Data frame with weekly processed GreenFeed data}
 }
 \description{
-`process_gfdata()` processes and computes daily and weekly averages
+Processes and computes daily and weekly averages
     for daily and final GreenFeed data, organizing it into two data sets.
-    This function handles data filtering, aggregation, and summarization to facilitate
+    Handles data filtering, aggregation, and summarization to facilitate
     further analysis and reporting.
 }
 \examples{

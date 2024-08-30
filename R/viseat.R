@@ -1,8 +1,8 @@
 #' @name viseat
-#' @title Check GreenFeed Visits
+#' @title Process GreenFeed Visits
 #'
-#' @description `viseat()` processes GreenFeed visits and food drops.
-#'      This function generates a list of animals not visiting the GreenFeed and
+#' @description Processes GreenFeed visits and food drops.
+#'      Generates a list of animals not visiting the GreenFeed and
 #'      a description of animals visiting the system for the requested period.
 #'
 #' @param file_path File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order

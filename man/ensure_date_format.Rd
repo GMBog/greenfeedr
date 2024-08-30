@@ -7,15 +7,15 @@
 ensure_date_format(date_input)
 }
 \arguments{
-\item{date_input}{Date included as input.}
+\item{date_input}{Date included as input}
 }
 \value{
-A character string representing the date in 'YYYY-MM-DD' format.
+A character string representing the date in 'YYYY-MM-DD' format
 }
 \description{
-`ensure_date_format()` is a helper function to check date format.
+Helper function to check date format.
     If the format is wrong 'NA' an error message is printed, else it will
-    formatted the date in the correct way (YYYY-MM-DD).
+    formatted the date in the correct way (YYYY-MM-DD)
 }
 \examples{
 # Example of correct date formats

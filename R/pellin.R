@@ -1,10 +1,10 @@
 #' @name pellin
 #' @title Process GreenFeed Pellet Intakes
 #'
-#' @description `pellin()` processes the feedtimes file from GreenFeed system,
+#' @description Processes the feedtimes file from GreenFeed system,
 #'     including visits and food drops across a specific period, and it is used
 #'     to calculate pellet intakes per animal from all units.
-#'     This function aggregates data to provide insights into the feeding behavior
+#'     Aggregates data to provide insights into the feeding behavior
 #'     and pellet consumption of the animals during a study.
 #'
 #' @param file_path File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order

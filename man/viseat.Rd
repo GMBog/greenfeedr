@@ -2,7 +2,7 @@
 % Please edit documentation in R/viseat.R
 \name{viseat}
 \alias{viseat}
-\title{Check GreenFeed Visits}
+\title{Process GreenFeed Visits}
 \arguments{
 \item{file_path}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
 
@@ -20,8 +20,8 @@ A list of two data frames:
   \item{visits_per_animal}{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
 }
 \description{
-`viseat()` processes GreenFeed visits and food drops.
-     This function generates a list of animals not visiting the GreenFeed and
+Processes GreenFeed visits and food drops.
+     Generates a list of animals not visiting the GreenFeed and
      a description of animals visiting the system for the requested period.
 }
 \examples{

@@ -1,10 +1,10 @@
 #' @name has_credentials
 #' @title Check for API Credentials
 #'
-#' @description `has_credentials()` is a helper function to check
-#'     if the necessary API credentials are available in the environment.
+#' @description Helper function to check if necessary
+#'     API credentials are available in the environment.
 #'
-#' @return A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise.
+#' @return A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise
 #' @examples
 #' # Example 1: When environment variables are set
 #' Sys.setenv(API_USER = "my_username", API_PASS = "my_password")
@@ -30,13 +30,13 @@ has_credentials <- function() {
 #' @name ensure_date_format
 #' @title Check date format and transform in a usable one
 #'
-#' @description `ensure_date_format()` is a helper function to check date format.
+#' @description Helper function to check date format.
 #'     If the format is wrong 'NA' an error message is printed, else it will
-#'     formatted the date in the correct way (YYYY-MM-DD).
+#'     formatted the date in the correct way (YYYY-MM-DD)
 #'
-#' @param date_input Date included as input.
+#' @param date_input Date included as input
 #'
-#' @return A character string representing the date in 'YYYY-MM-DD' format.
+#' @return A character string representing the date in 'YYYY-MM-DD' format
 #' @examples
 #' # Example of correct date formats
 #' ensure_date_format("2024-08-30") # "2024-08-30"
@@ -78,8 +78,7 @@ ensure_date_format <- function(date_input) {
 #' @name filter_within_range
 #' @title Detect outliers in data using mean and standard deviation
 #'
-#' @description `filter_within_range()` is a helper function to detect
-#'     outliers in data using the mean and sd
+#' @description Helper function to detect outliers using the mean and sd
 #'
 #' @param v A vector with data
 #' @param cutoff A threshold or cutoff value that defines the range (e.g., 2.5)
@@ -114,7 +113,7 @@ filter_within_range <- function(v, cutoff) {
 #' @name process_rfid_data
 #' @title Process RFID Data
 #'
-#' @description `process_rfid_data()` processes RFID data from animals in the study.
+#' @description Processes RFID data from animals in the study
 #'
 #' @param rfid_file Path or data frame containing RFID data.
 #'
@@ -136,9 +135,9 @@ filter_within_range <- function(v, cutoff) {
 #'
 #' # Example with unsupported file format
 #' # Assuming 'rfid_data.docx' is an unsupported file format
-#' # invalid_file <- process_rfid_data("path/to/rfid_data.docx")
+#' invalid_file <- process_rfid_data("path/to/rfid_data.docx")
 #' # Expected output: error message "Unsupported file format."
-#' # print(invalid_file)
+#' print(invalid_file)
 #'
 #' @export
 process_rfid_data <- function(rfid_file) {
