@@ -1,11 +1,4 @@
+url: https://gmbog.github.io/greenfeedr/
 template:
   bootstrap: 5
-  theme: arrow-dark
 
-navbar:
-  title: greenfeedr
-  left:
-  - text: GitHub
-    href: https://github.com/GMBog/greenfeedr
-
-url: https://GMBog.github.io/greenfeedr/

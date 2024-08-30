@@ -44,5 +44,5 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://GMBog.github.io/greenfeedr/
 BugReports: https://github.com/GMBog/greenfeedr/issues
+URL: https://gmbog.github.io/greenfeedr/
