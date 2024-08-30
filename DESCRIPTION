@@ -10,6 +10,9 @@ Authors@R:
            comment = c(ORCID = "0000-0003-3597-9426")),
     person("Meredith", "Harrison", 
            email = "mharrison@c-lockinc.com", 
+           role = c("ctb")),
+    person("Patrick", "Lutz", 
+           email = "plutz@c-lockinc.com", 
            role = c("ctb"))
     )
 Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
@@ -41,5 +44,5 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/GMBog/greenfeedr
+URL: https://GMBog.github.io/greenfeedr/
 BugReports: https://github.com/GMBog/greenfeedr/issues
