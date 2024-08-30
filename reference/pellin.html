@@ -84,7 +84,8 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An Excel file with pellet intakes for all animals and days of the requested period</p>
+    <p>An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.
+    The file is named "Pellet_Intakes_YYYY-MM-DD_YYYY-MM-DD.csv".</p>
     </div>
 
     <div class="section level2">
@@ -106,9 +107,8 @@
 <span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No valid data provided. Please include a valid 'rfid_file' parameter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> RFID data could not be processed. Exiting function.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> RFID is NA. It is recommended to include it.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pellet intakes file created and saved to /tmp/Rtmp5DUz2W</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

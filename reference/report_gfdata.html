@@ -100,8 +100,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An Excel file with daily data from GreenFeed system and
-    a R-markdown report with a description of the daily or final records</p>
+    <p>A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.</p>
     </div>
 
     <div class="section level2">
@@ -151,8 +150,22 @@
 <span class="r-in"><span>  file_path <span class="op">=</span> <span class="va">file</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid data provided. Please include a valid 'rfid_file' parameter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> RFID data could not be processed. Exiting function.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> processing file: FinalReportsGF.Rmd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1/8                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2/8 [libraries]                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3/8                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4/8 [Data per cow]               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5/8                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6/8 [Data per day]               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7/8                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8/8 [Gas data production per cow]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> output file: FinalReportsGF.knit.md</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/Rtmp5DUz2W/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>error in running command</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ! sh: 1: pdflatex: not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/Rtmp5DUz2W/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
