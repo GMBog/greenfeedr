@@ -78,8 +78,10 @@ process_gfdata <- function(data, start_date, end_date,
       data <- data %>%
         ## Remove leading zeros from RFID col to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with negative values. Note that O2 and H2 it is greater or equal because some units don't have sensors
-        dplyr::filter(CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0) %>%
+        ## Remove records with unknown ID and negative values. Note that O2 and H2 it is greater or equal because some units don't have sensors
+        dplyr::filter(RFID != "unknown",
+                      CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0
+                      ) %>%
         ## Change columns format
         dplyr::mutate(
           day = as.Date(EndTime),
@@ -121,10 +123,12 @@ process_gfdata <- function(data, start_date, end_date,
       )
 
       data <- data %>%
-        ## Remove leading zeros from RFID col to match with IDs
+        ## Remove "unknown IDs" and leading zeros from RFID col
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with negative values. Note that O2 and H2 are greater or equal because some units don't have sensors
-        dplyr::filter(CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0) %>%
+        ## Remove records with unknown ID or negative values. Note that O2 and H2 are greater or equal because some units don't have sensors
+        dplyr::filter(RFID != "unknown",
+                      CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0
+                      ) %>%
         ## Change columns format
         dplyr::mutate(
           ## Create a column with date
