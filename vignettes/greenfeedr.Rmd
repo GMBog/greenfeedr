@@ -1,0 +1,55 @@
+---
+title: "Introduction to greenfeedr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to greenfeedr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+When working with GreenFeed system you must:
+
+* Retrieve data from each GreenFeed unit
+* Check animal visitation
+* Filtering and process data for further analysis
+
+The greenfeedr makes these steps fast and easy:
+
+* It provides functions for downloading, reporting, and processing GreenFeed data
+
+This document introduces you to greenfeedr's set of tools, and shows you how to apply them to data frames.
+
+## Download data with `get_gfdata()`
+
+The first step in working with the GreenFeed system is to retrieve your data. This can be done manually by logging into the GreenFeed web interface [C-Lock Inc.](https://ext.c-lockinc.com/greenfeed.php)
+
+However, the easiest way to retrieve your daily data is via the API using the `get_gfdata()` function. This function automates the data retrieval process, allowing you to specify user and password, units, and date range to download the data directly into your computer.
+
+
+## GreenFeed data
+
+To explore the basic data manipulation functions of greenfeedr, we'll use dairy cow data from a experiment with 32 cows.
+
+```{r data}
+data <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"), show_col_types = FALSE)
+dim(data)
+data
+```
+
+
+
+## Report data with `report_gfdata()`
+
+
+
+
+
+
+
