@@ -26,6 +26,11 @@ The greenfeedr makes these steps fast and easy:
 
 This document introduces you to greenfeedr's set of tools, and shows you how to apply them to data frames.
 
+```{r setup}
+library(greenfeedr)
+```
+
+
 ## Download data with `get_gfdata()`
 
 The first step in working with the GreenFeed system is to retrieve your data. This can be done manually by logging into the GreenFeed web interface [C-Lock Inc.](https://ext.c-lockinc.com/greenfeed.php)

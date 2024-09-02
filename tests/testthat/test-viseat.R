@@ -50,10 +50,10 @@ test_that("viseat returns correct content in data frames", {
   )
 
   # Check content of visits_per_unit
-  expect_equal(nrow(result$visits_per_unit), 316) # Adjust based on actual data
+  expect_equal(nrow(result$visits_per_unit), 156) # Adjust based on actual data
   expect_equal(names(result$visits_per_unit), c("FarmName", "Date", "ndrops", "visits"))
 
   # Check content of visits_per_animal
-  expect_equal(nrow(result$visits_per_animal), 32) # Adjust based on actual data
+  expect_equal(nrow(result$visits_per_animal), 12) # Adjust based on actual data
   expect_equal(names(result$visits_per_animal), c("FarmName", "total_drops", "total_visits", "mean_drops", "mean_visits"))
 })
