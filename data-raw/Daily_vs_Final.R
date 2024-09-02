@@ -5,11 +5,11 @@
 rm(list = ls()) # initialization
 
 # Choose one of the experiments of the following list. If it's not on the list, then include it (Experiment name, Start and End Dates, and units)
-list_of_experiments <- list(KFK21 = list(
+list_of_experiments <- list(XXX = list(
   StartDate = "2024-02-02", EndDate = "2024-03-29",
-  Units = list("323" = 35, "324" = 35, "527" = 35),
-  fileEID_path = "~/GreenFeed_UW/Methane/KFK21/KFK21_EID.csv",
-  FinalData_path = "~/GreenFeed_UW/Methane/KFK21/GreenFeed_Summarized_Data_323_324_527.xlsx"
+  Units = list("XXX" = 35, "XXX" = 35, "XXX" = 35),
+  fileEID_path = "~/GreenFeed/Methane/XXXX/XXXX_EID.csv",
+  FinalData_path = "~/GreenFeed/Methane/XXXXX/GreenFeed_Summarized_Data_XXX_XXX_XXX.xlsx"
 ))
 
 

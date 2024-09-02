@@ -166,11 +166,12 @@ pellin <- function(file_path, unit, gcup = 34, start_date, end_date,
     df <- rbind(df, grid_missing)
   }
 
-
   # Save pellet intakes as a csv file with kg of pellets for the period requested
   readr::write_excel_csv(df,
     file = paste0(save_dir, "/Pellet_Intakes_", start_date, "_", end_date, ".csv")
   )
 
   message("Pellet intakes file created and saved to ", save_dir)
+
+  return(df)
 }

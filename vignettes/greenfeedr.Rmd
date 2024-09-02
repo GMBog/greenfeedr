@@ -30,7 +30,42 @@ This document introduces you to greenfeedr's set of tools, and shows you how to 
 
 The first step in working with the GreenFeed system is to retrieve your data. This can be done manually by logging into the GreenFeed web interface [C-Lock Inc.](https://ext.c-lockinc.com/greenfeed.php)
 
-However, the easiest way to retrieve your daily data is via the API using the `get_gfdata()` function. This function automates the data retrieval process, allowing you to specify user and password, units, and date range to download the data directly into your computer.
+However, the easiest way to do it is via the API using the `get_gfdata()` function. This function automates the data retrieval process, allowing you to specify user and password, units, and date range to download the data directly from C-Lock Inc. server.
+
+Note that if you have multiple studies simultaneously, you can define a list of studies as follows:
+
+```{r download data}
+
+USER <- "your_username"
+PASS <- "your_password"
+
+studies <- list(
+
+  list(
+    Experiment = "Experiment_01",
+    Unit = c(2,3),
+    StartDate = "2024-01-20",
+    EndDate = Sys.Date(),
+    save_dir = "/Downloads/Experiment_01/"
+  ),
+  
+  list(
+    Experiment = "Experiment_02",
+    Unit = c(212),
+    StartDate = "2024-02-01",
+    EndDate = Sys.Date(),
+    save_dir = "/Downloads/Experiment_02"
+  )
+)
+
+studies
+
+# Here you loop over your studies using the function get_gfdata()
+#for (element in studies) {
+#  get_gfdata(USER, PASS, element$Experiment, element$Unit, element$StartDate, element$EndDate, element$save_dir)
+#}
+
+```
 
 
 ## GreenFeed data
@@ -44,12 +79,42 @@ data
 ```
 
 
-
 ## Report data with `report_gfdata()`
 
 
 
+## Process data with `process_gfdata()`
 
+
+
+## Process pellet intakes and visits with `pellin()` and `viseat()`
+
+The greenfeedr includes additional functions to help you process daily entries and visits. To check animal visits, you must access the GreenFeed web interface and, in the [data](https://ext.c-lockinc.com/data.php) tab, select “Download Large Dataset” and define the time period for which you want to analyze data.
+In the folder that the system downloads to your computer, you will find a file 'feedtimes'.
+
+This is the file you will use as input for pellin and viseat. If you have more than one 'feedtimes' file because you are using multiple GreenFeed units in the same experiment then you just need to include them as a list of files.
+
+Note that by default the grams per cup is 34. However, you should include the result obtained from the 10-drops test.
+
+```{r pellin and viseat}
+
+file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+
+result <- pellin(file_path = file,
+ unit = 1,
+ gcup = 34,
+ start_date = "2024-05-13",
+ end_date = "2024-05-25",
+ save_dir = tempdir()
+)
+
+head(result)
+
+```
+
+## Citation
+
+* Comming soon
 
 
 
