@@ -84,6 +84,8 @@ GreenFeed data</li>
 </ul>
 <p>This document introduces you to greenfeedr’s set of tools, and shows
 you how to apply them to data frames.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="download-data-with-get_gfdata">Download data with <code>get_gfdata()</code><a class="anchor" aria-label="anchor" href="#download-data-with-get_gfdata"></a>
 </h2>
@@ -91,18 +93,81 @@ you how to apply them to data frames.</p>
 your data. This can be done manually by logging into the GreenFeed web
 interface <a href="https://ext.c-lockinc.com/greenfeed.php" class="external-link">C-Lock
 Inc.</a></p>
-<p>However, the easiest way to retrieve your daily data is via the API
-using the <code><a href="../reference/get_gfdata.html">get_gfdata()</a></code> function. This function automates
-the data retrieval process, allowing you to specify user and password,
-units, and date range to download the data directly into your
-computer.</p>
+<p>However, the easiest way to do it is via the API using the
+<code><a href="../reference/get_gfdata.html">get_gfdata()</a></code> function. This function automates the data
+retrieval process, allowing you to specify user and password, units, and
+date range to download the data directly from C-Lock Inc. server.</p>
+<p>Note that if you have multiple studies simultaneously, you can define
+a list of studies as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">USER</span> <span class="op">&lt;-</span> <span class="st">"your_username"</span></span>
+<span><span class="va">PASS</span> <span class="op">&lt;-</span> <span class="st">"your_password"</span></span>
+<span></span>
+<span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    Experiment <span class="op">=</span> <span class="st">"Experiment_01"</span>,</span>
+<span>    Unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
+<span>    StartDate <span class="op">=</span> <span class="st">"2024-01-20"</span>,</span>
+<span>    EndDate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    save_dir <span class="op">=</span> <span class="st">"/Downloads/Experiment_01/"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    Experiment <span class="op">=</span> <span class="st">"Experiment_02"</span>,</span>
+<span>    Unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">212</span><span class="op">)</span>,</span>
+<span>    StartDate <span class="op">=</span> <span class="st">"2024-02-01"</span>,</span>
+<span>    EndDate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    save_dir <span class="op">=</span> <span class="st">"/Downloads/Experiment_02"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">studies</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [[1]]$Experiment</span></span>
+<span><span class="co">#&gt; [1] "Experiment_01"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[1]]$Unit</span></span>
+<span><span class="co">#&gt; [1] 2 3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[1]]$StartDate</span></span>
+<span><span class="co">#&gt; [1] "2024-01-20"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[1]]$EndDate</span></span>
+<span><span class="co">#&gt; [1] "2024-09-02"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[1]]$save_dir</span></span>
+<span><span class="co">#&gt; [1] "/Downloads/Experiment_01/"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [[2]]$Experiment</span></span>
+<span><span class="co">#&gt; [1] "Experiment_02"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]$Unit</span></span>
+<span><span class="co">#&gt; [1] 212</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]$StartDate</span></span>
+<span><span class="co">#&gt; [1] "2024-02-01"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]$EndDate</span></span>
+<span><span class="co">#&gt; [1] "2024-09-02"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]$save_dir</span></span>
+<span><span class="co">#&gt; [1] "/Downloads/Experiment_02"</span></span>
+<span></span>
+<span><span class="co"># Here you loop over your studies using the function get_gfdata()</span></span>
+<span><span class="co">#for (element in studies) {</span></span>
+<span><span class="co">#  get_gfdata(USER, PASS, element$Experiment, element$Unit, element$StartDate, element$EndDate, element$save_dir)</span></span>
+<span><span class="co">#}</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="greenfeed-data">GreenFeed data<a class="anchor" aria-label="anchor" href="#greenfeed-data"></a>
 </h2>
 <p>To explore the basic data manipulation functions of greenfeedr, we’ll
 use dairy cow data from a experiment with 32 cows.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_GFdata.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>, show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 256  21</span></span>
@@ -130,6 +195,59 @@ use dairy cow data from a experiment with 32 cows.</p>
 <div class="section level2">
 <h2 id="report-data-with-report_gfdata">Report data with <code>report_gfdata()</code><a class="anchor" aria-label="anchor" href="#report-data-with-report_gfdata"></a>
 </h2>
+</div>
+<div class="section level2">
+<h2 id="process-data-with-process_gfdata">Process data with <code>process_gfdata()</code><a class="anchor" aria-label="anchor" href="#process-data-with-process_gfdata"></a>
+</h2>
+</div>
+<div class="section level2">
+<h2 id="process-pellet-intakes-and-visits-with-pellin-and-viseat">Process pellet intakes and visits with <code>pellin()</code> and
+<code>viseat()</code><a class="anchor" aria-label="anchor" href="#process-pellet-intakes-and-visits-with-pellin-and-viseat"></a>
+</h2>
+<p>The greenfeedr includes additional functions to help you process
+daily entries and visits. To check animal visits, you must access the
+GreenFeed web interface and, in the <a href="https://ext.c-lockinc.com/data.php" class="external-link">data</a> tab, select “Download
+Large Dataset” and define the time period for which you want to analyze
+data. In the folder that the system downloads to your computer, you will
+find a file ‘feedtimes’.</p>
+<p>This is the file you will use as input for pellin and viseat. If you
+have more than one ‘feedtimes’ file because you are using multiple
+GreenFeed units in the same experiment then you just need to include
+them as a list of files.</p>
+<p>Note that by default the grams per cup is 34. However, you should
+include the result obtained from the 10-drops test.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pellin.html">pellin</a></span><span class="op">(</span>file_path <span class="op">=</span> <span class="va">file</span>,</span>
+<span> unit <span class="op">=</span> <span class="fl">1</span>,</span>
+<span> gcup <span class="op">=</span> <span class="fl">34</span>,</span>
+<span> start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span>
+<span> end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span>
+<span> save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span></span>
+<span><span class="co">#&gt; RFID is NULL. It is recommended to include it.</span></span>
+<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpmuD5aQ</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
+<span><span class="co">#&gt;   Date       RFID            PIntake_kg</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-05-13 154150620340444      0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024-05-13 840003218921444      0.034</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024-05-13 840003234513777      0.714</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024-05-13 840003234513888      0.17 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024-05-13 840003250681111      0.068</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024-05-13 840003250681222      0.85</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<ul>
+<li>Comming soon</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
