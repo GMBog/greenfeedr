@@ -47,16 +47,18 @@ get_gfdata <- function(user, pass, exp = NA, unit,
                        start_date, end_date = Sys.Date(), save_dir = getwd()) {
   # Ensure unit is a comma-separated string
   if (is.numeric(unit)) {
-    unit <- as.character(unit)
+    unit <- as.character(unit)  # Convert numeric vector to character
+    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
   } else if (is.character(unit)) {
     if (grepl(",", unit)) {
-      unit <- strsplit(unit, ",")[[1]]
+      unit <- gsub(" ", "", unit)  # Remove spaces if any
+    } else {
+      unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
     }
   } else if (is.list(unit) || is.vector(unit)) {
-    unit <- paste(unit, collapse = ",")
+    unit <- as.character(unlist(unit))  # Convert list or vector to character vector
+    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
   }
-  # Check the format of unit because it will use in the URL
-  unit <- as.character(unit)
 
   # Check date format
   start_date <- ensure_date_format(start_date)

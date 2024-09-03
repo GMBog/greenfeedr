@@ -83,25 +83,20 @@ utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec",
 
 report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
                           input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL, file_path) {
-  # Ensure Unit is a comma-separated string
+  # Ensure unit is a comma-separated string
   if (is.numeric(unit)) {
-    ## Convert numeric to character
-    unit <- as.character(unit)
+    unit <- as.character(unit)  # Convert numeric vector to character
+    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
   } else if (is.character(unit)) {
-    ## If it's already a comma-separated string, keep it as is
     if (grepl(",", unit)) {
-      unit <- unit
+      unit <- gsub(" ", "", unit)  # Remove spaces if any
     } else {
-      ## If it's a single string without commas, keep it as is
-      unit <- unit
+      unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
     }
   } else if (is.list(unit) || is.vector(unit)) {
-    ## Convert lists or vectors to a single comma-separated string
-    unit <- paste(unlist(unit), collapse = ",")
+    unit <- as.character(unlist(unit))  # Convert list or vector to character vector
+    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
   }
-
-  # Ensure the final output is a single comma-separated string
-  unit <- paste(unit, collapse = ",")
 
   # Check Date format
   start_date <- ensure_date_format(start_date)
