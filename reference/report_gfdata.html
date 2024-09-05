@@ -62,47 +62,47 @@
 
 
 <dl><dt id="arg-user">user<a class="anchor" aria-label="anchor" href="#arg-user"></a></dt>
-<dd><p>User name to log in to the GreenFeed system</p></dd>
+<dd><p>a character string representing the user name to log in to the GreenFeed system</p></dd>
 
 
 <dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
-<dd><p>Password to log in to the GreenFeed system</p></dd>
+<dd><p>a character string representing password to log in to the GreenFeed system</p></dd>
 
 
 <dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>Study name or other study identifier. It is used as the file name to report the data</p></dd>
+<dd><p>a character string representing study name or other study identifier. It is used as the file name to save the data</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
-<dd><p>GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"</p></dd>
+<dd><p>numeric or character vector or list representing one or more GreenFeed unit numbers.</p></dd>
 
 
 <dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
-<dd><p>Start date of the study</p></dd>
+<dd><p>a character string representing the start date of the study (format: "mm/dd/yyyy")</p></dd>
 
 
 <dt id="arg-end-date">end_date<a class="anchor" aria-label="anchor" href="#arg-end-date"></a></dt>
-<dd><p>End date of the study. By default the current date is used</p></dd>
+<dd><p>a character string representing the end date of the study (format: "mm/dd/yyyy")</p></dd>
 
 
 <dt id="arg-input-type">input_type<a class="anchor" aria-label="anchor" href="#arg-input-type"></a></dt>
-<dd><p>Input data could be from daily or final report: daily or final</p></dd>
+<dd><p>a character string representing type of data ('daily' or 'final' report)</p></dd>
 
 
 <dt id="arg-save-dir">save_dir<a class="anchor" aria-label="anchor" href="#arg-save-dir"></a></dt>
-<dd><p>Directory to save the output file. By default the current working directory is used</p></dd>
+<dd><p>a character string representing the directory to save the output file.</p></dd>
 
 
 <dt id="arg-plot-opt">plot_opt<a class="anchor" aria-label="anchor" href="#arg-plot-opt"></a></dt>
-<dd><p>Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported</p></dd>
+<dd><p>a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used</p></dd>
 
 
 <dt id="arg-rfid-file">rfid_file<a class="anchor" aria-label="anchor" href="#arg-rfid-file"></a></dt>
-<dd><p>File that contains RFID of the animals in the study</p></dd>
+<dd><p>a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID</p></dd>
 
 
 <dt id="arg-file-path">file_path<a class="anchor" aria-label="anchor" href="#arg-file-path"></a></dt>
-<dd><p>List of files with final report from GreenFeed</p></dd>
+<dd><p>list of files with the final report(s) from GreenFeed system</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -169,10 +169,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7/8                              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8/8 [Gas data production per cow]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: FinalReportsGF.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/RtmpJK5fc2/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/RtmptBguft/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>error in running command</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ! sh: 1: pdflatex: not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/RtmpJK5fc2/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/RtmptBguft/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

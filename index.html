@@ -108,13 +108,13 @@
 <p>Note that we received the finalized data (or Summarized Data) for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.</p>
 <p>The data looks like:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 25</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;   RFID                 `Farm Name`   FID `Start Time`        `End Time`         </span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;       &lt;dbl&gt; &lt;dttm&gt;              &lt;dttm&gt;             </span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; 1 0000000008400032506… 0000000008…     1 2024-05-13 09:33:24 2024-05-13 09:36:31</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 2 0000000008400032506… 0000000008…     1 2024-05-13 10:25:44 2024-05-13 10:32:40</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 3 0000000008400032506… 0000000008…     1 2024-05-13 12:29:02 2024-05-13 12:45:19</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 4 0000000008400032506… 0000000008…     1 2024-05-13 13:06:20 2024-05-13 13:12:14</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 5 0000000008400032506… 0000000008…     1 2024-05-13 14:34:58 2024-05-13 14:41:52</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;      RFID `Farm Name`   FID `Start Time`        `End Time`         </span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;     &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dttm&gt;              &lt;dttm&gt;             </span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; 1 8.40e14     8.40e14     1 2024-05-13 09:33:24 2024-05-13 09:36:31</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 2 8.40e14     8.40e14     1 2024-05-13 10:25:44 2024-05-13 10:32:40</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 3 8.40e14     8.40e14     1 2024-05-13 12:29:02 2024-05-13 12:45:19</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 4 8.40e14     8.40e14     1 2024-05-13 13:06:20 2024-05-13 13:12:14</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 5 8.40e14     8.40e14     1 2024-05-13 14:34:58 2024-05-13 14:41:52</span></span>
 <span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; # ℹ 20 more variables: `Good Data Duration` &lt;dttm&gt;, `Hour Of Day` &lt;dbl&gt;,</span></span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; #   `CO2 Massflow (g/d)` &lt;dbl&gt;, `CH4 Massflow (g/d)` &lt;dbl&gt;,</span></span>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; #   `O2 Massflow (g/d)` &lt;dbl&gt;, `H2 Massflow (g/d)` &lt;dbl&gt;,</span></span>

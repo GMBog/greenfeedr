@@ -71,31 +71,31 @@
 
 
 <dl><dt id="arg-user">user<a class="anchor" aria-label="anchor" href="#arg-user"></a></dt>
-<dd><p>User name to log in to the GreenFeed system</p></dd>
+<dd><p>a character string representing the user name to log in to the GreenFeed system</p></dd>
 
 
 <dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
-<dd><p>Password to log in to the GreenFeed system</p></dd>
+<dd><p>a character string representing password to log in to the GreenFeed system</p></dd>
 
 
 <dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>Study name or other study identifier. It is used as the file name to save the data</p></dd>
+<dd><p>a character string representing study name or other study identifier. It is used as the file name to save the data</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
-<dd><p>GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"</p></dd>
+<dd><p>numeric or character vector or list representing one or more GreenFeed unit numbers.</p></dd>
 
 
 <dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
-<dd><p>Start date of the study</p></dd>
+<dd><p>a character string representing the start date of the study (format: "mm/dd/yyyy")</p></dd>
 
 
 <dt id="arg-end-date">end_date<a class="anchor" aria-label="anchor" href="#arg-end-date"></a></dt>
-<dd><p>End date of the study. By default the current date is used</p></dd>
+<dd><p>a character string representing the end date of the study (format: "mm/dd/yyyy")</p></dd>
 
 
 <dt id="arg-save-dir">save_dir<a class="anchor" aria-label="anchor" href="#arg-save-dir"></a></dt>
-<dd><p>Directory to save the output file. By default the current working directory is used</p></dd>
+<dd><p>a character string representing the directory to save the output file.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -113,14 +113,6 @@
 <span class="r-in"><span><span class="va">start_date</span> <span class="op">&lt;-</span> <span class="st">"2024-01-01"</span></span></span>
 <span class="r-in"><span><span class="va">end_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">save_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example with multiple units as a comma-separated string</span></span></span>
-<span class="r-in"><span><span class="va">unit</span> <span class="op">&lt;-</span> <span class="st">"304,305"</span></span></span>
-<span class="r-in"><span><span class="fu">get_gfdata</span><span class="op">(</span><span class="va">user</span>, <span class="va">pass</span>, <span class="va">exp</span>, <span class="va">unit</span>, <span class="va">start_date</span>, <span class="va">end_date</span>, <span class="va">save_dir</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example with a single unit as a numeric value</span></span></span>
-<span class="r-in"><span><span class="va">unit</span> <span class="op">&lt;-</span> <span class="fl">304</span></span></span>
-<span class="r-in"><span><span class="fu">get_gfdata</span><span class="op">(</span><span class="va">user</span>, <span class="va">pass</span>, <span class="va">exp</span>, <span class="va">unit</span>, <span class="va">start_date</span>, <span class="va">end_date</span>, <span class="va">save_dir</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example with units as a vector</span></span></span>
 <span class="r-in"><span><span class="va">unit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">304</span>, <span class="fl">305</span><span class="op">)</span></span></span>

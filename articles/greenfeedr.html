@@ -89,11 +89,11 @@ you how to apply them to data frames.</p>
 <div class="section level2">
 <h2 id="download-data-with-get_gfdata">Download data with <code>get_gfdata()</code><a class="anchor" aria-label="anchor" href="#download-data-with-get_gfdata"></a>
 </h2>
-<p>The first step in working with the GreenFeed system is to retrieve
-your data. This can be done manually by logging into the GreenFeed web
-interface <a href="https://ext.c-lockinc.com/greenfeed.php" class="external-link">C-Lock
-Inc.</a></p>
-<p>However, the easiest way to do it is via the API using the
+<p>The first step in working with GreenFeed is to retrieve your data
+from the system. This can be done manually by logging into the GreenFeed
+web interface <a href="https://ext.c-lockinc.com/greenfeed.php" class="external-link">C-Lock
+Inc.</a> using your username and password.</p>
+<p>However, there is a simpler approach: that is via the API using
 <code><a href="../reference/get_gfdata.html">get_gfdata()</a></code> function. This function automates the data
 retrieval process, allowing you to specify user and password, units, and
 date range to download the data directly from C-Lock Inc. server.</p>
@@ -123,82 +123,175 @@ a list of studies as follows:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">studies</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$Experiment</span></span>
-<span><span class="co">#&gt; [1] "Experiment_01"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$Unit</span></span>
-<span><span class="co">#&gt; [1] 2 3</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$StartDate</span></span>
-<span><span class="co">#&gt; [1] "2024-01-20"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$EndDate</span></span>
-<span><span class="co">#&gt; [1] "2024-09-03"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$save_dir</span></span>
-<span><span class="co">#&gt; [1] "/Downloads/Experiment_01/"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [[2]]$Experiment</span></span>
-<span><span class="co">#&gt; [1] "Experiment_02"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$Unit</span></span>
-<span><span class="co">#&gt; [1] 212</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$StartDate</span></span>
-<span><span class="co">#&gt; [1] "2024-02-01"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$EndDate</span></span>
-<span><span class="co">#&gt; [1] "2024-09-03"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$save_dir</span></span>
-<span><span class="co">#&gt; [1] "/Downloads/Experiment_02"</span></span>
-<span></span>
-<span><span class="co"># Here you loop over your studies using the function get_gfdata()</span></span>
+<span><span class="co"># Here you loop (using 'for') over all your studies applying get_gfdata() function</span></span>
 <span><span class="co">#for (element in studies) {</span></span>
 <span><span class="co">#  get_gfdata(USER, PASS, element$Experiment, element$Unit, element$StartDate, element$EndDate, element$save_dir)</span></span>
 <span><span class="co">#}</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="greenfeed-data">GreenFeed data<a class="anchor" aria-label="anchor" href="#greenfeed-data"></a>
+<h2 id="how-it-looks-the-greenfeed-data">How it looks the GreenFeed data?<a class="anchor" aria-label="anchor" href="#how-it-looks-the-greenfeed-data"></a>
 </h2>
-<p>To explore the basic data manipulation functions of greenfeedr, we’ll
-use dairy cow data from a experiment with 32 cows.</p>
+<p>The package provides daily and final datasets for you to explore the
+basic format of GreenFeed data. The data provided is actual data from a
+32-cow study.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_GFdata.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>, show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 256  21</span></span>
-<span><span class="va">data</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 256 × 21</span></span></span>
-<span><span class="co">#&gt;    FeederID AnimalName   RFID  StartTime EndTime GoodDataDuration CO2GramsPerDay</span></span>
-<span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;time&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 02<span style="color: #949494;">'</span>31<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">10</span>531.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 06<span style="color: #949494;">'</span>09<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">14</span>032.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 10<span style="color: #949494;">'</span>21<span style="color: #949494;">"</span>                    <span style="text-decoration: underline;">9</span>242.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 04<span style="color: #949494;">'</span>00<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">14</span>735.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 04<span style="color: #949494;">'</span>55<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">20</span>080.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 03<span style="color: #949494;">'</span>42<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">13</span>905.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 02<span style="color: #949494;">'</span>12<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">18</span>625.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 02<span style="color: #949494;">'</span>23<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">15</span>462.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 05<span style="color: #949494;">'</span>05<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">15</span>689.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>        1 <span style="color: #949494;">"</span>\"00000000… 0000… 5/13/24 … 5/13/2… 02<span style="color: #949494;">'</span>16<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">18</span>011.</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 246 more rows</span></span></span>
+<code class="sourceCode R"><span><span class="co"># Open the daily data downloaded from C-Lock Inc. server</span></span>
+<span><span class="va">daily_data</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_GFdata.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>, show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View the structure of the daily data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; spc_tbl_ [256 × 21] (S3: spec_tbl_df/tbl_df/tbl/data.frame)</span></span>
+<span><span class="co">#&gt;  $ FeederID              : num [1:256] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">#&gt;  $ AnimalName            : chr [1:256] "\"000000000840003250681664\"" "\"000000000840003250681664\"" "\"000000000840003250681799\"" "\"000000000840003250681664\"" ...</span></span>
+<span><span class="co">#&gt;  $ RFID                  : chr [1:256] "000000000840003250681664" "000000000840003250681664" "000000000840003250681799" "000000000840003250681664" ...</span></span>
+<span><span class="co">#&gt;  $ StartTime             : chr [1:256] "5/13/24 9:33" "5/13/24 10:25" "5/13/24 12:29" "5/13/24 13:06" ...</span></span>
+<span><span class="co">#&gt;  $ EndTime               : chr [1:256] "5/13/24 9:36" "5/13/24 10:32" "5/13/24 12:45" "5/13/24 13:12" ...</span></span>
+<span><span class="co">#&gt;  $ GoodDataDuration      : 'hms' num [1:256] 00:02:31 00:06:09 00:10:21 00:04:00 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "units")= chr "secs"</span></span>
+<span><span class="co">#&gt;  $ CO2GramsPerDay        : num [1:256] 10531 14032 9242 14735 20080 ...</span></span>
+<span><span class="co">#&gt;  $ CH4GramsPerDay        : num [1:256] 466 577 301 498 756 ...</span></span>
+<span><span class="co">#&gt;  $ O2GramsPerDay         : num [1:256] 6815 8799 6173 10636 11021 ...</span></span>
+<span><span class="co">#&gt;  $ H2GramsPerDay         : num [1:256] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ H2SGramsPerDay        : num [1:256] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ AirflowLitersPerSec   : num [1:256] 34 34 33.9 33.8 33.7 ...</span></span>
+<span><span class="co">#&gt;  $ AirflowCf             : num [1:256] 1.07 1.07 1.07 1.07 1.07 ...</span></span>
+<span><span class="co">#&gt;  $ WindSpeedMetersPerSec : num [1:256] 0.0185 0.0686 0.0682 0.1345 0.1094 ...</span></span>
+<span><span class="co">#&gt;  $ WindDirDeg            : num [1:256] 27.3 314.5 58 42.1 35.4 ...</span></span>
+<span><span class="co">#&gt;  $ WindCf                : num [1:256] 1 1.01 1.01 1.03 1.02 ...</span></span>
+<span><span class="co">#&gt;  $ WasInterrupted        : logi [1:256] NA NA NA NA NA NA ...</span></span>
+<span><span class="co">#&gt;  $ InterruptingTags      : chr [1:256] "\"\"" "\"\"" "\"\"" "\"\"" ...</span></span>
+<span><span class="co">#&gt;  $ TempPipeDegreesCelsius: num [1:256] 17.2 19 21.9 22.3 22.6 ...</span></span>
+<span><span class="co">#&gt;  $ IsPreliminary         : num [1:256] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">#&gt;  $ RunTime               : chr [1:256] "6/27/24 0:54" "6/27/24 0:54" "6/27/24 0:54" "6/27/24 0:54" ...</span></span>
+<span><span class="co">#&gt;  - attr(*, "spec")=</span></span>
+<span><span class="co">#&gt;   .. cols(</span></span>
+<span><span class="co">#&gt;   ..   FeederID = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   AnimalName = <span style="color: #BB0000;">col_character()</span>,</span></span>
+<span><span class="co">#&gt;   ..   RFID = <span style="color: #BB0000;">col_character()</span>,</span></span>
+<span><span class="co">#&gt;   ..   StartTime = <span style="color: #BB0000;">col_character()</span>,</span></span>
+<span><span class="co">#&gt;   ..   EndTime = <span style="color: #BB0000;">col_character()</span>,</span></span>
+<span><span class="co">#&gt;   ..   GoodDataDuration = <span style="color: #0000BB;">col_time(format = "")</span>,</span></span>
+<span><span class="co">#&gt;   ..   CO2GramsPerDay = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   CH4GramsPerDay = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   O2GramsPerDay = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   H2GramsPerDay = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   H2SGramsPerDay = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   AirflowLitersPerSec = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   AirflowCf = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   WindSpeedMetersPerSec = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   WindDirDeg = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   WindCf = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   WasInterrupted = <span style="color: #BBBB00;">col_logical()</span>,</span></span>
+<span><span class="co">#&gt;   ..   InterruptingTags = <span style="color: #BB0000;">col_character()</span>,</span></span>
+<span><span class="co">#&gt;   ..   TempPipeDegreesCelsius = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   IsPreliminary = <span style="color: #00BB00;">col_double()</span>,</span></span>
+<span><span class="co">#&gt;   ..   RunTime = <span style="color: #BB0000;">col_character()</span></span></span>
+<span><span class="co">#&gt;   .. )</span></span>
+<span><span class="co">#&gt;  - attr(*, "problems")=&lt;externalptr&gt;</span></span>
+<span></span>
+<span><span class="co"># View the first few rows of the daily data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 21</span></span></span>
+<span><span class="co">#&gt;   FeederID AnimalName    RFID  StartTime EndTime GoodDataDuration CO2GramsPerDay</span></span>
+<span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;time&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 02<span style="color: #949494;">'</span>31<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">10</span>531.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 06<span style="color: #949494;">'</span>09<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">14</span>032.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 10<span style="color: #949494;">'</span>21<span style="color: #949494;">"</span>                    <span style="text-decoration: underline;">9</span>242.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 04<span style="color: #949494;">'</span>00<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">14</span>735.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 04<span style="color: #949494;">'</span>55<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">20</span>080.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>        1 <span style="color: #949494;">"</span>\"000000000… 0000… 5/13/24 … 5/13/2… 03<span style="color: #949494;">'</span>42<span style="color: #949494;">"</span>                   <span style="text-decoration: underline;">13</span>905.</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 14 more variables: CH4GramsPerDay &lt;dbl&gt;, O2GramsPerDay &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   H2GramsPerDay &lt;dbl&gt;, H2SGramsPerDay &lt;dbl&gt;, AirflowLitersPerSec &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   AirflowCf &lt;dbl&gt;, WindSpeedMetersPerSec &lt;dbl&gt;, WindDirDeg &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   WindCf &lt;dbl&gt;, WasInterrupted &lt;lgl&gt;, InterruptingTags &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   TempPipeDegreesCelsius &lt;dbl&gt;, IsPreliminary &lt;dbl&gt;, RunTime &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;">#   TempPipeDegreesCelsius &lt;dbl&gt;, IsPreliminary &lt;dbl&gt;, RunTime &lt;chr&gt;</span></span></span>
+<span></span>
+<span><span class="co"># Open the finalized data received from C-Lock Inc.</span></span>
+<span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_excel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_FinalReport.xlsx"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>, </span>
+<span>                   col_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"text"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View the structure of the daily data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">final_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; tibble [467 × 25] (S3: tbl_df/tbl/data.frame)</span></span>
+<span><span class="co">#&gt;  $ RFID                              : chr [1:467] "840003250681664" "840003250681664" "840003250681799" "840003250681664" ...</span></span>
+<span><span class="co">#&gt;  $ Farm Name                         : chr [1:467] "840003250681664" "840003250681664" "840003250681799" "840003250681664" ...</span></span>
+<span><span class="co">#&gt;  $ FID                               : num [1:467] 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">#&gt;  $ Start Time                        : POSIXct[1:467], format: "2024-05-13 09:33:24" "2024-05-13 10:25:44" ...</span></span>
+<span><span class="co">#&gt;  $ End Time                          : POSIXct[1:467], format: "2024-05-13 09:36:31" "2024-05-13 10:32:40" ...</span></span>
+<span><span class="co">#&gt;  $ Good Data Duration                : POSIXct[1:467], format: "1899-12-31 00:02:31" "1899-12-31 00:06:09" ...</span></span>
+<span><span class="co">#&gt;  $ Hour Of Day                       : num [1:467] 9.56 10.43 12.48 13.11 14.58 ...</span></span>
+<span><span class="co">#&gt;  $ CO2 Massflow (g/d)                : num [1:467] 10541 14080 9273 14831 20187 ...</span></span>
+<span><span class="co">#&gt;  $ CH4 Massflow (g/d)                : num [1:467] 467 579 302 501 760 ...</span></span>
+<span><span class="co">#&gt;  $ O2 Massflow (g/d)                 : num [1:467] 6822 8829 6194 10705 11080 ...</span></span>
+<span><span class="co">#&gt;  $ H2 Massflow (g/d)                 : num [1:467] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ H2S Massflow (g/d)                : num [1:467] 0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ Average Airflow (L/s)             : num [1:467] 34 34 33.9 33.8 33.7 ...</span></span>
+<span><span class="co">#&gt;  $ Airflow CF                        : num [1:467] 1.07 1.07 1.07 1.07 1.07 ...</span></span>
+<span><span class="co">#&gt;  $ Average Wind Speed (m/s)          : num [1:467] 0.0185 0.0686 0.0682 0.1345 0.1094 ...</span></span>
+<span><span class="co">#&gt;  $ Average Wind Direction (deg)      : num [1:467] 27.3 314.5 58 42.1 35.4 ...</span></span>
+<span><span class="co">#&gt;  $ Wind CF                           : num [1:467] 1 1.02 1.02 1.03 1.03 ...</span></span>
+<span><span class="co">#&gt;  $ Was Interrupted                   : num [1:467] NA NA NA NA NA NA NA NA NA NA ...</span></span>
+<span><span class="co">#&gt;  $ Interrupting Tags                 : chr [1:467] "''" "''" "''" "''" ...</span></span>
+<span><span class="co">#&gt;  $ Midpoint Since Last               : num [1:467] NA NA NA NA NA NA NA NA NA NA ...</span></span>
+<span><span class="co">#&gt;  $ Midpoint Until Next               : num [1:467] NA NA NA NA NA NA NA NA NA NA ...</span></span>
+<span><span class="co">#&gt;  $ Standard Deviation of CH4 Baseline: num [1:467] 6.66 6.57 6.17 5.16 3.06 ...</span></span>
+<span><span class="co">#&gt;  $ Pipe Temperature (deg C)          : num [1:467] 17.2 19 21.9 22.3 22.6 ...</span></span>
+<span><span class="co">#&gt;  $ Gas Temperature (deg C)           : num [1:467] 25 25.2 27.2 27.7 28.8 ...</span></span>
+<span><span class="co">#&gt;  $ RID                               : num [1:467] 609715 609715 609715 609715 609715 ...</span></span>
+<span></span>
+<span><span class="co"># View the first few rows of the daily data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">final_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 25</span></span></span>
+<span><span class="co">#&gt;   RFID            `Farm Name`       FID `Start Time`        `End Time`         </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 840003250681664 840003250681664     1 2024-05-13 <span style="color: #949494;">09:33:24</span> 2024-05-13 <span style="color: #949494;">09:36:31</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 840003250681664 840003250681664     1 2024-05-13 <span style="color: #949494;">10:25:44</span> 2024-05-13 <span style="color: #949494;">10:32:40</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 840003250681799 840003250681799     1 2024-05-13 <span style="color: #949494;">12:29:02</span> 2024-05-13 <span style="color: #949494;">12:45:19</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 840003250681664 840003250681664     1 2024-05-13 <span style="color: #949494;">13:06:20</span> 2024-05-13 <span style="color: #949494;">13:12:14</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 840003250681664 840003250681664     1 2024-05-13 <span style="color: #949494;">14:34:58</span> 2024-05-13 <span style="color: #949494;">14:41:52</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 840003234513955 840003234513955     1 2024-05-13 <span style="color: #949494;">14:59:14</span> 2024-05-13 <span style="color: #949494;">15:11:50</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 20 more variables: `Good Data Duration` &lt;dttm&gt;, `Hour Of Day` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `CO2 Massflow (g/d)` &lt;dbl&gt;, `CH4 Massflow (g/d)` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `O2 Massflow (g/d)` &lt;dbl&gt;, `H2 Massflow (g/d)` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `H2S Massflow (g/d)` &lt;dbl&gt;, `Average Airflow (L/s)` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `Airflow CF` &lt;dbl&gt;, `Average Wind Speed (m/s)` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `Average Wind Direction (deg)` &lt;dbl&gt;, `Wind CF` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `Was Interrupted` &lt;dbl&gt;, `Interrupting Tags` &lt;chr&gt;, …</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="report-data-with-report_gfdata">Report data with <code>report_gfdata()</code><a class="anchor" aria-label="anchor" href="#report-data-with-report_gfdata"></a>
 </h2>
+<p>The next step in working with GreenFeed is to check animal visitation
+and gases production on animals and on a daily basis. The
+<code><a href="../reference/report_gfdata.html">report_gfdata()</a></code> function allows you to download the daily
+data and generates an easy-to-read report to check your GreenFeed on the
+farm. In addition, you can use <code><a href="../reference/report_gfdata.html">report_gfdata()</a></code> to generate
+a final report of your study by providing the final data received from
+C-Lock Inc. three to four weeks after the end of your study.</p>
+<p>This function is very useful when you have several studies and units
+running simultaneously to check that the study is going in the right
+direction.</p>
+<p><img src="greenfeedr_files/figure-html/report%20data-1.png" width="700"><img src="greenfeedr_files/figure-html/report%20data-2.png" width="700"><img src="greenfeedr_files/figure-html/report%20data-3.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="process-data-with-process_gfdata">Process data with <code>process_gfdata()</code><a class="anchor" aria-label="anchor" href="#process-data-with-process_gfdata"></a>
 </h2>
+<p>It is finally time to process your GreenFeed data for analysis. The
+most frequently asked questions are:</p>
+<ul>
+<li>What is the minimum acceptable time that my records should
+last?</li>
+<li>How many records should I have per day?</li>
+<li>How many days with records should I keep per week?</li>
+</ul>
+<p>However, since there is no single answer, these values will depend on
+many factors such as the duration of the study, number of animals,
+feeding, time of year, etc.</p>
+<p>The <code><a href="../reference/process_gfdata.html">process_gfdata()</a></code> function allows you to explore your
+data and use different sets of parameters (param1, param2, and min_time)
+and check how many records and animals you keep for analysis. To do that
+you can follow the example in the <a href="https://github.com/GMBog/greenfeedr/blob/main/README.md" class="external-link">README
+file</a></p>
 </div>
 <div class="section level2">
 <h2 id="process-pellet-intakes-and-visits-with-pellin-and-viseat">Process pellet intakes and visits with <code>pellin()</code> and
@@ -229,7 +322,7 @@ include the result obtained from the 10-drops test.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span></span>
 <span><span class="co">#&gt; RFID is NULL. It is recommended to include it.</span></span>
-<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpKiubMv</span></span>
+<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpZzvQJR</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
