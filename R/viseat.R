@@ -5,11 +5,11 @@
 #'      Generates a list of animals not visiting the GreenFeed and
 #'      a description of animals visiting the system for the requested period.
 #'
-#' @param file_path File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
-#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
-#' @param start_date Start date of the study
-#' @param end_date End date of the study
-#' @param rfid_file The file that contains the RFID of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
+#' @param file_path a character string or list representing files(s) with feedtimes from C-Lock.
+#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
 #'
 #' @return A list of two data frames:
 #'   \item{visits_per_unit}{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}

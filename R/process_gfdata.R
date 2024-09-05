@@ -6,12 +6,12 @@
 #'     Handles data filtering, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
-#' @param data Data frame with daily or finalized GreenFeed data
-#' @param start_date Start date of the study
-#' @param end_date End date of the study
-#' @param param1 Number of records per day to be consider for analysis
-#' @param param2 Number of days with records per week to be consider for analysis
-#' @param min_time Minimum number of minutes for a records to be consider for analysis. By default min_time is 2
+#' @param data a data frame with daily or finalized GreenFeed data
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param param1 an integer representing the number of records per day to be consider for analysis
+#' @param param2 an integer representing the number of days with records per week to be consider for analysis
+#' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
 #' @return A list of two data frames:
 #'   \item{daily_data}{Data frame with daily processed GreenFeed data}

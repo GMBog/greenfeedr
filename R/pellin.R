@@ -7,13 +7,13 @@
 #'     Aggregates data to provide insights into the feeding behavior
 #'     and pellet consumption of the animals during a study.
 #'
-#' @param file_path File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order
-#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
-#' @param gcup Grams of pellets per cup. By default 34 grams, but users should provide the grams based on the 10-drops test
-#' @param start_date Start date of the study
-#' @param end_date End date of the study
-#' @param save_dir Directory where to save the resulting file with pellet intakes
-#' @param rfid_file The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID
+#' @param file_path a character string or list representing files(s) with feedtimes from C-Lock.
+#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param gcup a numeric value representing the grams of pellets per cup. By default 34 grams
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param save_dir a character string representing the directory to save the output file.
+#' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
 #'
 #' @return An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.
 #'     The file is named "Pellet_Intakes_YYYY-MM-DD_YYYY-MM-DD.csv".

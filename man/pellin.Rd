@@ -4,19 +4,19 @@
 \alias{pellin}
 \title{Process GreenFeed Pellet Intakes}
 \arguments{
-\item{file_path}{File with feedtimes from C-Lock. If multiple files are provided, units should be in the same order}
+\item{file_path}{a character string or list representing files(s) with feedtimes from C-Lock.}
 
-\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
+\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
 
-\item{gcup}{Grams of pellets per cup. By default 34 grams, but users should provide the grams based on the 10-drops test}
+\item{gcup}{a numeric value representing the grams of pellets per cup. By default 34 grams}
 
-\item{start_date}{Start date of the study}
+\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
-\item{end_date}{End date of the study}
+\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{save_dir}{Directory where to save the resulting file with pellet intakes}
+\item{save_dir}{a character string representing the directory to save the output file.}
 
-\item{rfid_file}{The file that contains the rfid of the animals enrolled in the study. The order should be col1=FarmName and col2=RFID}
+\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID}
 }
 \value{
 An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.

@@ -193,3 +193,49 @@ process_rfid_data <- function(rfid_file) {
   message("No valid data provided. Please include a valid 'rfid_file' parameter.")
   return(NULL)
 }
+
+
+
+#' @name convert_unit
+#' @title Convert GreenFeed Unit Number
+#'
+#' @description Processes the parameter `unit` to format it correctly as a comma-separated string, regardless of whether it's provided as a numeric, character, or list/vector.
+#'
+#' @param unit Number of the GreenFeed unit(s). Can be a numeric, character, list, or vector.
+#'
+#' @return A character string of the unit(s) in the correct comma-separated format.
+#'
+#' @examples
+#' # Example 1: Providing unit as a character vector
+#' unit <- c("592", "593")
+#' convert_unit(unit)
+#'
+#' # Example 2: Providing unit as a single numeric
+#' unit <- 592
+#' convert_unit(unit)
+#'
+#' # Example 3: Providing unit as a comma-separated character string
+#' unit <- "592, 593"
+#' convert_unit(unit)
+#'
+#' # Example 4: Providing unit as a list
+#' unit <- list(592, 593)
+#' convert_unit(unit)
+#'
+#' @export
+convert_unit <- function(unit) {
+  if (is.numeric(unit)) {
+    unit <- as.character(unit)
+  } else if (is.character(unit)) {
+    unit <- gsub(" ", "", unit)  # Remove spaces from the character string
+  } else if (is.list(unit) || is.vector(unit)) {
+    unit <- as.character(unlist(unit))  # Flatten and convert list/vector to character
+  }
+
+  if (length(unit) > 1) {
+    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string if needed
+  }
+
+  return(unit)
+}
+

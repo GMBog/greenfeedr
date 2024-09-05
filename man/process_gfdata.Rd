@@ -4,17 +4,17 @@
 \alias{process_gfdata}
 \title{Process Daily and Final GreenFeed Data}
 \arguments{
-\item{data}{Data frame with daily or finalized GreenFeed data}
+\item{data}{a data frame with daily or finalized GreenFeed data}
 
-\item{start_date}{Start date of the study}
+\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
-\item{end_date}{End date of the study}
+\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{param1}{Number of records per day to be consider for analysis}
+\item{param1}{an integer representing the number of records per day to be consider for analysis}
 
-\item{param2}{Number of days with records per week to be consider for analysis}
+\item{param2}{an integer representing the number of days with records per week to be consider for analysis}
 
-\item{min_time}{Minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
+\item{min_time}{an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
 }
 \value{
 A list of two data frames:

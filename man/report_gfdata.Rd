@@ -4,27 +4,27 @@
 \alias{report_gfdata}
 \title{Download and Report GreenFeed Data}
 \arguments{
-\item{user}{User name to log in to the GreenFeed system}
+\item{user}{a character string representing the user name to log in to the GreenFeed system}
 
-\item{pass}{Password to log in to the GreenFeed system}
+\item{pass}{a character string representing password to log in to the GreenFeed system}
 
-\item{exp}{Study name or other study identifier. It is used as the file name to report the data}
+\item{exp}{a character string representing study name or other study identifier. It is used as the file name to save the data}
 
-\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
+\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
 
-\item{start_date}{Start date of the study}
+\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
-\item{end_date}{End date of the study. By default the current date is used}
+\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{input_type}{Input data could be from daily or final report: daily or final}
+\item{input_type}{a character string representing type of data ('daily' or 'final' report)}
 
-\item{save_dir}{Directory to save the output file. By default the current working directory is used}
+\item{save_dir}{a character string representing the directory to save the output file.}
 
-\item{plot_opt}{Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported}
+\item{plot_opt}{a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used}
 
-\item{rfid_file}{File that contains RFID of the animals in the study}
+\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID}
 
-\item{file_path}{List of files with final report from GreenFeed}
+\item{file_path}{list of files with the final report(s) from GreenFeed system}
 }
 \value{
 A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.

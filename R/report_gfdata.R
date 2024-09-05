@@ -7,17 +7,17 @@
 #'     But, if option "final" is used, final data should be provided to generates a PDF report
 #'     to evaluate all GreenFeed data obtained from the finalized study.
 #'
-#' @param user User name to log in to the GreenFeed system
-#' @param pass Password to log in to the GreenFeed system
-#' @param exp Study name or other study identifier. It is used as the file name to report the data
-#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
-#' @param start_date Start date of the study
-#' @param end_date End date of the study. By default the current date is used
-#' @param input_type Input data could be from daily or final report: daily or final
-#' @param save_dir Directory to save the output file. By default the current working directory is used
-#' @param plot_opt Type of gas to plot: All, or CH4, CO2, O2, H2. By default only CH4 will be processed and reported
-#' @param rfid_file File that contains RFID of the animals in the study
-#' @param file_path List of files with final report from GreenFeed
+#' @param user a character string representing the user name to log in to the GreenFeed system
+#' @param pass a character string representing password to log in to the GreenFeed system
+#' @param exp a character string representing study name or other study identifier. It is used as the file name to save the data
+#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param input_type a character string representing type of data ('daily' or 'final' report)
+#' @param save_dir a character string representing the directory to save the output file.
+#' @param plot_opt a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used
+#' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
+#' @param file_path list of files with the final report(s) from GreenFeed system
 #'
 #' @return A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.
 #'
@@ -84,19 +84,7 @@ utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec",
 report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
                           input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL, file_path) {
   # Ensure unit is a comma-separated string
-  if (is.numeric(unit)) {
-    unit <- as.character(unit)  # Convert numeric vector to character
-    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-  } else if (is.character(unit)) {
-    if (grepl(",", unit)) {
-      unit <- gsub(" ", "", unit)  # Remove spaces if any
-    } else {
-      unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-    }
-  } else if (is.list(unit) || is.vector(unit)) {
-    unit <- as.character(unlist(unit))  # Convert list or vector to character vector
-    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-  }
+  unit <- convert_unit(unit)
 
   # Check Date format
   start_date <- ensure_date_format(start_date)

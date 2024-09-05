@@ -6,13 +6,13 @@
 #'     Retrieves data based on specified parameters such as login information,
 #'     date range and units, providing an Excel file with GreenFeed data.
 #'
-#' @param user User name to log in to the GreenFeed system
-#' @param pass Password to log in to the GreenFeed system
-#' @param exp Study name or other study identifier. It is used as the file name to save the data
-#' @param unit GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"
-#' @param start_date Start date of the study
-#' @param end_date End date of the study. By default the current date is used
-#' @param save_dir Directory to save the output file. By default the current working directory is used
+#' @param user a character string representing the user name to log in to the GreenFeed system
+#' @param pass a character string representing password to log in to the GreenFeed system
+#' @param exp a character string representing study name or other study identifier. It is used as the file name to save the data
+#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param save_dir a character string representing the directory to save the output file.
 #'
 #' @return This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
 #'
@@ -24,14 +24,6 @@
 #' start_date <- "2024-01-01"
 #' end_date <- Sys.Date()
 #' save_dir <- tempdir()
-#'
-#' # Example with multiple units as a comma-separated string
-#' unit <- "304,305"
-#' get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
-#'
-#' # Example with a single unit as a numeric value
-#' unit <- 304
-#' get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 #'
 #' # Example with units as a vector
 #' unit <- c(304, 305)
@@ -46,19 +38,7 @@
 get_gfdata <- function(user, pass, exp = NA, unit,
                        start_date, end_date = Sys.Date(), save_dir = getwd()) {
   # Ensure unit is a comma-separated string
-  if (is.numeric(unit)) {
-    unit <- as.character(unit)  # Convert numeric vector to character
-    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-  } else if (is.character(unit)) {
-    if (grepl(",", unit)) {
-      unit <- gsub(" ", "", unit)  # Remove spaces if any
-    } else {
-      unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-    }
-  } else if (is.list(unit) || is.vector(unit)) {
-    unit <- as.character(unlist(unit))  # Convert list or vector to character vector
-    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string
-  }
+  unit <- convert_unit(unit)
 
   # Check date format
   start_date <- ensure_date_format(start_date)

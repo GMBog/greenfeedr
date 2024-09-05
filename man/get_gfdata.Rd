@@ -15,19 +15,19 @@ get_gfdata(
 )
 }
 \arguments{
-\item{user}{User name to log in to the GreenFeed system}
+\item{user}{a character string representing the user name to log in to the GreenFeed system}
 
-\item{pass}{Password to log in to the GreenFeed system}
+\item{pass}{a character string representing password to log in to the GreenFeed system}
 
-\item{exp}{Study name or other study identifier. It is used as the file name to save the data}
+\item{exp}{a character string representing study name or other study identifier. It is used as the file name to save the data}
 
-\item{unit}{GreenFeed unit number(s). If multiple units, they could be in a vector, list, or character as "1,2"}
+\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
 
-\item{start_date}{Start date of the study}
+\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
-\item{end_date}{End date of the study. By default the current date is used}
+\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{save_dir}{Directory to save the output file. By default the current working directory is used}
+\item{save_dir}{a character string representing the directory to save the output file.}
 }
 \value{
 This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
@@ -47,14 +47,6 @@ exp <- "StudyName"
 start_date <- "2024-01-01"
 end_date <- Sys.Date()
 save_dir <- tempdir()
-
-# Example with multiple units as a comma-separated string
-unit <- "304,305"
-get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
-
-# Example with a single unit as a numeric value
-unit <- 304
-get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
 
 # Example with units as a vector
 unit <- c(304, 305)
