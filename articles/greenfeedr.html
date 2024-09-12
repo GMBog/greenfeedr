@@ -100,20 +100,17 @@ date range to download the data directly from C-Lock Inc. server.</p>
 <p>Note that if you have multiple studies simultaneously, you can define
 a list of studies as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">USER</span> <span class="op">&lt;-</span> <span class="st">"your_username"</span></span>
+<code class="sourceCode R"><span><span class="va">USER</span> <span class="op">&lt;-</span> <span class="st">"your_username"</span></span>
 <span><span class="va">PASS</span> <span class="op">&lt;-</span> <span class="st">"your_password"</span></span>
 <span></span>
 <span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    Experiment <span class="op">=</span> <span class="st">"Experiment_01"</span>,</span>
-<span>    Unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
+<span>    Unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
 <span>    StartDate <span class="op">=</span> <span class="st">"2024-01-20"</span>,</span>
 <span>    EndDate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    save_dir <span class="op">=</span> <span class="st">"/Downloads/Experiment_01/"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    Experiment <span class="op">=</span> <span class="st">"Experiment_02"</span>,</span>
 <span>    Unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">212</span><span class="op">)</span>,</span>
@@ -124,9 +121,9 @@ a list of studies as follows:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Here you loop (using 'for') over all your studies applying get_gfdata() function</span></span>
-<span><span class="co">#for (element in studies) {</span></span>
+<span><span class="co"># for (element in studies) {</span></span>
 <span><span class="co">#  get_gfdata(USER, PASS, element$Experiment, element$Unit, element$StartDate, element$EndDate, element$save_dir)</span></span>
-<span><span class="co">#}</span></span></code></pre></div>
+<span><span class="co"># }</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="how-it-looks-the-greenfeed-data">How it looks the GreenFeed data?<a class="anchor" aria-label="anchor" href="#how-it-looks-the-greenfeed-data"></a>
@@ -207,8 +204,9 @@ basic format of GreenFeed data. The data provided is actual data from a
 <span><span class="co">#&gt; <span style="color: #949494;">#   TempPipeDegreesCelsius &lt;dbl&gt;, IsPreliminary &lt;dbl&gt;, RunTime &lt;chr&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Open the finalized data received from C-Lock Inc.</span></span>
-<span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_excel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_FinalReport.xlsx"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>, </span>
-<span>                   col_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"text"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_excel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_FinalReport.xlsx"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span>,</span>
+<span>  col_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">12</span><span class="op">)</span>, <span class="st">"text"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"numeric"</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the structure of the daily data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">final_data</span><span class="op">)</span></span>
@@ -310,19 +308,19 @@ them as a list of files.</p>
 <p>Note that by default the grams per cup is 34. However, you should
 include the result obtained from the 10-drops test.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pellin.html">pellin</a></span><span class="op">(</span>file_path <span class="op">=</span> <span class="va">file</span>,</span>
-<span> unit <span class="op">=</span> <span class="fl">1</span>,</span>
-<span> gcup <span class="op">=</span> <span class="fl">34</span>,</span>
-<span> start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span>
-<span> end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span>
-<span> save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pellin.html">pellin</a></span><span class="op">(</span></span>
+<span>  file_path <span class="op">=</span> <span class="va">file</span>,</span>
+<span>  unit <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  gcup <span class="op">=</span> <span class="fl">34</span>,</span>
+<span>  start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span>
+<span>  end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span>
+<span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span></span>
 <span><span class="co">#&gt; RFID is NULL. It is recommended to include it.</span></span>
-<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpZzvQJR</span></span>
+<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpkTZPp1</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
