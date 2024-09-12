@@ -40,20 +40,17 @@ However, there is a simpler approach: that is via the API using `get_gfdata()` f
 Note that if you have multiple studies simultaneously, you can define a list of studies as follows:
 
 ```{r download data}
-
 USER <- "your_username"
 PASS <- "your_password"
 
 studies <- list(
-
   list(
     Experiment = "Experiment_01",
-    Unit = c(2,3),
+    Unit = c(2, 3),
     StartDate = "2024-01-20",
     EndDate = Sys.Date(),
     save_dir = "/Downloads/Experiment_01/"
   ),
-  
   list(
     Experiment = "Experiment_02",
     Unit = c(212),
@@ -64,10 +61,9 @@ studies <- list(
 )
 
 # Here you loop (using 'for') over all your studies applying get_gfdata() function
-#for (element in studies) {
+# for (element in studies) {
 #  get_gfdata(USER, PASS, element$Experiment, element$Unit, element$StartDate, element$EndDate, element$save_dir)
-#}
-
+# }
 ```
 
 
@@ -85,15 +81,15 @@ str(daily_data)
 head(daily_data)
 
 # Open the finalized data received from C-Lock Inc.
-final_data <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"), 
-                   col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
+final_data <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"),
+  col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6))
+)
 
 # View the structure of the daily data
 str(final_data)
 
 # View the first few rows of the daily data
 head(final_data)
-
 ```
 
 
@@ -104,57 +100,56 @@ The next step in working with GreenFeed is to check animal visitation and gases 
 This function is very useful when you have several studies and units running simultaneously to check that the study is going in the right direction.
 
 ```{r report data, message = FALSE, echo = FALSE, warning = FALSE}
-
 library(dplyr)
 library(ggplot2)
 
 file <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
-start_date = "2024-05-13"
-end_date = "2024-05-25"
-input_type = "final"
-plot_opt = "All"
-rfid_file = NA
+start_date <- "2024-05-13"
+end_date <- "2024-05-25"
+input_type <- "final"
+plot_opt <- "All"
+rfid_file <- NA
 
 df <- readxl::read_excel(file, col_types = c("text", "text", "numeric", rep("date", 3), rep("numeric", 12), "text", rep("numeric", 6)))
 names(df)[1:14] <- c(
-        "RFID",
-        "AnimalName",
-        "FeederID",
-        "StartTime",
-        "EndTime",
-        "GoodDataDuration",
-        "HourOfDay",
-        "CO2GramsPerDay",
-        "CH4GramsPerDay",
-        "O2GramsPerDay",
-        "H2GramsPerDay",
-        "H2SGramsPerDay",
-        "AirflowLitersPerSec",
-        "AirflowCf"
-      )
+  "RFID",
+  "AnimalName",
+  "FeederID",
+  "StartTime",
+  "EndTime",
+  "GoodDataDuration",
+  "HourOfDay",
+  "CO2GramsPerDay",
+  "CH4GramsPerDay",
+  "O2GramsPerDay",
+  "H2GramsPerDay",
+  "H2SGramsPerDay",
+  "AirflowLitersPerSec",
+  "AirflowCf"
+)
 
 # df contains finalized GreenFeed data
 df <- df %>%
-      ## Remove leading zeros from RFID col to match with IDs
-      dplyr::mutate(
-        RFID = gsub("^0+", "", RFID),
-        ## Extract hours, minutes, and seconds from GoodDataDuration
-        GoodDataDuration = round(
-          as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
-            # as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +  # Hours to minutes
-            as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
-            # as.numeric(substr(GoodDataDuration, 4, 5)) +
-            as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
-            # as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
-            2
-          )
-        ) %>%
-      ## Remove data with Airflow below the threshold (25 l/s) and data in the time range selected
-      dplyr::filter(
-        AirflowLitersPerSec >= 25,
-        as.Date(StartTime) >= as.Date(start_date) & as.Date(StartTime) <= as.Date(end_date)
-      )
+  ## Remove leading zeros from RFID col to match with IDs
+  dplyr::mutate(
+    RFID = gsub("^0+", "", RFID),
+    ## Extract hours, minutes, and seconds from GoodDataDuration
+    GoodDataDuration = round(
+      as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # Hours to minutes
+        # as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +  # Hours to minutes
+        as.numeric(substr(GoodDataDuration, 15, 16)) + # Minutes
+        # as.numeric(substr(GoodDataDuration, 4, 5)) +
+        as.numeric(substr(GoodDataDuration, 18, 19)) / 60, # Seconds to minutes
+      # as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
+      2
+    )
+  ) %>%
+  ## Remove data with Airflow below the threshold (25 l/s) and data in the time range selected
+  dplyr::filter(
+    AirflowLitersPerSec >= 25,
+    as.Date(StartTime) >= as.Date(start_date) & as.Date(StartTime) <= as.Date(end_date)
+  )
 
 
 cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
@@ -291,19 +286,18 @@ This is the file you will use as input for pellin and viseat. If you have more t
 Note that by default the grams per cup is 34. However, you should include the result obtained from the 10-drops test.
 
 ```{r pellin and viseat}
-
 file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
-result <- pellin(file_path = file,
- unit = 1,
- gcup = 34,
- start_date = "2024-05-13",
- end_date = "2024-05-25",
- save_dir = tempdir()
+result <- pellin(
+  file_path = file,
+  unit = 1,
+  gcup = 34,
+  start_date = "2024-05-13",
+  end_date = "2024-05-25",
+  save_dir = tempdir()
 )
 
 head(result)
-
 ```
 
 ## Citation

@@ -234,7 +234,8 @@ report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_
 
       # df contains finalized GreenFeed data
       df <- df %>%
-        ## Remove leading zeros from RFID col to match with IDs
+        ## Remove "unknown IDs" and leading zeros from RFID col
+        dplyr::filter(RFID != "unknown") %>%
         dplyr::mutate(
           RFID = gsub("^0+", "", RFID),
           ## Extract hours, minutes, and seconds from GoodDataDuration

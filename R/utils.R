@@ -44,11 +44,14 @@ has_credentials <- function() {
 #' ensure_date_format("30/08/2024") # "2024-08-30"
 #'
 #' # Example of incorrect date formats
-#' tryCatch({
-#'   ensure_date_format("Aug-30")
-#' }, error = function(e) {
-#'   message(e$message)
-#' })
+#' tryCatch(
+#'   {
+#'     ensure_date_format("Aug-30")
+#'   },
+#'   error = function(e) {
+#'     message(e$message)
+#'   }
+#' )
 #'
 #' @export
 ensure_date_format <- function(date_input) {
@@ -227,15 +230,14 @@ convert_unit <- function(unit) {
   if (is.numeric(unit)) {
     unit <- as.character(unit)
   } else if (is.character(unit)) {
-    unit <- gsub(" ", "", unit)  # Remove spaces from the character string
+    unit <- gsub(" ", "", unit) # Remove spaces from the character string
   } else if (is.list(unit) || is.vector(unit)) {
-    unit <- as.character(unlist(unit))  # Flatten and convert list/vector to character
+    unit <- as.character(unlist(unit)) # Flatten and convert list/vector to character
   }
 
   if (length(unit) > 1) {
-    unit <- paste(unit, collapse = ",")  # Collapse into comma-separated string if needed
+    unit <- paste(unit, collapse = ",") # Collapse into comma-separated string if needed
   }
 
   return(unit)
 }
-
