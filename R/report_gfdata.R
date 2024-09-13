@@ -29,7 +29,8 @@
 #' # The data range must be fewer than 180 days
 #' # Example without rfid_file (by default NA)
 #'
-#' report_gfdata(input_type = "daily",
+#' report_gfdata(
+#'   input_type = "daily",
 #'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2023-01-01",

@@ -33,7 +33,8 @@ path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
-data <- viseat(file_path = path,
+data <- viseat(
+  file_path = path,
   unit = 1,
   start_date = "2024-05-13",
   end_date = "2024-05-25",

@@ -20,7 +20,8 @@
 #' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 #' datafile <- readr::read_csv(file)
 #'
-#' gf_data <- process_gfdata(data = datafile,
+#' gf_data <- process_gfdata(
+#'   data = datafile,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
 #'   param1 = 2,

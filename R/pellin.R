@@ -29,7 +29,8 @@
 #' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 #' RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 #'
-#' pellin(file_path = path,
+#' pellin(
+#'   file_path = path,
 #'   unit = 1,
 #'   gcup = 34,
 #'   start_date = "2024-05-13",
