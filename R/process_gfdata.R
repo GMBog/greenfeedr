@@ -1,8 +1,7 @@
 #' @name process_gfdata
 #' @title Process Daily and Final GreenFeed Data
 #'
-#' @description Processes and computes daily and weekly averages
-#'     for daily and final GreenFeed data, organizing it into two data sets.
+#' @description Processes and calculates daily and weekly averages of GreenFeed data.
 #'     Handles data filtering, aggregation, and summarization to facilitate
 #'     further analysis and reporting.
 #'
@@ -14,14 +13,14 @@
 #' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
 #' @return A list of two data frames:
-#'   \item{daily_data}{Data frame with daily processed GreenFeed data}
-#'   \item{weekly_data}{Data frame with weekly processed GreenFeed data}
+#'   \item{daily_data }{data frame with daily processed GreenFeed data}
+#'   \item{weekly_data }{data frame with weekly processed GreenFeed data}
 #'
 #' @examples
 #' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
-#' data <- readr::read_csv(file)
+#' datafile <- readr::read_csv(file)
 #'
-#' gf_data <- process_gfdata(data,
+#' gf_data <- process_gfdata(data = datafile,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
 #'   param1 = 2,

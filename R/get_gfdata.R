@@ -1,20 +1,20 @@
 #' @name get_gfdata
 #' @title Download Daily GreenFeed Data via API
 #'
-#' @description Downloads from C-Lock Inc. server daily GreenFeed data
-#'     via an application programming interface (API).
-#'     Retrieves data based on specified parameters such as login information,
-#'     date range and units, providing an Excel file with GreenFeed data.
+#' @description Downloads daily GreenFeed data from the C-Lock Inc. server
+#'     via an application programming interface (API). Retrieves data
+#'     based on specified parameters such as login information, date range and units,
+#'     and provides an Excel file with the GreenFeed data.
 #'
-#' @param user a character string representing the user name to log in to the GreenFeed system
-#' @param pass a character string representing password to log in to the GreenFeed system
-#' @param exp a character string representing study name or other study identifier. It is used as the file name to save the data
-#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param user a character string representing the user name to logging into GreenFeed system
+#' @param pass a character string representing password to logging into GreenFeed system
+#' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
+#' @param unit numeric or character vector, or a list representing one or more GreenFeed unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
-#' @param save_dir a character string representing the directory to save the output file.
+#' @param save_dir a character string representing the directory to save the output file
 #'
-#' @return This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
+#' @return A CSV file with daily GreenFeed data in the specified directory
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.

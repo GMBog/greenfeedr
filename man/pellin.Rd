@@ -4,19 +4,19 @@
 \alias{pellin}
 \title{Process GreenFeed Pellet Intakes}
 \arguments{
-\item{file_path}{a character string or list representing files(s) with feedtimes from C-Lock.}
+\item{file_path}{a character string or list representing files(s) with feedtimes from C-Lock}
 
-\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
+\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers. The order should match with feedtimes files}
 
-\item{gcup}{a numeric value representing the grams of pellets per cup. By default 34 grams}
+\item{gcup}{a numeric value representing the grams of pellets per cup.}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{save_dir}{a character string representing the directory to save the output file.}
+\item{save_dir}{a character string representing the directory to save the output file}
 
-\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID}
+\item{rfid_file}{a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)}
 }
 \value{
 An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.
@@ -32,19 +32,21 @@ Processes the feedtimes file from GreenFeed system,
 \examples{
 # You should provide the 'feedtimes' file provided by C-Lock.
 # it could be a list of files if you have data from multiple units to combine
-file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 
-# By default the function use 34g, but you should include the result obtained from the 10-drops test
+# You must include the grams of pellets per cup based on the result obtained from the 10-drops test
 
-# If the user include an rfid file, the structure should be in col1 the farmname or visualID, and
+# If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
+RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
-pellin(file,
+pellin(file_path = path,
   unit = 1,
   gcup = 34,
   start_date = "2024-05-13",
   end_date = "2024-05-25",
-  save_dir = tempdir()
+  save_dir = tempdir(),
+  rfid_file = RFIDs
 )
 
 }

@@ -7,19 +7,19 @@
 #'     But, if option "final" is used, final data should be provided to generates a PDF report
 #'     to evaluate all GreenFeed data obtained from the finalized study.
 #'
-#' @param user a character string representing the user name to log in to the GreenFeed system
-#' @param pass a character string representing password to log in to the GreenFeed system
-#' @param exp a character string representing study name or other study identifier. It is used as the file name to save the data
-#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
+#' @param input_type a character string representing type of data (options: "daily" or "final")
+#' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
+#' @param unit numeric or character vector, or a list representing one or more GreenFeed unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
-#' @param input_type a character string representing type of data ('daily' or 'final' report)
-#' @param save_dir a character string representing the directory to save the output file.
-#' @param plot_opt a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used
-#' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
-#' @param file_path list of files with the final report(s) from GreenFeed system
+#' @param save_dir a character string representing the directory to save the output file
+#' @param plot_opt a character string representing the gas(es) to plot (options: 'All', 'CH4', 'CO2', 'O2', 'H2')
+#' @param rfid_file a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)
+#' @param user a character string representing the user name to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored
+#' @param pass a character string representing password to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored
+#' @param file_path A list of file paths containing the final report(s) from the GreenFeed system. If `input_type` is "final", this parameter is ignored
 #'
-#' @return A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.
+#' @return A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
@@ -29,13 +29,11 @@
 #' # The data range must be fewer than 180 days
 #' # Example without rfid_file (by default NA)
 #'
-#' report_gfdata(user,
-#'   pass,
+#' report_gfdata(input_type = "daily",
 #'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2023-01-01",
 #'   end_date = Sys.Date(),
-#'   input_type = "daily",
 #'   save_dir = tempdir(),
 #'   plot_opt = "All"
 #' )
@@ -54,13 +52,11 @@
 #' # The file structure should be: FarmName | RFID
 #'
 #' report_gfdata(
-#'   user = NA,
-#'   pass = NA,
+#'   input_type = "final",
 #'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
-#'   input_type = "final",
 #'   save_dir = tempdir(),
 #'   plot_opt = "All",
 #'   rfid_file = NA,
@@ -81,8 +77,9 @@
 
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "Gas_Data"))
 
-report_gfdata <- function(user = NA, pass = NA, exp = NA, unit, start_date, end_date = Sys.Date(),
-                          input_type, save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL, file_path) {
+report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys.Date(),
+                          save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL,
+                          user = NA, pass = NA, file_path) {
   # Ensure unit is a comma-separated string
   unit <- convert_unit(unit)
 

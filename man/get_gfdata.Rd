@@ -15,28 +15,28 @@ get_gfdata(
 )
 }
 \arguments{
-\item{user}{a character string representing the user name to log in to the GreenFeed system}
+\item{user}{a character string representing the user name to logging into GreenFeed system}
 
-\item{pass}{a character string representing password to log in to the GreenFeed system}
+\item{pass}{a character string representing password to logging into GreenFeed system}
 
-\item{exp}{a character string representing study name or other study identifier. It is used as the file name to save the data}
+\item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
-\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
+\item{unit}{numeric or character vector, or a list representing one or more GreenFeed unit numbers}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{save_dir}{a character string representing the directory to save the output file.}
+\item{save_dir}{a character string representing the directory to save the output file}
 }
 \value{
-This function does not return any value. It saves the downloaded data as a CSV file in the specified directory.
+A CSV file with daily GreenFeed data in the specified directory
 }
 \description{
-Downloads from C-Lock Inc. server daily GreenFeed data
-    via an application programming interface (API).
-    Retrieves data based on specified parameters such as login information,
-    date range and units, providing an Excel file with GreenFeed data.
+Downloads daily GreenFeed data from the C-Lock Inc. server
+    via an application programming interface (API). Retrieves data
+    based on specified parameters such as login information, date range and units,
+    and provides an Excel file with the GreenFeed data.
 }
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

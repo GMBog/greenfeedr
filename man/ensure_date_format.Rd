@@ -24,10 +24,13 @@ ensure_date_format("08/30/2024") # "2024-08-30"
 ensure_date_format("30/08/2024") # "2024-08-30"
 
 # Example of incorrect date formats
-tryCatch({
-  ensure_date_format("Aug-30")
-}, error = function(e) {
-  message(e$message)
-})
+tryCatch(
+  {
+    ensure_date_format("Aug-30")
+  },
+  error = function(e) {
+    message(e$message)
+  }
+)
 
 }

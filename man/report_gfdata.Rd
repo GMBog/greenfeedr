@@ -4,30 +4,30 @@
 \alias{report_gfdata}
 \title{Download and Report GreenFeed Data}
 \arguments{
-\item{user}{a character string representing the user name to log in to the GreenFeed system}
+\item{input_type}{a character string representing type of data (options: "daily" or "final")}
 
-\item{pass}{a character string representing password to log in to the GreenFeed system}
+\item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
-\item{exp}{a character string representing study name or other study identifier. It is used as the file name to save the data}
-
-\item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
+\item{unit}{numeric or character vector, or a list representing one or more GreenFeed unit numbers}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{input_type}{a character string representing type of data ('daily' or 'final' report)}
+\item{save_dir}{a character string representing the directory to save the output file}
 
-\item{save_dir}{a character string representing the directory to save the output file.}
+\item{plot_opt}{a character string representing the gas(es) to plot (options: 'All', 'CH4', 'CO2', 'O2', 'H2')}
 
-\item{plot_opt}{a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used}
+\item{rfid_file}{a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)}
 
-\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID}
+\item{user}{a character string representing the user name to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored}
 
-\item{file_path}{list of files with the final report(s) from GreenFeed system}
+\item{pass}{a character string representing password to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored}
+
+\item{file_path}{A list of file paths containing the final report(s) from the GreenFeed system. If `input_type` is "final", this parameter is ignored}
 }
 \value{
-A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.
+A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records
 }
 \description{
 Generates PDF reports of daily and final GreenFeed data.
@@ -45,13 +45,11 @@ pass <- Sys.getenv("API_PASS")
 # The data range must be fewer than 180 days
 # Example without rfid_file (by default NA)
 
-report_gfdata(user,
-  pass,
+report_gfdata(input_type = "daily",
   exp = "StudyName",
   unit = 1,
   start_date = "2023-01-01",
   end_date = Sys.Date(),
-  input_type = "daily",
   save_dir = tempdir(),
   plot_opt = "All"
 )
@@ -69,13 +67,11 @@ file <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "gre
 # The file structure should be: FarmName | RFID
 
 report_gfdata(
-  user = NA,
-  pass = NA,
+  input_type = "final",
   exp = "StudyName",
   unit = 1,
   start_date = "2024-05-13",
   end_date = "2024-05-25",
-  input_type = "final",
   save_dir = tempdir(),
   plot_opt = "All",
   rfid_file = NA,

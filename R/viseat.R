@@ -1,9 +1,9 @@
 #' @name viseat
 #' @title Process GreenFeed Visits
 #'
-#' @description Processes GreenFeed visits and food drops.
-#'      Generates a list of animals not visiting the GreenFeed and
-#'      a description of animals visiting the system for the requested period.
+#' @description Processes GreenFeed visits and food drops for a requested period.
+#'      Generates a list of animals not visiting the GreenFeed to manage them,
+#'      and a description of animals visiting the GreenFeed.
 #'
 #' @param file_path a character string or list representing files(s) with feedtimes from C-Lock.
 #' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
@@ -12,20 +12,20 @@
 #' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
 #'
 #' @return A list of two data frames:
-#'   \item{visits_per_unit}{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
-#'   \item{visits_per_animal}{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
+#'   \item{visits_per_unit }{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
+#'   \item{visits_per_animal }{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
 #'
 #'
 #' @examples
 #' # You should provide the 'feedtimes' files.
 #' # it could be a list of files if you have data from multiple units to combine
-#' file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+#' path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 #'
-#' # If the user include an RFID file, the structure should be in col1 the farmname or visualID, and
+#' # If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and
 #' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 #' RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 #'
-#' data <- viseat(file,
+#' data <- viseat(file_path = path,
 #'   unit = 1,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
@@ -125,7 +125,10 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
 
 
   # Return a list of data frames
-  return(list(visits_per_unit = daily_visits, visits_per_animal = animal_visits))
+  return(list(
+    visits_per_unit = daily_visits,
+    visits_per_animal = animal_visits)
+    )
 
   message("Processing complete.")
 }
