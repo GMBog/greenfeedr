@@ -61,20 +61,16 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-user">user<a class="anchor" aria-label="anchor" href="#arg-user"></a></dt>
-<dd><p>a character string representing the user name to log in to the GreenFeed system</p></dd>
-
-
-<dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
-<dd><p>a character string representing password to log in to the GreenFeed system</p></dd>
+<dl><dt id="arg-input-type">input_type<a class="anchor" aria-label="anchor" href="#arg-input-type"></a></dt>
+<dd><p>a character string representing type of data (options: "daily" or "final")</p></dd>
 
 
 <dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
-<dd><p>a character string representing study name or other study identifier. It is used as the file name to save the data</p></dd>
+<dd><p>a character string representing study name or other study identifier. It is used as file name to save the data</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
-<dd><p>numeric or character vector or list representing one or more GreenFeed unit numbers.</p></dd>
+<dd><p>numeric or character vector, or a list representing one or more GreenFeed unit numbers</p></dd>
 
 
 <dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
@@ -85,29 +81,33 @@
 <dd><p>a character string representing the end date of the study (format: "mm/dd/yyyy")</p></dd>
 
 
-<dt id="arg-input-type">input_type<a class="anchor" aria-label="anchor" href="#arg-input-type"></a></dt>
-<dd><p>a character string representing type of data ('daily' or 'final' report)</p></dd>
-
-
 <dt id="arg-save-dir">save_dir<a class="anchor" aria-label="anchor" href="#arg-save-dir"></a></dt>
-<dd><p>a character string representing the directory to save the output file.</p></dd>
+<dd><p>a character string representing the directory to save the output file</p></dd>
 
 
 <dt id="arg-plot-opt">plot_opt<a class="anchor" aria-label="anchor" href="#arg-plot-opt"></a></dt>
-<dd><p>a character string representing the gas(es) to plot ('All', or 'CH4', 'CO2', 'O2', 'H2'. By default CH4 will be used</p></dd>
+<dd><p>a character string representing the gas(es) to plot (options: 'All', 'CH4', 'CO2', 'O2', 'H2')</p></dd>
 
 
 <dt id="arg-rfid-file">rfid_file<a class="anchor" aria-label="anchor" href="#arg-rfid-file"></a></dt>
-<dd><p>a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID</p></dd>
+<dd><p>a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)</p></dd>
+
+
+<dt id="arg-user">user<a class="anchor" aria-label="anchor" href="#arg-user"></a></dt>
+<dd><p>a character string representing the user name to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored</p></dd>
+
+
+<dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
+<dd><p>a character string representing password to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored</p></dd>
 
 
 <dt id="arg-file-path">file_path<a class="anchor" aria-label="anchor" href="#arg-file-path"></a></dt>
-<dd><p>list of files with the final report(s) from GreenFeed system</p></dd>
+<dd><p>A list of file paths containing the final report(s) from the GreenFeed system. If `input_type` is "final", this parameter is ignored</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records.</p>
+    <p>A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records</p>
     </div>
 
     <div class="section level2">
@@ -120,13 +120,11 @@
 <span class="r-in"><span><span class="co"># The data range must be fewer than 180 days</span></span></span>
 <span class="r-in"><span><span class="co"># Example without rfid_file (by default NA)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">report_gfdata</span><span class="op">(</span><span class="va">user</span>,</span></span>
-<span class="r-in"><span>  <span class="va">pass</span>,</span></span>
+<span class="r-in"><span><span class="fu">report_gfdata</span><span class="op">(</span>input_type <span class="op">=</span> <span class="st">"daily"</span>,</span></span>
 <span class="r-in"><span>  exp <span class="op">=</span> <span class="st">"StudyName"</span>,</span></span>
 <span class="r-in"><span>  unit <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  start_date <span class="op">=</span> <span class="st">"2023-01-01"</span>,</span></span>
 <span class="r-in"><span>  end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"daily"</span>,</span></span>
 <span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_opt <span class="op">=</span> <span class="st">"All"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -144,13 +142,11 @@
 <span class="r-in"><span><span class="co"># The file structure should be: FarmName | RFID</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">report_gfdata</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  user <span class="op">=</span> <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>  pass <span class="op">=</span> <span class="cn">NA</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"final"</span>,</span></span>
 <span class="r-in"><span>  exp <span class="op">=</span> <span class="st">"StudyName"</span>,</span></span>
 <span class="r-in"><span>  unit <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span></span>
 <span class="r-in"><span>  end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span></span>
-<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"final"</span>,</span></span>
 <span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_opt <span class="op">=</span> <span class="st">"All"</span>,</span></span>
 <span class="r-in"><span>  rfid_file <span class="op">=</span> <span class="cn">NA</span>,</span></span>
@@ -169,10 +165,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7/8                              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8/8 [Gas data production per cow]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: FinalReportsGF.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/RtmpeZWTog/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/RtmpbU6rBG/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>error in running command</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ! sh: 1: pdflatex: not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/RtmpeZWTog/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/RtmpbU6rBG/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

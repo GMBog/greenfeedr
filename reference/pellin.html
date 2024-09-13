@@ -62,15 +62,15 @@
 
 
 <dl><dt id="arg-file-path">file_path<a class="anchor" aria-label="anchor" href="#arg-file-path"></a></dt>
-<dd><p>a character string or list representing files(s) with feedtimes from C-Lock.</p></dd>
+<dd><p>a character string or list representing files(s) with feedtimes from C-Lock</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
-<dd><p>numeric or character vector or list representing one or more GreenFeed unit numbers.</p></dd>
+<dd><p>numeric or character vector or list representing one or more GreenFeed unit numbers. The order should match with feedtimes files</p></dd>
 
 
 <dt id="arg-gcup">gcup<a class="anchor" aria-label="anchor" href="#arg-gcup"></a></dt>
-<dd><p>a numeric value representing the grams of pellets per cup. By default 34 grams</p></dd>
+<dd><p>a numeric value representing the grams of pellets per cup.</p></dd>
 
 
 <dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
@@ -82,11 +82,11 @@
 
 
 <dt id="arg-save-dir">save_dir<a class="anchor" aria-label="anchor" href="#arg-save-dir"></a></dt>
-<dd><p>a character string representing the directory to save the output file.</p></dd>
+<dd><p>a character string representing the directory to save the output file</p></dd>
 
 
 <dt id="arg-rfid-file">rfid_file<a class="anchor" aria-label="anchor" href="#arg-rfid-file"></a></dt>
-<dd><p>a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID</p></dd>
+<dd><p>a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -99,37 +99,39 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># You should provide the 'feedtimes' file provided by C-Lock.</span></span></span>
 <span class="r-in"><span><span class="co"># it could be a list of files if you have data from multiple units to combine</span></span></span>
-<span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># By default the function use 34g, but you should include the result obtained from the 10-drops test</span></span></span>
+<span class="r-in"><span><span class="co"># You must include the grams of pellets per cup based on the result obtained from the 10-drops test</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># If the user include an rfid file, the structure should be in col1 the farmname or visualID, and</span></span></span>
+<span class="r-in"><span><span class="co"># If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and</span></span></span>
 <span class="r-in"><span><span class="co"># col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).</span></span></span>
+<span class="r-in"><span><span class="va">RFIDs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"RFID_file.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">pellin</span><span class="op">(</span><span class="va">file</span>,</span></span>
+<span class="r-in"><span><span class="fu">pellin</span><span class="op">(</span>file_path <span class="op">=</span> <span class="va">path</span>,</span></span>
 <span class="r-in"><span>  unit <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  gcup <span class="op">=</span> <span class="fl">34</span>,</span></span>
 <span class="r-in"><span>  start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span></span>
 <span class="r-in"><span>  end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span></span>
-<span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  rfid_file <span class="op">=</span> <span class="va">RFIDs</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> RFID is NULL. It is recommended to include it.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pellet intakes file created and saved to /tmp/RtmpeZWTog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 169 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Date       RFID            PIntake_kg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2024-05-13 154150620340444      0    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2024-05-13 840003218921444      0.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2024-05-13 840003234513777      0.714</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2024-05-13 840003234513888      0.17 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2024-05-13 840003250681111      0.068</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2024-05-13 840003250681222      0.85 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2024-05-13 840003250681333      1.02 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2024-05-13 840003250681444      0.034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2024-05-13 840003250681555      0.612</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2024-05-13 840003250681666      1.26 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 159 more rows</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Animal ID not visting GreenFeed: Animal11, Animal12, Animal13, Animal14, Animal16, Animal17, Animal18, Animal19, Animal20, Animal21, Animal22, Animal23, Animal24, Animal25, Animal26, Animal27, Animal28, Animal29, Animal30, Animal32</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pellet intakes file created and saved to /tmp/RtmpbU6rBG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 416 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Date       FarmName RFID            PIntake_kg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2024-05-13 Animal1  840003234513777      0.714</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2024-05-13 Animal10 840003250681777      0.578</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2024-05-13 Animal15 840003250681666      1.26 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2024-05-13 Animal2  840003250681999      0.34 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2024-05-13 Animal3  840003250681888      0.374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2024-05-13 Animal31 840003250681666      1.26 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2024-05-13 Animal4  840003250681111      0.068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2024-05-13 Animal5  840003250681222      0.85 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2024-05-13 Animal6  840003250681444      0.034</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2024-05-13 Animal7  840003250681666      1.26 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 406 more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
