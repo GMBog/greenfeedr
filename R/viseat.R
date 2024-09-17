@@ -63,8 +63,17 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
 
   # Read and bind feedtimes data
   df <- purrr::map2_dfr(file_path, unit, ~ {
-    readr::read_csv(.x) %>%
-      dplyr::mutate(FID = .y)
+    if (grepl("\\.csv$", .x)) {
+      # Read CSV file
+      readr::read_csv(.x, show_col_types = FALSE) %>%
+        dplyr::mutate(FID = .y)
+    } else if (grepl("\\.xlsx?$", .x)) {
+      # Read Excel file
+      readxl::read_excel(.x) %>%
+        dplyr::mutate(FID = .y)
+    } else {
+      stop("Unsupported file type. Please provide a CSV or Excel file.")
+    }
   }) %>%
     dplyr::relocate(FID, .before = FeedTime) %>%
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
