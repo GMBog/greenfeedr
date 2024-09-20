@@ -6,8 +6,6 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
-![GitHub All
-Releases](https://img.shields.io/github/downloads/GMBog/greenfeedr/total?color=blue&label=GitHub%20Downloads)
 <!-- badges: end -->
 
 ## Overview
