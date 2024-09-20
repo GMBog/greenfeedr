@@ -67,7 +67,7 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
       # Read CSV file
       readr::read_csv(.x, show_col_types = FALSE) %>%
         dplyr::mutate(FID = .y)
-    } else if (grepl("\\.xlsx?$", .x)) {
+    } else if (grepl("\\.xls?$", .x)) {
       # Read Excel file
       readxl::read_excel(.x) %>%
         dplyr::mutate(FID = .y)

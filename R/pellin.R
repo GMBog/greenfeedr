@@ -72,7 +72,7 @@ pellin <- function(file_path, unit, gcup, start_date, end_date,
       # Read CSV file
       readr::read_csv(.x, show_col_types = FALSE) %>%
         dplyr::mutate(FID = .y)
-    } else if (grepl("\\.xlsx?$", .x)) {
+    } else if (grepl("\\.xls?$", .x)) {
       # Read Excel file
       readxl::read_excel(.x) %>%
         dplyr::mutate(FID = .y)
