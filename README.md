@@ -166,6 +166,910 @@ process_and_summarize <- function(param1, param2, min_time) {
     CV_wCO2 = round(CV_wCO2, 2)
   ))
 }
+
+# Apply helper function to all combinations and combine results into a data frame
+data <- param_combinations %>%
+  purrr::pmap_dfr(process_and_summarize)
+#> Using param1 = 1 , param2 = 3 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 382.39 +- 54.74"
+#> [1] "CH4 CV = 14.3%"
+#> [1] "CO2: 11480.18 +- 1422.09"
+#> [1] "CO2 CV = 12.4%"
+#> [1] "O2: 7814.07 +- 944.58"
+#> [1] "O2 CV = 12.1%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 3 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 392.54 +- 58.64"
+#> [1] "CH4 CV = 14.9%"
+#> [1] "CO2: 11615.04 +- 1415.68"
+#> [1] "CO2 CV = 12.2%"
+#> [1] "O2: 7856.83 +- 874.78"
+#> [1] "O2 CV = 11.1%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 3 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 377.11 +- 62.09"
+#> [1] "CH4 CV = 16.5%"
+#> [1] "CO2: 11428.8 +- 1392.8"
+#> [1] "CO2 CV = 12.2%"
+#> [1] "O2: 7774.5 +- 847.36"
+#> [1] "O2 CV = 10.9%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 1 , param2 = 4 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 389.78 +- 50.33"
+#> [1] "CH4 CV = 12.9%"
+#> [1] "CO2: 11674.57 +- 1259.09"
+#> [1] "CO2 CV = 10.8%"
+#> [1] "O2: 7906.13 +- 832.51"
+#> [1] "O2 CV = 10.5%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 4 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 380.38 +- 51.44"
+#> [1] "CH4 CV = 13.5%"
+#> [1] "CO2: 11347.47 +- 1250.74"
+#> [1] "CO2 CV = 11%"
+#> [1] "O2: 7709.47 +- 796.65"
+#> [1] "O2 CV = 10.3%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 4 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 359.4 +- 41.9"
+#> [1] "CH4 CV = 11.7%"
+#> [1] "CO2: 11310.19 +- 1595.71"
+#> [1] "CO2 CV = 14.1%"
+#> [1] "O2: 7779.78 +- 1006.5"
+#> [1] "O2 CV = 12.9%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 1 , param2 = 5 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 380.15 +- 48.01"
+#> [1] "CH4 CV = 12.6%"
+#> [1] "CO2: 11431.81 +- 1170.41"
+#> [1] "CO2 CV = 10.2%"
+#> [1] "O2: 7749.8 +- 747.06"
+#> [1] "O2 CV = 9.6%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 5 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 361.48 +- 38.81"
+#> [1] "CH4 CV = 10.7%"
+#> [1] "CO2: 11247.01 +- 1250.15"
+#> [1] "CO2 CV = 11.1%"
+#> [1] "O2: 7705.37 +- 802.44"
+#> [1] "O2 CV = 10.4%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 5 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 360.33 +- 49.96"
+#> [1] "CH4 CV = 13.9%"
+#> [1] "CO2: 11555.85 +- 2000.59"
+#> [1] "CO2 CV = 17.3%"
+#> [1] "O2: 7946.87 +- 1245.56"
+#> [1] "O2 CV = 15.7%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 1 , param2 = 6 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 377.95 +- 50.37"
+#> [1] "CH4 CV = 13.3%"
+#> [1] "CO2: 11189.38 +- 1295.89"
+#> [1] "CO2 CV = 11.6%"
+#> [1] "O2: 7596.6 +- 833.51"
+#> [1] "O2 CV = 11%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 6 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 365.64 +- 47.81"
+#> [1] "CH4 CV = 13.1%"
+#> [1] "CO2: 11420.48 +- 1616.94"
+#> [1] "CO2 CV = 14.2%"
+#> [1] "O2: 7872.97 +- 1003.77"
+#> [1] "O2 CV = 12.7%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 6 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 306.12 +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: 9447.76 +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: 6635.55 +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: 0 +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 7 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 355.92 +- 72.44"
+#> [1] "CH4 CV = 20.4%"
+#> [1] "CO2: 10336.65 +- 1617.65"
+#> [1] "CO2 CV = 15.6%"
+#> [1] "O2: 7026.66 +- 1020.92"
+#> [1] "O2 CV = 14.5%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 7 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 7 , min_time = 2
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 3 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 395.07 +- 56.73"
+#> [1] "CH4 CV = 14.4%"
+#> [1] "CO2: 11691.91 +- 1465.52"
+#> [1] "CO2 CV = 12.5%"
+#> [1] "O2: 7943.64 +- 990.06"
+#> [1] "O2 CV = 12.5%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 3 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 374.58 +- 62.24"
+#> [1] "CH4 CV = 16.6%"
+#> [1] "CO2: 11058.44 +- 1673.46"
+#> [1] "CO2 CV = 15.1%"
+#> [1] "O2: 7508.69 +- 1052.61"
+#> [1] "O2 CV = 14%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 3 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 343.85 +- 80.13"
+#> [1] "CH4 CV = 23.3%"
+#> [1] "CO2: 11019.55 +- 2857.03"
+#> [1] "CO2 CV = 25.9%"
+#> [1] "O2: 7739.68 +- 1717.18"
+#> [1] "O2 CV = 22.2%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 1 , param2 = 4 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 390.76 +- 59.83"
+#> [1] "CH4 CV = 15.3%"
+#> [1] "CO2: 11512.5 +- 1500.04"
+#> [1] "CO2 CV = 13%"
+#> [1] "O2: 7825.07 +- 980.17"
+#> [1] "O2 CV = 12.5%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 4 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 407.91 +- 13.63"
+#> [1] "CH4 CV = 3.3%"
+#> [1] "CO2: 12166.19 +- 1058.25"
+#> [1] "CO2 CV = 8.7%"
+#> [1] "O2: 8209.07 +- 725.73"
+#> [1] "O2 CV = 8.8%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 4 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 5 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 379.25 +- 68.57"
+#> [1] "CH4 CV = 18.1%"
+#> [1] "CO2: 11408.63 +- 1894.93"
+#> [1] "CO2 CV = 16.6%"
+#> [1] "O2: 7802.85 +- 1245.96"
+#> [1] "O2 CV = 16%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 5 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 403.48 +- 12.27"
+#> [1] "CH4 CV = 3%"
+#> [1] "CO2: 12587.04 +- 1232.48"
+#> [1] "CO2 CV = 9.8%"
+#> [1] "O2: 8524.65 +- 818.87"
+#> [1] "O2 CV = 9.6%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 5 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 6 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 405.07 +- 50.63"
+#> [1] "CH4 CV = 12.5%"
+#> [1] "CO2: 11974.23 +- 1494.78"
+#> [1] "CO2 CV = 12.5%"
+#> [1] "O2: 8112.64 +- 932.5"
+#> [1] "O2 CV = 11.5%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 6 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 413.83 +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: 13809.62 +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: 9367.71 +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: 0 +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 6 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 7 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 2 , param2 = 7 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 7 , min_time = 3
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 3 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 396.19 +- 64.49"
+#> [1] "CH4 CV = 16.3%"
+#> [1] "CO2: 11616.2 +- 1614.12"
+#> [1] "CO2 CV = 13.9%"
+#> [1] "O2: 7962.3 +- 1045.1"
+#> [1] "O2 CV = 13.1%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 3 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 372 +- 37.25"
+#> [1] "CH4 CV = 10%"
+#> [1] "CO2: 11963.47 +- 1569.29"
+#> [1] "CO2 CV = 13.1%"
+#> [1] "O2: 8288.51 +- 912.68"
+#> [1] "O2 CV = 11%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 3 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 4 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 406.19 +- 68.78"
+#> [1] "CH4 CV = 16.9%"
+#> [1] "CO2: 11940.27 +- 1764.71"
+#> [1] "CO2 CV = 14.8%"
+#> [1] "O2: 8109.57 +- 1127.25"
+#> [1] "O2 CV = 13.9%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 4 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 400.73 +- 4.08"
+#> [1] "CH4 CV = 1%"
+#> [1] "CO2: 13275.1 +- 548.69"
+#> [1] "CO2 CV = 4.1%"
+#> [1] "O2: 9040.81 +- 475.12"
+#> [1] "O2 CV = 5.3%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 3 , param2 = 4 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 5 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 396.51 +- 50.77"
+#> [1] "CH4 CV = 12.8%"
+#> [1] "CO2: 11968.31 +- 1816.15"
+#> [1] "CO2 CV = 15.2%"
+#> [1] "O2: 8149.18 +- 1198.12"
+#> [1] "O2 CV = 14.7%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 5 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 5 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 6 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 396.51 +- 50.77"
+#> [1] "CH4 CV = 12.8%"
+#> [1] "CO2: 11968.31 +- 1816.15"
+#> [1] "CO2 CV = 15.2%"
+#> [1] "O2: 8149.18 +- 1198.12"
+#> [1] "O2 CV = 14.7%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 6 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 6 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 7 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 2 , param2 = 7 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 7 , min_time = 4
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 3 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 396.26 +- 71.34"
+#> [1] "CH4 CV = 18%"
+#> [1] "CO2: 11943.45 +- 2006.88"
+#> [1] "CO2 CV = 16.8%"
+#> [1] "O2: 8132.21 +- 1267.87"
+#> [1] "O2 CV = 15.6%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 3 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 3 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 4 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: 388.66 +- 17.43"
+#> [1] "CH4 CV = 4.5%"
+#> [1] "CO2: 12354.78 +- 1386"
+#> [1] "CO2 CV = 11.2%"
+#> [1] "O2: 8338.46 +- 1022.06"
+#> [1] "O2 CV = 12.3%"
+#> [1] "H2: 0 +- 0"
+#> [1] "H2 CV = NaN%"
+#> Using param1 = 2 , param2 = 4 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 4 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 5 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 2 , param2 = 5 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 5 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 6 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 2 , param2 = 6 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 6 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 1 , param2 = 7 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 2 , param2 = 7 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
+#> Using param1 = 3 , param2 = 7 , min_time = 5
+#> Warning: There were 2 warnings in `dplyr::mutate()`.
+#> The first warning was:
+#> ℹ In argument: `GoodDataDuration = case_when(...)`.
+#> Caused by warning:
+#> ! NAs introduced by coercion
+#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
+#> [1] "CH4: NaN +- NA"
+#> [1] "CH4 CV = NA%"
+#> [1] "CO2: NaN +- NA"
+#> [1] "CO2 CV = NA%"
+#> [1] "O2: NaN +- NA"
+#> [1] "O2 CV = NA%"
+#> [1] "H2: NaN +- NA"
+#> [1] "H2 CV = NA%"
 ```
 
 Finally, the results from our function will be placed in a data frame

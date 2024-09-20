@@ -156,12 +156,11 @@ process_and_summarize <- function(param1, param2, min_time) {
     CV_wCO2 = round(CV_wCO2, 2)
   ))
 }
-```
 
-```{r Results, include = FALSE}
 # Apply helper function to all combinations and combine results into a data frame
 data <- param_combinations %>%
   purrr::pmap_dfr(process_and_summarize)
+
 ```
 
 Finally, the results from our function will be placed in a data frame with the following structure:
