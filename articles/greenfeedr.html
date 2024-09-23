@@ -305,8 +305,9 @@ find a file ‘feedtimes’.</p>
 have more than one ‘feedtimes’ file because you are using multiple
 GreenFeed units in the same experiment then you just need to include
 them as a list of files.</p>
-<p>Note that by default the grams per cup is 34. However, you should
-include the result obtained from the 10-drops test.</p>
+<p>Note that you should include the result obtained from the 10-drops
+test. If units have different gram values, define ‘gcup’ as a vector
+with an element for each unit.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"feedtimes.csv"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -318,9 +319,10 @@ include the result obtained from the 10-drops test.</p>
 <span>  end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span>
 <span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.</span></span>
+<span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test.</span></span>
+<span><span class="co">#&gt;            If units have different gram values, define 'gcup' as a vector with an element for each unit.</span></span>
 <span><span class="co">#&gt; RFID is NULL. It is recommended to include it.</span></span>
-<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpObl0UK</span></span>
+<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/Rtmpp5O2R0</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
@@ -336,9 +338,6 @@ include the result obtained from the 10-drops test.</p>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<ul>
-<li>Comming soon</li>
-</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
