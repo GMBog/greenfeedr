@@ -57,7 +57,8 @@ utils::globalVariables(c(
 
 pellin <- function(file_path, unit, gcup, start_date, end_date,
                    save_dir = getwd(), rfid_file = NULL) {
-  message("Please set the 'gcup' parameter based on the 10-drops test. The default value is 34g.")
+  message("Please set the 'gcup' parameter based on the 10-drops test.
+           If units have different gram values, define 'gcup' as a vector with an element for each unit.")
 
   # Check Date format
   start_date <- ensure_date_format(start_date)
@@ -68,20 +69,23 @@ pellin <- function(file_path, unit, gcup, start_date, end_date,
 
   # Read and bind feedtimes data
   df <- purrr::map2_dfr(file_path, unit, ~ {
-    if (grepl("\\.csv$", .x)) {
+    ext <- tools::file_ext(.x)
+
+    if (ext == "csv") {
       # Read CSV file
       readr::read_csv(.x, show_col_types = FALSE) %>%
         dplyr::mutate(FID = .y)
-    } else if (grepl("\\.xls?$", .x)) {
-      # Read Excel file
+    } else if (ext %in% c("xls", "xlsx")) {
+      # Read Excel file (both xls and xlsx)
       readxl::read_excel(.x) %>%
         dplyr::mutate(FID = .y)
     } else {
-      stop("Unsupported file type. Please provide a CSV or Excel file.")
+      stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
     }
   }) %>%
     dplyr::relocate(FID, .before = FeedTime) %>%
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+
 
 
   # If rfid_file provided, filter and get animal ID not visiting the GreenFeed units

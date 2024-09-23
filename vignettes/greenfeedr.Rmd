@@ -283,7 +283,7 @@ In the folder that the system downloads to your computer, you will find a file '
 
 This is the file you will use as input for pellin and viseat. If you have more than one 'feedtimes' file because you are using multiple GreenFeed units in the same experiment then you just need to include them as a list of files.
 
-Note that by default the grams per cup is 34. However, you should include the result obtained from the 10-drops test.
+Note that you should include the result obtained from the 10-drops test. If units have different gram values, define 'gcup' as a vector with an element for each unit. 
 
 ```{r pellin and viseat}
 file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
@@ -302,7 +302,6 @@ head(result)
 
 ## Citation
 
-* Comming soon
 
 
 
