@@ -202,7 +202,7 @@ process_gfdata <- function(data, start_date, end_date,
     ## Filter by number of records per day (=param1)
     dplyr::filter(n >= param1) %>%
     ## Compute week based on the minimum date
-    dplyr::mutate(week = floor(as.numeric(difftime(day, min(day), units = "weeks"))) + 1) %>%
+    dplyr::mutate(week = floor(as.numeric(difftime(day, as.Date(start_date), units = "weeks"))) + 1) %>%
     ## Select columns
     dplyr::select(RFID, week, day, n, minutes, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
