@@ -78,23 +78,30 @@ process_gfdata <- function(data, start_date, end_date,
       data <- data %>%
         ## Remove leading zeros from RFID col to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID and negative values. Note that O2 and H2 it is greater or equal because some units don't have sensors
-        dplyr::filter(
-          RFID != "unknown",
-          CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0
+        ## Remove records with unknown ID and negative values.
+        dplyr::filter(RFID != "unknown") %>%
+        ## Mark records with invalid gas values as NA, instead of removing them
+        dplyr::mutate(
+          CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
+          CO2GramsPerDay = ifelse(CO2GramsPerDay <= 0, NA, CO2GramsPerDay),
+          O2GramsPerDay = ifelse(O2GramsPerDay <= 0, NA, O2GramsPerDay),
+          H2GramsPerDay = ifelse(H2GramsPerDay <= 0, NA, H2GramsPerDay)
         ) %>%
-        ## Change columns format
+        ## Convert EndTime to date and modify GoodDataDuration
         dplyr::mutate(
           day = as.Date(EndTime),
-          ## Extract hours, minutes, and seconds from GoodDataDuration
-          GoodDataDuration = case_when(
-            nchar(GoodDataDuration) == 8 ~ as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # HH:MM:SS format
-              as.numeric(substr(GoodDataDuration, 4, 5)) +
-              as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
-            nchar(GoodDataDuration) > 8 ~ as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # YYYY-MM-DD HH:MM:SS format
-              as.numeric(substr(GoodDataDuration, 15, 16)) +
-              as.numeric(substr(GoodDataDuration, 18, 19)) / 60,
-            TRUE ~ NA_real_
+
+          ## Suppress warnings from coercion issues with GoodDataDuration
+          GoodDataDuration = suppressWarnings(
+            case_when(
+              nchar(GoodDataDuration) == 8 ~ as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # HH:MM:SS format
+                as.numeric(substr(GoodDataDuration, 4, 5)) +
+                as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
+              nchar(GoodDataDuration) > 8 ~ as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # YYYY-MM-DD HH:MM:SS format
+                as.numeric(substr(GoodDataDuration, 15, 16)) +
+                as.numeric(substr(GoodDataDuration, 18, 19)) / 60,
+              TRUE ~ NA_real_
+            )
           ),
           GoodDataDuration = round(GoodDataDuration, 2)
         )
@@ -126,10 +133,14 @@ process_gfdata <- function(data, start_date, end_date,
       data <- data %>%
         ## Remove "unknown IDs" and leading zeros from RFID col
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID or negative values. Note that O2 and H2 are greater or equal because some units don't have sensors
-        dplyr::filter(
-          RFID != "unknown",
-          CH4GramsPerDay > 0, CO2GramsPerDay > 0, O2GramsPerDay >= 0, H2GramsPerDay >= 0
+        ## Remove records with unknown ID and negative values.
+        dplyr::filter(RFID != "unknown") %>%
+        ## Mark records with invalid gas values as NA, instead of removing them
+        dplyr::mutate(
+          CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
+          CO2GramsPerDay = ifelse(CO2GramsPerDay <= 0, NA, CO2GramsPerDay),
+          O2GramsPerDay = ifelse(O2GramsPerDay <= 0, NA, O2GramsPerDay),
+          H2GramsPerDay = ifelse(H2GramsPerDay <= 0, NA, H2GramsPerDay)
         ) %>%
         ## Change columns format
         dplyr::mutate(
@@ -159,14 +170,19 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Computing daily production of gases
   daily_df <- df %>%
+    ## Filter by conditions where CH4 and CO2 must be within range, but allow O2 and H2 to be NA
     dplyr::filter(
-      ## Filter by outlier records
       dplyr::if_all(
-        c(CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay),
+        c(CH4GramsPerDay, CO2GramsPerDay),
         ~ filter_within_range(.x, 2.5)
       ),
+
+      ## Retain records with valid CH4 and CO2, even if O2 or H2 are NA
+      !is.na(CH4GramsPerDay) & !is.na(CO2GramsPerDay),
+
       ## Filter by minimum time of records
       GoodDataDuration >= min_time,
+
       ## Filter by start and end of study
       day >= start_date & day <= end_date
     ) %>%
