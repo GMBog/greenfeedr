@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-greenfeedr provides a set of functions that help you work with GreenFeed data:
+**greenfeedr** provides a set of functions that help you work with GreenFeed data:
 
 * `get_gfdata()` downloads GreenFeed data via API.
 * `report_gfdata()` downloads and generates markdown reports of daily and final GreenFeed data.
@@ -32,7 +32,7 @@ Most of these use the same daily and final data from GreenFeed system.
 
 ## Citation
 
-More complete information about how to use greenfeedr can be found in: ...
+More complete information about how to use greenfeedr can be found in:
 
 ## Cheat Sheet
 
@@ -63,22 +63,28 @@ library(greenfeedr)
 
 Note that we received the finalized data (or Summarized Data) for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.
 
-The data looks like:
+The data looks like (first 5 cols):
 
 ```{r data, echo = FALSE, message = FALSE}
+# Read in the data
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-head(finaldata, n = 5)
+
+# Show the first 5 rows in a formatted table
+knitr::kable(finaldata[1:5, 1:5], format = "markdown")
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 
 
 To do this we will use the `process_gfdata()` function and test 3 threshold values that will define the records we will retain for further analysis. Note that the function includes 3 parameters:
-- **`param1`**: The number of records per day. 
- - This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.
-- **`param2`**: The number of days with records per week. 
- - This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis.
-- **`min_time`**: The minimum duration of a record. 
- - This parameter specifies the minimum time threshold for each record to be considered valid.
+
+* **`param1`** is the number of records per day. 
+ ➡ This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.
+
+* **`param2`** is the number of days with records per week. 
+ ➡ This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis.
+
+* **`min_time`** is the minimum duration of a record. 
+ ➡ This parameter specifies the minimum time threshold for each record to be considered valid.
 
 We can make an iterative process evaluating all possible combinations of parameters. Then, we define the parameters as follows:
 
@@ -96,7 +102,7 @@ Interestingly, we have `r nrow(param_combinations)` combinations of our 3 parame
 
 The next step, is to evaluate the function `process_gfdata()` with the defined set of parameters. Note that the function can handle as argument a file path to the data files or the data as data frame.
 
-```{r Example}
+```{r Example, echo = FALSE}
 # Helper function to call process_gfdata and extract relevant information
 process_and_summarize <- function(param1, param2, min_time) {
   data <- process_gfdata(
@@ -166,7 +172,7 @@ data <- param_combinations %>%
 Finally, the results from our function will be placed in a data frame with the following structure:
 
 ```{r Results table, message = FALSE}
-head(data)
+knitr::kable(data, format = "markdown")
 ```
 
 Also, it is possible to compute Pearson correlations between the different parameters and number of records, and/or the gas production average.
