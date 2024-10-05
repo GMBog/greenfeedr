@@ -181,21 +181,6 @@ knitr::kable(data[1:10,], format = "html")
 cat('</div>')
 ```
 
-Also, it is possible to compute Pearson correlations between the different parameters and number of records, and/or the gas production average.
-
-```{r Correaltions, echo = FALSE}
-cat("Daily data:")
-round(cor(data[, c("param1", "param2", "min_time", "records_d", "cows_d", "mean_dCH4", "CV_dCH4")],
-  use = "complete.obs"
-), 2)
-
-cat(" ")
-cat("Weekly data:")
-round(cor(data[, c("param1", "param2", "min_time", "records_w", "cows_w", "mean_wCH4", "CV_wCH4")],
-  use = "complete.obs"
-), 2)
-```
-
 That gives the user an idea of what are the pros and cons of being more or less conservative when processing GreenFeed data for analysis. In general, the more conservative the parameters are, the fewer records are retained in the data.
 
 ## Getting help

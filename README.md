@@ -1035,30 +1035,6 @@ CV_wCO2
 
 </div>
 
-Also, it is possible to compute Pearson correlations between the
-different parameters and number of records, and/or the gas production
-average.
-
-    #> Daily data:
-    #>           param1 param2 min_time records_d cows_d mean_dCH4 CV_dCH4
-    #> param1      1.00      0     0.00     -0.62  -0.71     -0.77   -0.75
-    #> param2      0.00      1     0.00      0.00   0.00      0.00    0.00
-    #> min_time    0.00      0     1.00     -0.74  -0.65     -0.28   -0.25
-    #> records_d  -0.62      0    -0.74      1.00   0.90      0.55    0.66
-    #> cows_d     -0.71      0    -0.65      0.90   1.00      0.82    0.80
-    #> mean_dCH4  -0.77      0    -0.28      0.55   0.82      1.00    0.75
-    #> CV_dCH4    -0.75      0    -0.25      0.66   0.80      0.75    1.00
-
-    #> Weekly data:
-    #>           param1 param2 min_time records_w cows_w mean_wCH4 CV_wCH4
-    #> param1      1.00  -0.25    -0.35     -0.30  -0.29     -0.53   -0.05
-    #> param2     -0.25   1.00    -0.24     -0.37  -0.33     -0.10   -0.06
-    #> min_time   -0.35  -0.24     1.00     -0.45  -0.47      0.49   -0.21
-    #> records_w  -0.30  -0.37    -0.45      1.00   0.98      0.11    0.23
-    #> cows_w     -0.29  -0.33    -0.47      0.98   1.00      0.12    0.26
-    #> mean_wCH4  -0.53  -0.10     0.49      0.11   0.12      1.00   -0.46
-    #> CV_wCH4    -0.05  -0.06    -0.21      0.23   0.26     -0.46    1.00
-
 That gives the user an idea of what are the pros and cons of being more
 or less conservative when processing GreenFeed data for analysis. In
 general, the more conservative the parameters are, the fewer records are
