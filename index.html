@@ -66,7 +66,7 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>greenfeedr provides a set of functions that help you work with GreenFeed data:</p>
+<p><strong>greenfeedr</strong> provides a set of functions that help you work with GreenFeed data:</p>
 <ul>
 <li>
 <code><a href="reference/get_gfdata.html">get_gfdata()</a></code> downloads GreenFeed data via API.</li>
@@ -84,7 +84,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>More complete information about how to use greenfeedr can be found in: …</p>
+<p>More complete information about how to use greenfeedr can be found in:</p>
 </div>
 <div class="section level2">
 <h2 id="cheat-sheet">Cheat Sheet<a class="anchor" aria-label="anchor" href="#cheat-sheet"></a>
@@ -106,26 +106,69 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span></code></pre></div>
 <p>Note that we received the finalized data (or Summarized Data) for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.</p>
-<p>The data looks like:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 25</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;      RFID `Farm Name`   FID `Start Time`        `End Time`         </span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;     &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dttm&gt;              &lt;dttm&gt;             </span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; 1 8.40e14     8.40e14     1 2024-05-13 09:33:24 2024-05-13 09:36:31</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 2 8.40e14     8.40e14     1 2024-05-13 10:25:44 2024-05-13 10:32:40</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 3 8.40e14     8.40e14     1 2024-05-13 12:29:02 2024-05-13 12:45:19</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 4 8.40e14     8.40e14     1 2024-05-13 13:06:20 2024-05-13 13:12:14</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 5 8.40e14     8.40e14     1 2024-05-13 14:34:58 2024-05-13 14:41:52</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; # ℹ 20 more variables: `Good Data Duration` &lt;dttm&gt;, `Hour Of Day` &lt;dbl&gt;,</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; #   `CO2 Massflow (g/d)` &lt;dbl&gt;, `CH4 Massflow (g/d)` &lt;dbl&gt;,</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; #   `O2 Massflow (g/d)` &lt;dbl&gt;, `H2 Massflow (g/d)` &lt;dbl&gt;,</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; #   `H2S Massflow (g/d)` &lt;dbl&gt;, `Average Airflow (L/s)` &lt;dbl&gt;,</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; #   `Airflow CF` &lt;dbl&gt;, `Average Wind Speed (m/s)` &lt;dbl&gt;,</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; #   `Average Wind Direction (deg)` &lt;dbl&gt;, `Wind CF` &lt;dbl&gt;,</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; #   `Was Interrupted` &lt;lgl&gt;, `Interrupting Tags` &lt;chr&gt;, …</span></span></code></pre></div>
+<p>The data looks like (first 5 cols):</p>
+<table class="table">
+<colgroup>
+<col width="18%">
+<col width="18%">
+<col width="6%">
+<col width="28%">
+<col width="28%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">RFID</th>
+<th align="right">Farm Name</th>
+<th align="right">FID</th>
+<th align="left">Start Time</th>
+<th align="left">End Time</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">8.400033e+14</td>
+<td align="right">8.400033e+14</td>
+<td align="right">1</td>
+<td align="left">2024-05-13 09:33:24</td>
+<td align="left">2024-05-13 09:36:31</td>
+</tr>
+<tr class="even">
+<td align="right">8.400033e+14</td>
+<td align="right">8.400033e+14</td>
+<td align="right">1</td>
+<td align="left">2024-05-13 10:25:44</td>
+<td align="left">2024-05-13 10:32:40</td>
+</tr>
+<tr class="odd">
+<td align="right">8.400033e+14</td>
+<td align="right">8.400033e+14</td>
+<td align="right">1</td>
+<td align="left">2024-05-13 12:29:02</td>
+<td align="left">2024-05-13 12:45:19</td>
+</tr>
+<tr class="even">
+<td align="right">8.400033e+14</td>
+<td align="right">8.400033e+14</td>
+<td align="right">1</td>
+<td align="left">2024-05-13 13:06:20</td>
+<td align="left">2024-05-13 13:12:14</td>
+</tr>
+<tr class="odd">
+<td align="right">8.400033e+14</td>
+<td align="right">8.400033e+14</td>
+<td align="right">1</td>
+<td align="left">2024-05-13 14:34:58</td>
+<td align="left">2024-05-13 14:41:52</td>
+</tr>
+</tbody>
+</table>
 <p>The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data.</p>
-<p>To do this we will use the <code><a href="reference/process_gfdata.html">process_gfdata()</a></code> function and test 3 threshold values that will define the records we will retain for further analysis. Note that the function includes 3 parameters: - <strong><code>param1</code></strong>: The number of records per day. - This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid. - <strong><code>param2</code></strong>: The number of days with records per week. - This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis. - <strong><code>min_time</code></strong>: The minimum duration of a record. - This parameter specifies the minimum time threshold for each record to be considered valid.</p>
+<p>To do this we will use the <code><a href="reference/process_gfdata.html">process_gfdata()</a></code> function and test 3 threshold values that will define the records we will retain for further analysis. Note that the function includes 3 parameters:</p>
+<ul>
+<li><p><strong><code>param1</code></strong> is the number of records per day. ➡ This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.</p></li>
+<li><p><strong><code>param2</code></strong> is the number of days with records per week. ➡ This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis.</p></li>
+<li><p><strong><code>min_time</code></strong> is the minimum duration of a record. ➡ This parameter specifies the minimum time threshold for each record to be considered valid.</p></li>
+</ul>
 <p>We can make an iterative process evaluating all possible combinations of parameters. Then, we define the parameters as follows:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the parameter space for param1 (i), param2 (j), and min_time (k):</span></span>
 <span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span></span>
@@ -135,1014 +178,1875 @@
 <span><span class="va">param_combinations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>param1 <span class="op">=</span> <span class="va">i</span>, param2 <span class="op">=</span> <span class="va">j</span>, min_time <span class="op">=</span> <span class="va">k</span><span class="op">)</span></span></code></pre></div>
 <p>Interestingly, we have 60 combinations of our 3 parameters (param1, param2, and min_time).</p>
 <p>The next step, is to evaluate the function <code><a href="reference/process_gfdata.html">process_gfdata()</a></code> with the defined set of parameters. Note that the function can handle as argument a file path to the data files or the data as data frame.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Helper function to call process_gfdata and extract relevant information</span></span>
-<span><span class="va">process_and_summarize</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">param1</span>, <span class="va">param2</span>, <span class="va">min_time</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/process_gfdata.html">process_gfdata</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">finaldata</span>,</span>
-<span>    start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span>
-<span>    end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span>
-<span>    param1 <span class="op">=</span> <span class="va">param1</span>,</span>
-<span>    param2 <span class="op">=</span> <span class="va">param2</span>,</span>
-<span>    min_time <span class="op">=</span> <span class="va">min_time</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Extract daily_data and weekly_data</span></span>
-<span>  <span class="va">daily_data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">daily_data</span></span>
-<span>  <span class="va">weekly_data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">weekly_data</span></span>
-<span></span>
-<span>  <span class="co"># Calculate the required metrics</span></span>
-<span>  <span class="va">records_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">)</span></span>
-<span>  <span class="va">cows_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">RFID</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">mean_dCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">sd_dCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">CV_dCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">mean_dCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">sd_dCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">CV_dCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">daily_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">records_w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">)</span></span>
-<span>  <span class="va">cows_w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">RFID</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">mean_wCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">sd_wCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">CV_wCH4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CH4GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">mean_wCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">sd_wCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="va">CV_wCO2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weekly_data</span><span class="op">$</span><span class="va">CO2GramsPerDay</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># Return a summary row</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    param1 <span class="op">=</span> <span class="va">param1</span>,</span>
-<span>    param2 <span class="op">=</span> <span class="va">param2</span>,</span>
-<span>    min_time <span class="op">=</span> <span class="va">min_time</span>,</span>
-<span>    records_d <span class="op">=</span> <span class="va">records_d</span>,</span>
-<span>    cows_d <span class="op">=</span> <span class="va">cows_d</span>,</span>
-<span>    mean_dCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_dCH4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    sd_dCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd_dCH4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    CV_dCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">CV_dCH4</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    mean_dCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_dCO2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    sd_dCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd_dCO2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    CV_dCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">CV_dCO2</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    records_w <span class="op">=</span> <span class="va">records_w</span>,</span>
-<span>    cows_w <span class="op">=</span> <span class="va">cows_w</span>,</span>
-<span>    mean_wCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_wCH4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    sd_wCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd_wCH4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    CV_wCH4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">CV_wCH4</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    mean_wCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_wCO2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    sd_wCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sd_wCO2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>    CV_wCO2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">CV_wCO2</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Apply helper function to all combinations and combine results into a data frame</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">param_combinations</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">pmap_dfr</a></span><span class="op">(</span><span class="va">process_and_summarize</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 382.39 +- 54.74"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 14.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11480.18 +- 1422.09"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 12.4%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7814.07 +- 944.58"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.1%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 392.54 +- 58.64"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 14.9%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11615.04 +- 1415.68"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 12.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7856.83 +- 874.78"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 11.1%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 377.11 +- 62.09"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 16.5%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11428.8 +- 1392.8"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 12.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7774.5 +- 847.36"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 10.9%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 389.78 +- 50.33"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 12.9%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11674.57 +- 1259.09"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 10.8%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7906.13 +- 832.51"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 10.5%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 380.38 +- 51.44"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 13.5%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11347.47 +- 1250.74"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 11%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7709.47 +- 796.65"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 10.3%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 359.4 +- 41.9"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 11.7%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11310.19 +- 1595.71"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 14.1%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7779.78 +- 1006.5"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.9%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 380.15 +- 48.01"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 12.6%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11431.81 +- 1170.41"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 10.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7749.8 +- 747.06"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 9.6%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 361.48 +- 38.81"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 10.7%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11247.01 +- 1250.15"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 11.1%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7705.37 +- 802.44"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 10.4%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 360.33 +- 49.96"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 13.9%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11555.85 +- 2000.59"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 17.3%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7946.87 +- 1245.56"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 15.7%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 377.95 +- 50.37"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 13.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11189.38 +- 1295.89"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 11.6%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7596.6 +- 833.51"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 11%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 365.64 +- 47.81"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 13.1%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11420.48 +- 1616.94"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 14.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7872.97 +- 1003.77"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.7%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 306.12 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 9447.76 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 6635.55 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 355.92 +- 72.44"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 20.4%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 10336.65 +- 1617.65"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 15.6%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7026.66 +- 1020.92"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 14.5%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 2</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 395.07 +- 56.73"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 14.4%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11691.91 +- 1465.52"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 12.5%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7943.64 +- 990.06"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.5%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 374.58 +- 62.24"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 16.6%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11058.44 +- 1673.46"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 15.1%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7508.69 +- 1052.61"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 14%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 343.85 +- 80.13"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 23.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11019.55 +- 2857.03"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 25.9%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7739.68 +- 1717.18"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 22.2%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 390.76 +- 59.83"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 15.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11512.5 +- 1500.04"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 13%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7825.07 +- 980.17"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.5%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 407.91 +- 13.63"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 3.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 12166.19 +- 1058.25"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 8.7%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8209.07 +- 725.73"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 8.8%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 379.25 +- 68.57"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 18.1%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11408.63 +- 1894.93"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 16.6%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7802.85 +- 1245.96"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 16%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 403.48 +- 12.27"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 12587.04 +- 1232.48"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 9.8%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8524.65 +- 818.87"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 9.6%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 405.07 +- 50.63"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 12.5%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11974.23 +- 1494.78"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 12.5%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8112.64 +- 932.5"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 11.5%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 413.83 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 13809.62 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 9367.71 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 3</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 396.19 +- 64.49"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 16.3%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11616.2 +- 1614.12"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 13.9%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 7962.3 +- 1045.1"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 13.1%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 372 +- 37.25"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 10%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11963.47 +- 1569.29"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 13.1%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8288.51 +- 912.68"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 11%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 406.19 +- 68.78"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 16.9%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11940.27 +- 1764.71"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 14.8%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8109.57 +- 1127.25"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 13.9%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 400.73 +- 4.08"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 1%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 13275.1 +- 548.69"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 4.1%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 9040.81 +- 475.12"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 5.3%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 396.51 +- 50.77"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 12.8%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11968.31 +- 1816.15"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 15.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8149.18 +- 1198.12"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 14.7%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 396.51 +- 50.77"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 12.8%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11968.31 +- 1816.15"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 15.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8149.18 +- 1198.12"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 14.7%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 4</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 396.26 +- 71.34"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 18%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 11943.45 +- 2006.88"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 16.8%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8132.21 +- 1267.87"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 15.6%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: 388.66 +- 17.43"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = 4.5%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: 12354.78 +- 1386"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = 11.2%"</span></span>
-<span><span class="co">#&gt; [1] "O2: 8338.46 +- 1022.06"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = 12.3%"</span></span>
-<span><span class="co">#&gt; [1] "H2: 0 +- 0"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NaN%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
-<span><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 5</span></span>
-<span><span class="co">#&gt; Warning: There were 2 warnings in `dplyr::mutate()`.</span></span>
-<span><span class="co">#&gt; The first warning was:</span></span>
-<span><span class="co">#&gt; ℹ In argument: `GoodDataDuration = case_when(...)`.</span></span>
-<span><span class="co">#&gt; Caused by warning:</span></span>
-<span><span class="co">#&gt; ! NAs introduced by coercion</span></span>
-<span><span class="co">#&gt; ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span></span>
-<span><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
-<span><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
-<span><span class="co">#&gt; [1] "H2 CV = NA%"</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 2</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 382.44 +- 54.8"</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 14.3%"</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11488.13 +- 1427.95"</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 12.4%"</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7820.78 +- 949.21"</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.1%"</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 2</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 392.67 +- 58.74"</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 15%"</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11630.54 +- 1421.75"</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 12.2%"</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7869.98 +- 878.89"</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 11.2%"</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 2</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 377.13 +- 62.13"</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 16.5%"</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11458.76 +- 1429.37"</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 12.5%"</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7801.62 +- 874.1"</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 11.2%"</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 2</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 389.85 +- 50.42"</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 12.9%"</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11685.06 +- 1266.23"</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 10.8%"</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7914.98 +- 838.47"</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 10.6%"</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 2</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 380.53 +- 51.64"</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 13.6%"</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11367.53 +- 1264.22"</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 11.1%"</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7726.48 +- 805.83"</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 10.4%"</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 2</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 359.4 +- 41.9"</span></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 11.7%"</span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11310.19 +- 1595.71"</span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 14.1%"</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7779.78 +- 1006.5"</span></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.9%"</span></span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 2</span></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 380.23 +- 48.14"</span></span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 12.7%"</span></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11444.3 +- 1182.29"</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 10.3%"</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7760.33 +- 757.29"</span></span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 9.8%"</span></span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 2</span></span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 361.48 +- 38.81"</span></span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 10.7%"</span></span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11247.01 +- 1250.15"</span></span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 11.1%"</span></span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7705.37 +- 802.44"</span></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 10.4%"</span></span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 2</span></span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 360.33 +- 49.96"</span></span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 13.9%"</span></span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11555.85 +- 2000.59"</span></span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 17.3%"</span></span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7946.87 +- 1245.56"</span></span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 15.7%"</span></span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 2</span></span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 378.08 +- 50.57"</span></span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 13.4%"</span></span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11208.12 +- 1316.05"</span></span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 11.7%"</span></span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7612.4 +- 850.62"</span></span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 11.2%"</span></span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 2</span></span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 365.64 +- 47.81"</span></span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 13.1%"</span></span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11420.48 +- 1616.94"</span></span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 14.2%"</span></span>
+<span id="cb4-96"><a href="#cb4-96" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7872.97 +- 1003.77"</span></span>
+<span id="cb4-97"><a href="#cb4-97" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.7%"</span></span>
+<span id="cb4-98"><a href="#cb4-98" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-99"><a href="#cb4-99" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-100"><a href="#cb4-100" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 2</span></span>
+<span id="cb4-101"><a href="#cb4-101" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 306.12 +- NA"</span></span>
+<span id="cb4-102"><a href="#cb4-102" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-103"><a href="#cb4-103" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 9447.76 +- NA"</span></span>
+<span id="cb4-104"><a href="#cb4-104" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-105"><a href="#cb4-105" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 6635.55 +- NA"</span></span>
+<span id="cb4-106"><a href="#cb4-106" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-107"><a href="#cb4-107" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-108"><a href="#cb4-108" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-109"><a href="#cb4-109" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 2</span></span>
+<span id="cb4-110"><a href="#cb4-110" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 356.37 +- 73.21"</span></span>
+<span id="cb4-111"><a href="#cb4-111" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 20.5%"</span></span>
+<span id="cb4-112"><a href="#cb4-112" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 10402.26 +- 1729.21"</span></span>
+<span id="cb4-113"><a href="#cb4-113" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 16.6%"</span></span>
+<span id="cb4-114"><a href="#cb4-114" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7081.97 +- 1117.26"</span></span>
+<span id="cb4-115"><a href="#cb4-115" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 15.8%"</span></span>
+<span id="cb4-116"><a href="#cb4-116" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-117"><a href="#cb4-117" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-118"><a href="#cb4-118" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 2</span></span>
+<span id="cb4-119"><a href="#cb4-119" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-120"><a href="#cb4-120" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-121"><a href="#cb4-121" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-122"><a href="#cb4-122" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-123"><a href="#cb4-123" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-124"><a href="#cb4-124" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-125"><a href="#cb4-125" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-126"><a href="#cb4-126" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-127"><a href="#cb4-127" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 2</span></span>
+<span id="cb4-128"><a href="#cb4-128" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-129"><a href="#cb4-129" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-130"><a href="#cb4-130" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-131"><a href="#cb4-131" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-132"><a href="#cb4-132" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-133"><a href="#cb4-133" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-134"><a href="#cb4-134" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-135"><a href="#cb4-135" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-136"><a href="#cb4-136" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 3</span></span>
+<span id="cb4-137"><a href="#cb4-137" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 395.07 +- 56.73"</span></span>
+<span id="cb4-138"><a href="#cb4-138" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 14.4%"</span></span>
+<span id="cb4-139"><a href="#cb4-139" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11691.91 +- 1465.52"</span></span>
+<span id="cb4-140"><a href="#cb4-140" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 12.5%"</span></span>
+<span id="cb4-141"><a href="#cb4-141" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7943.64 +- 990.06"</span></span>
+<span id="cb4-142"><a href="#cb4-142" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.5%"</span></span>
+<span id="cb4-143"><a href="#cb4-143" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-144"><a href="#cb4-144" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-145"><a href="#cb4-145" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 3</span></span>
+<span id="cb4-146"><a href="#cb4-146" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 374.58 +- 62.24"</span></span>
+<span id="cb4-147"><a href="#cb4-147" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 16.6%"</span></span>
+<span id="cb4-148"><a href="#cb4-148" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11058.44 +- 1673.46"</span></span>
+<span id="cb4-149"><a href="#cb4-149" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 15.1%"</span></span>
+<span id="cb4-150"><a href="#cb4-150" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7508.69 +- 1052.61"</span></span>
+<span id="cb4-151"><a href="#cb4-151" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 14%"</span></span>
+<span id="cb4-152"><a href="#cb4-152" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-153"><a href="#cb4-153" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-154"><a href="#cb4-154" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 3</span></span>
+<span id="cb4-155"><a href="#cb4-155" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 343.85 +- 80.13"</span></span>
+<span id="cb4-156"><a href="#cb4-156" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 23.3%"</span></span>
+<span id="cb4-157"><a href="#cb4-157" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11019.55 +- 2857.03"</span></span>
+<span id="cb4-158"><a href="#cb4-158" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 25.9%"</span></span>
+<span id="cb4-159"><a href="#cb4-159" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7739.68 +- 1717.18"</span></span>
+<span id="cb4-160"><a href="#cb4-160" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 22.2%"</span></span>
+<span id="cb4-161"><a href="#cb4-161" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-162"><a href="#cb4-162" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-163"><a href="#cb4-163" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 3</span></span>
+<span id="cb4-164"><a href="#cb4-164" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 390.76 +- 59.83"</span></span>
+<span id="cb4-165"><a href="#cb4-165" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 15.3%"</span></span>
+<span id="cb4-166"><a href="#cb4-166" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11512.5 +- 1500.04"</span></span>
+<span id="cb4-167"><a href="#cb4-167" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 13%"</span></span>
+<span id="cb4-168"><a href="#cb4-168" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7825.07 +- 980.17"</span></span>
+<span id="cb4-169"><a href="#cb4-169" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.5%"</span></span>
+<span id="cb4-170"><a href="#cb4-170" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-171"><a href="#cb4-171" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-172"><a href="#cb4-172" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 3</span></span>
+<span id="cb4-173"><a href="#cb4-173" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 407.91 +- 13.63"</span></span>
+<span id="cb4-174"><a href="#cb4-174" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 3.3%"</span></span>
+<span id="cb4-175"><a href="#cb4-175" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 12166.19 +- 1058.25"</span></span>
+<span id="cb4-176"><a href="#cb4-176" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 8.7%"</span></span>
+<span id="cb4-177"><a href="#cb4-177" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8209.07 +- 725.73"</span></span>
+<span id="cb4-178"><a href="#cb4-178" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 8.8%"</span></span>
+<span id="cb4-179"><a href="#cb4-179" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-180"><a href="#cb4-180" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-181"><a href="#cb4-181" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 3</span></span>
+<span id="cb4-182"><a href="#cb4-182" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-183"><a href="#cb4-183" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-184"><a href="#cb4-184" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-185"><a href="#cb4-185" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-186"><a href="#cb4-186" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-187"><a href="#cb4-187" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-188"><a href="#cb4-188" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-189"><a href="#cb4-189" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-190"><a href="#cb4-190" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 3</span></span>
+<span id="cb4-191"><a href="#cb4-191" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 379.25 +- 68.57"</span></span>
+<span id="cb4-192"><a href="#cb4-192" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 18.1%"</span></span>
+<span id="cb4-193"><a href="#cb4-193" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11408.63 +- 1894.93"</span></span>
+<span id="cb4-194"><a href="#cb4-194" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 16.6%"</span></span>
+<span id="cb4-195"><a href="#cb4-195" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7802.85 +- 1245.96"</span></span>
+<span id="cb4-196"><a href="#cb4-196" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 16%"</span></span>
+<span id="cb4-197"><a href="#cb4-197" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-198"><a href="#cb4-198" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-199"><a href="#cb4-199" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 3</span></span>
+<span id="cb4-200"><a href="#cb4-200" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 403.48 +- 12.27"</span></span>
+<span id="cb4-201"><a href="#cb4-201" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 3%"</span></span>
+<span id="cb4-202"><a href="#cb4-202" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 12587.04 +- 1232.48"</span></span>
+<span id="cb4-203"><a href="#cb4-203" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 9.8%"</span></span>
+<span id="cb4-204"><a href="#cb4-204" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8524.65 +- 818.87"</span></span>
+<span id="cb4-205"><a href="#cb4-205" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 9.6%"</span></span>
+<span id="cb4-206"><a href="#cb4-206" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-207"><a href="#cb4-207" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-208"><a href="#cb4-208" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 3</span></span>
+<span id="cb4-209"><a href="#cb4-209" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-210"><a href="#cb4-210" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-211"><a href="#cb4-211" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-212"><a href="#cb4-212" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-213"><a href="#cb4-213" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-214"><a href="#cb4-214" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-215"><a href="#cb4-215" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-216"><a href="#cb4-216" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-217"><a href="#cb4-217" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 3</span></span>
+<span id="cb4-218"><a href="#cb4-218" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 405.07 +- 50.63"</span></span>
+<span id="cb4-219"><a href="#cb4-219" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 12.5%"</span></span>
+<span id="cb4-220"><a href="#cb4-220" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11974.23 +- 1494.78"</span></span>
+<span id="cb4-221"><a href="#cb4-221" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 12.5%"</span></span>
+<span id="cb4-222"><a href="#cb4-222" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8112.64 +- 932.5"</span></span>
+<span id="cb4-223"><a href="#cb4-223" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 11.5%"</span></span>
+<span id="cb4-224"><a href="#cb4-224" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-225"><a href="#cb4-225" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-226"><a href="#cb4-226" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 3</span></span>
+<span id="cb4-227"><a href="#cb4-227" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 413.83 +- NA"</span></span>
+<span id="cb4-228"><a href="#cb4-228" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-229"><a href="#cb4-229" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 13809.62 +- NA"</span></span>
+<span id="cb4-230"><a href="#cb4-230" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-231"><a href="#cb4-231" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 9367.71 +- NA"</span></span>
+<span id="cb4-232"><a href="#cb4-232" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-233"><a href="#cb4-233" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-234"><a href="#cb4-234" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-235"><a href="#cb4-235" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 3</span></span>
+<span id="cb4-236"><a href="#cb4-236" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-237"><a href="#cb4-237" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-238"><a href="#cb4-238" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-239"><a href="#cb4-239" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-240"><a href="#cb4-240" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-241"><a href="#cb4-241" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-242"><a href="#cb4-242" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-243"><a href="#cb4-243" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-244"><a href="#cb4-244" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 3</span></span>
+<span id="cb4-245"><a href="#cb4-245" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-246"><a href="#cb4-246" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-247"><a href="#cb4-247" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-248"><a href="#cb4-248" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-249"><a href="#cb4-249" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-250"><a href="#cb4-250" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-251"><a href="#cb4-251" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-252"><a href="#cb4-252" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-253"><a href="#cb4-253" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 3</span></span>
+<span id="cb4-254"><a href="#cb4-254" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-255"><a href="#cb4-255" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-256"><a href="#cb4-256" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-257"><a href="#cb4-257" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-258"><a href="#cb4-258" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-259"><a href="#cb4-259" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-260"><a href="#cb4-260" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-261"><a href="#cb4-261" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-262"><a href="#cb4-262" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 3</span></span>
+<span id="cb4-263"><a href="#cb4-263" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-264"><a href="#cb4-264" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-265"><a href="#cb4-265" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-266"><a href="#cb4-266" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-267"><a href="#cb4-267" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-268"><a href="#cb4-268" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-269"><a href="#cb4-269" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-270"><a href="#cb4-270" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-271"><a href="#cb4-271" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 4</span></span>
+<span id="cb4-272"><a href="#cb4-272" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 396.19 +- 64.49"</span></span>
+<span id="cb4-273"><a href="#cb4-273" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 16.3%"</span></span>
+<span id="cb4-274"><a href="#cb4-274" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11616.2 +- 1614.12"</span></span>
+<span id="cb4-275"><a href="#cb4-275" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 13.9%"</span></span>
+<span id="cb4-276"><a href="#cb4-276" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 7962.3 +- 1045.1"</span></span>
+<span id="cb4-277"><a href="#cb4-277" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 13.1%"</span></span>
+<span id="cb4-278"><a href="#cb4-278" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-279"><a href="#cb4-279" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-280"><a href="#cb4-280" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 4</span></span>
+<span id="cb4-281"><a href="#cb4-281" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 372 +- 37.25"</span></span>
+<span id="cb4-282"><a href="#cb4-282" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 10%"</span></span>
+<span id="cb4-283"><a href="#cb4-283" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11963.47 +- 1569.29"</span></span>
+<span id="cb4-284"><a href="#cb4-284" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 13.1%"</span></span>
+<span id="cb4-285"><a href="#cb4-285" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8288.51 +- 912.68"</span></span>
+<span id="cb4-286"><a href="#cb4-286" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 11%"</span></span>
+<span id="cb4-287"><a href="#cb4-287" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-288"><a href="#cb4-288" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-289"><a href="#cb4-289" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 4</span></span>
+<span id="cb4-290"><a href="#cb4-290" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-291"><a href="#cb4-291" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-292"><a href="#cb4-292" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-293"><a href="#cb4-293" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-294"><a href="#cb4-294" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-295"><a href="#cb4-295" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-296"><a href="#cb4-296" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-297"><a href="#cb4-297" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-298"><a href="#cb4-298" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 4</span></span>
+<span id="cb4-299"><a href="#cb4-299" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 406.19 +- 68.78"</span></span>
+<span id="cb4-300"><a href="#cb4-300" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 16.9%"</span></span>
+<span id="cb4-301"><a href="#cb4-301" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11940.27 +- 1764.71"</span></span>
+<span id="cb4-302"><a href="#cb4-302" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 14.8%"</span></span>
+<span id="cb4-303"><a href="#cb4-303" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8109.57 +- 1127.25"</span></span>
+<span id="cb4-304"><a href="#cb4-304" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 13.9%"</span></span>
+<span id="cb4-305"><a href="#cb4-305" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-306"><a href="#cb4-306" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-307"><a href="#cb4-307" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 4</span></span>
+<span id="cb4-308"><a href="#cb4-308" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 400.73 +- 4.08"</span></span>
+<span id="cb4-309"><a href="#cb4-309" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 1%"</span></span>
+<span id="cb4-310"><a href="#cb4-310" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 13275.1 +- 548.69"</span></span>
+<span id="cb4-311"><a href="#cb4-311" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 4.1%"</span></span>
+<span id="cb4-312"><a href="#cb4-312" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 9040.81 +- 475.12"</span></span>
+<span id="cb4-313"><a href="#cb4-313" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 5.3%"</span></span>
+<span id="cb4-314"><a href="#cb4-314" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-315"><a href="#cb4-315" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-316"><a href="#cb4-316" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 4</span></span>
+<span id="cb4-317"><a href="#cb4-317" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-318"><a href="#cb4-318" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-319"><a href="#cb4-319" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-320"><a href="#cb4-320" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-321"><a href="#cb4-321" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-322"><a href="#cb4-322" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-323"><a href="#cb4-323" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-324"><a href="#cb4-324" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-325"><a href="#cb4-325" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 4</span></span>
+<span id="cb4-326"><a href="#cb4-326" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 396.51 +- 50.77"</span></span>
+<span id="cb4-327"><a href="#cb4-327" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 12.8%"</span></span>
+<span id="cb4-328"><a href="#cb4-328" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11968.31 +- 1816.15"</span></span>
+<span id="cb4-329"><a href="#cb4-329" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 15.2%"</span></span>
+<span id="cb4-330"><a href="#cb4-330" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8149.18 +- 1198.12"</span></span>
+<span id="cb4-331"><a href="#cb4-331" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 14.7%"</span></span>
+<span id="cb4-332"><a href="#cb4-332" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-333"><a href="#cb4-333" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-334"><a href="#cb4-334" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 4</span></span>
+<span id="cb4-335"><a href="#cb4-335" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-336"><a href="#cb4-336" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-337"><a href="#cb4-337" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-338"><a href="#cb4-338" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-339"><a href="#cb4-339" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-340"><a href="#cb4-340" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-341"><a href="#cb4-341" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-342"><a href="#cb4-342" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-343"><a href="#cb4-343" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 4</span></span>
+<span id="cb4-344"><a href="#cb4-344" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-345"><a href="#cb4-345" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-346"><a href="#cb4-346" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-347"><a href="#cb4-347" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-348"><a href="#cb4-348" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-349"><a href="#cb4-349" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-350"><a href="#cb4-350" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-351"><a href="#cb4-351" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-352"><a href="#cb4-352" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 4</span></span>
+<span id="cb4-353"><a href="#cb4-353" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 396.51 +- 50.77"</span></span>
+<span id="cb4-354"><a href="#cb4-354" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 12.8%"</span></span>
+<span id="cb4-355"><a href="#cb4-355" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11968.31 +- 1816.15"</span></span>
+<span id="cb4-356"><a href="#cb4-356" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 15.2%"</span></span>
+<span id="cb4-357"><a href="#cb4-357" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8149.18 +- 1198.12"</span></span>
+<span id="cb4-358"><a href="#cb4-358" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 14.7%"</span></span>
+<span id="cb4-359"><a href="#cb4-359" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-360"><a href="#cb4-360" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-361"><a href="#cb4-361" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 4</span></span>
+<span id="cb4-362"><a href="#cb4-362" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-363"><a href="#cb4-363" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-364"><a href="#cb4-364" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-365"><a href="#cb4-365" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-366"><a href="#cb4-366" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-367"><a href="#cb4-367" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-368"><a href="#cb4-368" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-369"><a href="#cb4-369" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-370"><a href="#cb4-370" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 4</span></span>
+<span id="cb4-371"><a href="#cb4-371" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-372"><a href="#cb4-372" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-373"><a href="#cb4-373" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-374"><a href="#cb4-374" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-375"><a href="#cb4-375" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-376"><a href="#cb4-376" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-377"><a href="#cb4-377" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-378"><a href="#cb4-378" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-379"><a href="#cb4-379" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 4</span></span>
+<span id="cb4-380"><a href="#cb4-380" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-381"><a href="#cb4-381" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-382"><a href="#cb4-382" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-383"><a href="#cb4-383" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-384"><a href="#cb4-384" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-385"><a href="#cb4-385" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-386"><a href="#cb4-386" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-387"><a href="#cb4-387" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-388"><a href="#cb4-388" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 4</span></span>
+<span id="cb4-389"><a href="#cb4-389" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-390"><a href="#cb4-390" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-391"><a href="#cb4-391" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-392"><a href="#cb4-392" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-393"><a href="#cb4-393" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-394"><a href="#cb4-394" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-395"><a href="#cb4-395" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-396"><a href="#cb4-396" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-397"><a href="#cb4-397" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 4</span></span>
+<span id="cb4-398"><a href="#cb4-398" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-399"><a href="#cb4-399" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-400"><a href="#cb4-400" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-401"><a href="#cb4-401" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-402"><a href="#cb4-402" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-403"><a href="#cb4-403" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-404"><a href="#cb4-404" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-405"><a href="#cb4-405" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-406"><a href="#cb4-406" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 3 , min_time = 5</span></span>
+<span id="cb4-407"><a href="#cb4-407" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 396.26 +- 71.34"</span></span>
+<span id="cb4-408"><a href="#cb4-408" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 18%"</span></span>
+<span id="cb4-409"><a href="#cb4-409" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 11943.45 +- 2006.88"</span></span>
+<span id="cb4-410"><a href="#cb4-410" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 16.8%"</span></span>
+<span id="cb4-411"><a href="#cb4-411" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8132.21 +- 1267.87"</span></span>
+<span id="cb4-412"><a href="#cb4-412" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 15.6%"</span></span>
+<span id="cb4-413"><a href="#cb4-413" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-414"><a href="#cb4-414" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-415"><a href="#cb4-415" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 3 , min_time = 5</span></span>
+<span id="cb4-416"><a href="#cb4-416" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-417"><a href="#cb4-417" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-418"><a href="#cb4-418" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-419"><a href="#cb4-419" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-420"><a href="#cb4-420" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-421"><a href="#cb4-421" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-422"><a href="#cb4-422" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-423"><a href="#cb4-423" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-424"><a href="#cb4-424" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 3 , min_time = 5</span></span>
+<span id="cb4-425"><a href="#cb4-425" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-426"><a href="#cb4-426" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-427"><a href="#cb4-427" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-428"><a href="#cb4-428" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-429"><a href="#cb4-429" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-430"><a href="#cb4-430" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-431"><a href="#cb4-431" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-432"><a href="#cb4-432" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-433"><a href="#cb4-433" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 4 , min_time = 5</span></span>
+<span id="cb4-434"><a href="#cb4-434" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: 388.66 +- 17.43"</span></span>
+<span id="cb4-435"><a href="#cb4-435" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = 4.5%"</span></span>
+<span id="cb4-436"><a href="#cb4-436" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: 12354.78 +- 1386"</span></span>
+<span id="cb4-437"><a href="#cb4-437" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = 11.2%"</span></span>
+<span id="cb4-438"><a href="#cb4-438" tabindex="-1"></a><span class="co">#&gt; [1] "O2: 8338.46 +- 1022.06"</span></span>
+<span id="cb4-439"><a href="#cb4-439" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = 12.3%"</span></span>
+<span id="cb4-440"><a href="#cb4-440" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-441"><a href="#cb4-441" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-442"><a href="#cb4-442" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 4 , min_time = 5</span></span>
+<span id="cb4-443"><a href="#cb4-443" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-444"><a href="#cb4-444" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-445"><a href="#cb4-445" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-446"><a href="#cb4-446" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-447"><a href="#cb4-447" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-448"><a href="#cb4-448" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-449"><a href="#cb4-449" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-450"><a href="#cb4-450" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-451"><a href="#cb4-451" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 4 , min_time = 5</span></span>
+<span id="cb4-452"><a href="#cb4-452" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-453"><a href="#cb4-453" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-454"><a href="#cb4-454" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-455"><a href="#cb4-455" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-456"><a href="#cb4-456" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-457"><a href="#cb4-457" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-458"><a href="#cb4-458" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-459"><a href="#cb4-459" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-460"><a href="#cb4-460" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 5 , min_time = 5</span></span>
+<span id="cb4-461"><a href="#cb4-461" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-462"><a href="#cb4-462" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-463"><a href="#cb4-463" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-464"><a href="#cb4-464" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-465"><a href="#cb4-465" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-466"><a href="#cb4-466" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-467"><a href="#cb4-467" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-468"><a href="#cb4-468" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-469"><a href="#cb4-469" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 5 , min_time = 5</span></span>
+<span id="cb4-470"><a href="#cb4-470" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-471"><a href="#cb4-471" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-472"><a href="#cb4-472" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-473"><a href="#cb4-473" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-474"><a href="#cb4-474" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-475"><a href="#cb4-475" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-476"><a href="#cb4-476" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-477"><a href="#cb4-477" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-478"><a href="#cb4-478" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 5 , min_time = 5</span></span>
+<span id="cb4-479"><a href="#cb4-479" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-480"><a href="#cb4-480" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-481"><a href="#cb4-481" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-482"><a href="#cb4-482" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-483"><a href="#cb4-483" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-484"><a href="#cb4-484" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-485"><a href="#cb4-485" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-486"><a href="#cb4-486" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-487"><a href="#cb4-487" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 6 , min_time = 5</span></span>
+<span id="cb4-488"><a href="#cb4-488" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-489"><a href="#cb4-489" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-490"><a href="#cb4-490" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-491"><a href="#cb4-491" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-492"><a href="#cb4-492" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-493"><a href="#cb4-493" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-494"><a href="#cb4-494" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-495"><a href="#cb4-495" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-496"><a href="#cb4-496" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 6 , min_time = 5</span></span>
+<span id="cb4-497"><a href="#cb4-497" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-498"><a href="#cb4-498" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-499"><a href="#cb4-499" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-500"><a href="#cb4-500" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-501"><a href="#cb4-501" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-502"><a href="#cb4-502" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-503"><a href="#cb4-503" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-504"><a href="#cb4-504" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-505"><a href="#cb4-505" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 6 , min_time = 5</span></span>
+<span id="cb4-506"><a href="#cb4-506" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-507"><a href="#cb4-507" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-508"><a href="#cb4-508" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-509"><a href="#cb4-509" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-510"><a href="#cb4-510" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-511"><a href="#cb4-511" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-512"><a href="#cb4-512" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-513"><a href="#cb4-513" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-514"><a href="#cb4-514" tabindex="-1"></a><span class="co">#&gt; Using param1 = 1 , param2 = 7 , min_time = 5</span></span>
+<span id="cb4-515"><a href="#cb4-515" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-516"><a href="#cb4-516" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-517"><a href="#cb4-517" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-518"><a href="#cb4-518" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-519"><a href="#cb4-519" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-520"><a href="#cb4-520" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-521"><a href="#cb4-521" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-522"><a href="#cb4-522" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-523"><a href="#cb4-523" tabindex="-1"></a><span class="co">#&gt; Using param1 = 2 , param2 = 7 , min_time = 5</span></span>
+<span id="cb4-524"><a href="#cb4-524" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-525"><a href="#cb4-525" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-526"><a href="#cb4-526" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-527"><a href="#cb4-527" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-528"><a href="#cb4-528" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-529"><a href="#cb4-529" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-530"><a href="#cb4-530" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-531"><a href="#cb4-531" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span>
+<span id="cb4-532"><a href="#cb4-532" tabindex="-1"></a><span class="co">#&gt; Using param1 = 3 , param2 = 7 , min_time = 5</span></span>
+<span id="cb4-533"><a href="#cb4-533" tabindex="-1"></a><span class="co">#&gt; [1] "CH4: NaN +- NA"</span></span>
+<span id="cb4-534"><a href="#cb4-534" tabindex="-1"></a><span class="co">#&gt; [1] "CH4 CV = NA%"</span></span>
+<span id="cb4-535"><a href="#cb4-535" tabindex="-1"></a><span class="co">#&gt; [1] "CO2: NaN +- NA"</span></span>
+<span id="cb4-536"><a href="#cb4-536" tabindex="-1"></a><span class="co">#&gt; [1] "CO2 CV = NA%"</span></span>
+<span id="cb4-537"><a href="#cb4-537" tabindex="-1"></a><span class="co">#&gt; [1] "O2: NaN +- NA"</span></span>
+<span id="cb4-538"><a href="#cb4-538" tabindex="-1"></a><span class="co">#&gt; [1] "O2 CV = NA%"</span></span>
+<span id="cb4-539"><a href="#cb4-539" tabindex="-1"></a><span class="co">#&gt; [1] "H2: NaN +- NA"</span></span>
+<span id="cb4-540"><a href="#cb4-540" tabindex="-1"></a><span class="co">#&gt; [1] "H2 CV = NA%"</span></span></code></pre></div>
 <p>Finally, the results from our function will be placed in a data frame with the following structure:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   param1 param2 min_time records_d cows_d mean_dCH4 sd_dCH4 CV_dCH4 mean_dCO2</span></span>
-<span><span class="co">#&gt; 1      1      3        2       184     25     380.3   110.5    0.29   11426.1</span></span>
-<span><span class="co">#&gt; 2      2      3        2       116     20     380.9    85.0    0.22   11445.8</span></span>
-<span><span class="co">#&gt; 3      3      3        2        75     19     373.3    87.0    0.23   11386.8</span></span>
-<span><span class="co">#&gt; 4      1      4        2       184     25     380.3   110.5    0.29   11426.1</span></span>
-<span><span class="co">#&gt; 5      2      4        2       116     20     380.9    85.0    0.22   11445.8</span></span>
-<span><span class="co">#&gt; 6      3      4        2        75     19     373.3    87.0    0.23   11386.8</span></span>
-<span><span class="co">#&gt;   sd_dCO2 CV_dCO2 records_w cows_w mean_wCH4 sd_wCH4 CV_wCH4 mean_wCO2 sd_wCO2</span></span>
-<span><span class="co">#&gt; 1  2527.9    0.22        33     19     382.4    54.7    0.14   11480.2  1422.1</span></span>
-<span><span class="co">#&gt; 2  2069.2    0.18        22     15     392.5    58.6    0.15   11615.0  1415.7</span></span>
-<span><span class="co">#&gt; 3  2174.8    0.19        12     10     377.1    62.1    0.16   11428.8  1392.8</span></span>
-<span><span class="co">#&gt; 4  2527.9    0.22        25     15     389.8    50.3    0.13   11674.6  1259.1</span></span>
-<span><span class="co">#&gt; 5  2069.2    0.18        17     14     380.4    51.4    0.14   11347.5  1250.7</span></span>
-<span><span class="co">#&gt; 6  2174.8    0.19         6      5     359.4    41.9    0.12   11310.2  1595.7</span></span>
-<span><span class="co">#&gt;   CV_wCO2</span></span>
-<span><span class="co">#&gt; 1    0.12</span></span>
-<span><span class="co">#&gt; 2    0.12</span></span>
-<span><span class="co">#&gt; 3    0.12</span></span>
-<span><span class="co">#&gt; 4    0.11</span></span>
-<span><span class="co">#&gt; 5    0.11</span></span>
-<span><span class="co">#&gt; 6    0.14</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">data</span>, format <span class="op">=</span> <span class="st">"markdown"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="4%">
+<col width="4%">
+<col width="5%">
+<col width="6%">
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="4%">
+<col width="6%">
+<col width="4%">
+<col width="4%">
+</colgroup>
+<thead><tr class="header">
+<th align="right">param1</th>
+<th align="right">param2</th>
+<th align="right">min_time</th>
+<th align="right">records_d</th>
+<th align="right">cows_d</th>
+<th align="right">mean_dCH4</th>
+<th align="right">sd_dCH4</th>
+<th align="right">CV_dCH4</th>
+<th align="right">mean_dCO2</th>
+<th align="right">sd_dCO2</th>
+<th align="right">CV_dCO2</th>
+<th align="right">records_w</th>
+<th align="right">cows_w</th>
+<th align="right">mean_wCH4</th>
+<th align="right">sd_wCH4</th>
+<th align="right">CV_wCH4</th>
+<th align="right">mean_wCO2</th>
+<th align="right">sd_wCO2</th>
+<th align="right">CV_wCO2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">184</td>
+<td align="right">25</td>
+<td align="right">380.2</td>
+<td align="right">110.5</td>
+<td align="right">0.29</td>
+<td align="right">11429.1</td>
+<td align="right">2531.7</td>
+<td align="right">0.22</td>
+<td align="right">33</td>
+<td align="right">19</td>
+<td align="right">382.4</td>
+<td align="right">54.8</td>
+<td align="right">0.14</td>
+<td align="right">11488.1</td>
+<td align="right">1428.0</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">116</td>
+<td align="right">20</td>
+<td align="right">380.8</td>
+<td align="right">84.9</td>
+<td align="right">0.22</td>
+<td align="right">11450.6</td>
+<td align="right">2076.6</td>
+<td align="right">0.18</td>
+<td align="right">22</td>
+<td align="right">15</td>
+<td align="right">392.7</td>
+<td align="right">58.7</td>
+<td align="right">0.15</td>
+<td align="right">11630.5</td>
+<td align="right">1421.7</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">75</td>
+<td align="right">19</td>
+<td align="right">373.1</td>
+<td align="right">86.7</td>
+<td align="right">0.23</td>
+<td align="right">11394.2</td>
+<td align="right">2185.9</td>
+<td align="right">0.19</td>
+<td align="right">12</td>
+<td align="right">10</td>
+<td align="right">377.1</td>
+<td align="right">62.1</td>
+<td align="right">0.16</td>
+<td align="right">11458.8</td>
+<td align="right">1429.4</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">184</td>
+<td align="right">25</td>
+<td align="right">380.2</td>
+<td align="right">110.5</td>
+<td align="right">0.29</td>
+<td align="right">11429.1</td>
+<td align="right">2531.7</td>
+<td align="right">0.22</td>
+<td align="right">25</td>
+<td align="right">15</td>
+<td align="right">389.9</td>
+<td align="right">50.4</td>
+<td align="right">0.13</td>
+<td align="right">11685.1</td>
+<td align="right">1266.2</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">116</td>
+<td align="right">20</td>
+<td align="right">380.8</td>
+<td align="right">84.9</td>
+<td align="right">0.22</td>
+<td align="right">11450.6</td>
+<td align="right">2076.6</td>
+<td align="right">0.18</td>
+<td align="right">17</td>
+<td align="right">14</td>
+<td align="right">380.5</td>
+<td align="right">51.6</td>
+<td align="right">0.14</td>
+<td align="right">11367.5</td>
+<td align="right">1264.2</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">75</td>
+<td align="right">19</td>
+<td align="right">373.1</td>
+<td align="right">86.7</td>
+<td align="right">0.23</td>
+<td align="right">11394.2</td>
+<td align="right">2185.9</td>
+<td align="right">0.19</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">359.4</td>
+<td align="right">41.9</td>
+<td align="right">0.12</td>
+<td align="right">11310.2</td>
+<td align="right">1595.7</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">184</td>
+<td align="right">25</td>
+<td align="right">380.2</td>
+<td align="right">110.5</td>
+<td align="right">0.29</td>
+<td align="right">11429.1</td>
+<td align="right">2531.7</td>
+<td align="right">0.22</td>
+<td align="right">21</td>
+<td align="right">15</td>
+<td align="right">380.2</td>
+<td align="right">48.1</td>
+<td align="right">0.13</td>
+<td align="right">11444.3</td>
+<td align="right">1182.3</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">116</td>
+<td align="right">20</td>
+<td align="right">380.8</td>
+<td align="right">84.9</td>
+<td align="right">0.22</td>
+<td align="right">11450.6</td>
+<td align="right">2076.6</td>
+<td align="right">0.18</td>
+<td align="right">8</td>
+<td align="right">7</td>
+<td align="right">361.5</td>
+<td align="right">38.8</td>
+<td align="right">0.11</td>
+<td align="right">11247.0</td>
+<td align="right">1250.1</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">75</td>
+<td align="right">19</td>
+<td align="right">373.1</td>
+<td align="right">86.7</td>
+<td align="right">0.23</td>
+<td align="right">11394.2</td>
+<td align="right">2185.9</td>
+<td align="right">0.19</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">360.3</td>
+<td align="right">50.0</td>
+<td align="right">0.14</td>
+<td align="right">11555.9</td>
+<td align="right">2000.6</td>
+<td align="right">0.17</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">184</td>
+<td align="right">25</td>
+<td align="right">380.2</td>
+<td align="right">110.5</td>
+<td align="right">0.29</td>
+<td align="right">11429.1</td>
+<td align="right">2531.7</td>
+<td align="right">0.22</td>
+<td align="right">14</td>
+<td align="right">11</td>
+<td align="right">378.1</td>
+<td align="right">50.6</td>
+<td align="right">0.13</td>
+<td align="right">11208.1</td>
+<td align="right">1316.1</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">116</td>
+<td align="right">20</td>
+<td align="right">380.8</td>
+<td align="right">84.9</td>
+<td align="right">0.22</td>
+<td align="right">11450.6</td>
+<td align="right">2076.6</td>
+<td align="right">0.18</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">365.6</td>
+<td align="right">47.8</td>
+<td align="right">0.13</td>
+<td align="right">11420.5</td>
+<td align="right">1616.9</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">75</td>
+<td align="right">19</td>
+<td align="right">373.1</td>
+<td align="right">86.7</td>
+<td align="right">0.23</td>
+<td align="right">11394.2</td>
+<td align="right">2185.9</td>
+<td align="right">0.19</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">306.1</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">9447.8</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">184</td>
+<td align="right">25</td>
+<td align="right">380.2</td>
+<td align="right">110.5</td>
+<td align="right">0.29</td>
+<td align="right">11429.1</td>
+<td align="right">2531.7</td>
+<td align="right">0.22</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">356.4</td>
+<td align="right">73.2</td>
+<td align="right">0.21</td>
+<td align="right">10402.3</td>
+<td align="right">1729.2</td>
+<td align="right">0.17</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">116</td>
+<td align="right">20</td>
+<td align="right">380.8</td>
+<td align="right">84.9</td>
+<td align="right">0.22</td>
+<td align="right">11450.6</td>
+<td align="right">2076.6</td>
+<td align="right">0.18</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">75</td>
+<td align="right">19</td>
+<td align="right">373.1</td>
+<td align="right">86.7</td>
+<td align="right">0.23</td>
+<td align="right">11394.2</td>
+<td align="right">2185.9</td>
+<td align="right">0.19</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">127</td>
+<td align="right">25</td>
+<td align="right">387.5</td>
+<td align="right">112.0</td>
+<td align="right">0.29</td>
+<td align="right">11533.3</td>
+<td align="right">2612.7</td>
+<td align="right">0.23</td>
+<td align="right">23</td>
+<td align="right">14</td>
+<td align="right">395.1</td>
+<td align="right">56.7</td>
+<td align="right">0.14</td>
+<td align="right">11691.9</td>
+<td align="right">1465.5</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">66</td>
+<td align="right">16</td>
+<td align="right">385.2</td>
+<td align="right">100.0</td>
+<td align="right">0.26</td>
+<td align="right">11491.6</td>
+<td align="right">2509.6</td>
+<td align="right">0.22</td>
+<td align="right">13</td>
+<td align="right">10</td>
+<td align="right">374.6</td>
+<td align="right">62.2</td>
+<td align="right">0.17</td>
+<td align="right">11058.4</td>
+<td align="right">1673.5</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">13</td>
+<td align="right">373.0</td>
+<td align="right">88.8</td>
+<td align="right">0.24</td>
+<td align="right">11316.4</td>
+<td align="right">2362.3</td>
+<td align="right">0.21</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">343.9</td>
+<td align="right">80.1</td>
+<td align="right">0.23</td>
+<td align="right">11019.5</td>
+<td align="right">2857.0</td>
+<td align="right">0.26</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">127</td>
+<td align="right">25</td>
+<td align="right">387.5</td>
+<td align="right">112.0</td>
+<td align="right">0.29</td>
+<td align="right">11533.3</td>
+<td align="right">2612.7</td>
+<td align="right">0.23</td>
+<td align="right">18</td>
+<td align="right">14</td>
+<td align="right">390.8</td>
+<td align="right">59.8</td>
+<td align="right">0.15</td>
+<td align="right">11512.5</td>
+<td align="right">1500.0</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">66</td>
+<td align="right">16</td>
+<td align="right">385.2</td>
+<td align="right">100.0</td>
+<td align="right">0.26</td>
+<td align="right">11491.6</td>
+<td align="right">2509.6</td>
+<td align="right">0.22</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">407.9</td>
+<td align="right">13.6</td>
+<td align="right">0.03</td>
+<td align="right">12166.2</td>
+<td align="right">1058.3</td>
+<td align="right">0.09</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">13</td>
+<td align="right">373.0</td>
+<td align="right">88.8</td>
+<td align="right">0.24</td>
+<td align="right">11316.4</td>
+<td align="right">2362.3</td>
+<td align="right">0.21</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">127</td>
+<td align="right">25</td>
+<td align="right">387.5</td>
+<td align="right">112.0</td>
+<td align="right">0.29</td>
+<td align="right">11533.3</td>
+<td align="right">2612.7</td>
+<td align="right">0.23</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">379.3</td>
+<td align="right">68.6</td>
+<td align="right">0.18</td>
+<td align="right">11408.6</td>
+<td align="right">1894.9</td>
+<td align="right">0.17</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">66</td>
+<td align="right">16</td>
+<td align="right">385.2</td>
+<td align="right">100.0</td>
+<td align="right">0.26</td>
+<td align="right">11491.6</td>
+<td align="right">2509.6</td>
+<td align="right">0.22</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">403.5</td>
+<td align="right">12.3</td>
+<td align="right">0.03</td>
+<td align="right">12587.0</td>
+<td align="right">1232.5</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">13</td>
+<td align="right">373.0</td>
+<td align="right">88.8</td>
+<td align="right">0.24</td>
+<td align="right">11316.4</td>
+<td align="right">2362.3</td>
+<td align="right">0.21</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">127</td>
+<td align="right">25</td>
+<td align="right">387.5</td>
+<td align="right">112.0</td>
+<td align="right">0.29</td>
+<td align="right">11533.3</td>
+<td align="right">2612.7</td>
+<td align="right">0.23</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">405.1</td>
+<td align="right">50.6</td>
+<td align="right">0.12</td>
+<td align="right">11974.2</td>
+<td align="right">1494.8</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">66</td>
+<td align="right">16</td>
+<td align="right">385.2</td>
+<td align="right">100.0</td>
+<td align="right">0.26</td>
+<td align="right">11491.6</td>
+<td align="right">2509.6</td>
+<td align="right">0.22</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">413.8</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">13809.6</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">13</td>
+<td align="right">373.0</td>
+<td align="right">88.8</td>
+<td align="right">0.24</td>
+<td align="right">11316.4</td>
+<td align="right">2362.3</td>
+<td align="right">0.21</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">3</td>
+<td align="right">127</td>
+<td align="right">25</td>
+<td align="right">387.5</td>
+<td align="right">112.0</td>
+<td align="right">0.29</td>
+<td align="right">11533.3</td>
+<td align="right">2612.7</td>
+<td align="right">0.23</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">3</td>
+<td align="right">66</td>
+<td align="right">16</td>
+<td align="right">385.2</td>
+<td align="right">100.0</td>
+<td align="right">0.26</td>
+<td align="right">11491.6</td>
+<td align="right">2509.6</td>
+<td align="right">0.22</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">13</td>
+<td align="right">373.0</td>
+<td align="right">88.8</td>
+<td align="right">0.24</td>
+<td align="right">11316.4</td>
+<td align="right">2362.3</td>
+<td align="right">0.21</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">83</td>
+<td align="right">21</td>
+<td align="right">397.0</td>
+<td align="right">122.4</td>
+<td align="right">0.31</td>
+<td align="right">11753.7</td>
+<td align="right">2904.9</td>
+<td align="right">0.25</td>
+<td align="right">13</td>
+<td align="right">9</td>
+<td align="right">396.2</td>
+<td align="right">64.5</td>
+<td align="right">0.16</td>
+<td align="right">11616.2</td>
+<td align="right">1614.1</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">30</td>
+<td align="right">13</td>
+<td align="right">381.6</td>
+<td align="right">71.3</td>
+<td align="right">0.19</td>
+<td align="right">11755.4</td>
+<td align="right">1843.6</td>
+<td align="right">0.16</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">372.0</td>
+<td align="right">37.3</td>
+<td align="right">0.10</td>
+<td align="right">11963.5</td>
+<td align="right">1569.3</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">351.2</td>
+<td align="right">46.9</td>
+<td align="right">0.13</td>
+<td align="right">11263.3</td>
+<td align="right">1874.0</td>
+<td align="right">0.17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">83</td>
+<td align="right">21</td>
+<td align="right">397.0</td>
+<td align="right">122.4</td>
+<td align="right">0.31</td>
+<td align="right">11753.7</td>
+<td align="right">2904.9</td>
+<td align="right">0.25</td>
+<td align="right">9</td>
+<td align="right">8</td>
+<td align="right">406.2</td>
+<td align="right">68.8</td>
+<td align="right">0.17</td>
+<td align="right">11940.3</td>
+<td align="right">1764.7</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">30</td>
+<td align="right">13</td>
+<td align="right">381.6</td>
+<td align="right">71.3</td>
+<td align="right">0.19</td>
+<td align="right">11755.4</td>
+<td align="right">1843.6</td>
+<td align="right">0.16</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">400.7</td>
+<td align="right">4.1</td>
+<td align="right">0.01</td>
+<td align="right">13275.1</td>
+<td align="right">548.7</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">351.2</td>
+<td align="right">46.9</td>
+<td align="right">0.13</td>
+<td align="right">11263.3</td>
+<td align="right">1874.0</td>
+<td align="right">0.17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">83</td>
+<td align="right">21</td>
+<td align="right">397.0</td>
+<td align="right">122.4</td>
+<td align="right">0.31</td>
+<td align="right">11753.7</td>
+<td align="right">2904.9</td>
+<td align="right">0.25</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">396.5</td>
+<td align="right">50.8</td>
+<td align="right">0.13</td>
+<td align="right">11968.3</td>
+<td align="right">1816.1</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">30</td>
+<td align="right">13</td>
+<td align="right">381.6</td>
+<td align="right">71.3</td>
+<td align="right">0.19</td>
+<td align="right">11755.4</td>
+<td align="right">1843.6</td>
+<td align="right">0.16</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">351.2</td>
+<td align="right">46.9</td>
+<td align="right">0.13</td>
+<td align="right">11263.3</td>
+<td align="right">1874.0</td>
+<td align="right">0.17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">4</td>
+<td align="right">83</td>
+<td align="right">21</td>
+<td align="right">397.0</td>
+<td align="right">122.4</td>
+<td align="right">0.31</td>
+<td align="right">11753.7</td>
+<td align="right">2904.9</td>
+<td align="right">0.25</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">396.5</td>
+<td align="right">50.8</td>
+<td align="right">0.13</td>
+<td align="right">11968.3</td>
+<td align="right">1816.1</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">4</td>
+<td align="right">30</td>
+<td align="right">13</td>
+<td align="right">381.6</td>
+<td align="right">71.3</td>
+<td align="right">0.19</td>
+<td align="right">11755.4</td>
+<td align="right">1843.6</td>
+<td align="right">0.16</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">351.2</td>
+<td align="right">46.9</td>
+<td align="right">0.13</td>
+<td align="right">11263.3</td>
+<td align="right">1874.0</td>
+<td align="right">0.17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">83</td>
+<td align="right">21</td>
+<td align="right">397.0</td>
+<td align="right">122.4</td>
+<td align="right">0.31</td>
+<td align="right">11753.7</td>
+<td align="right">2904.9</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">30</td>
+<td align="right">13</td>
+<td align="right">381.6</td>
+<td align="right">71.3</td>
+<td align="right">0.19</td>
+<td align="right">11755.4</td>
+<td align="right">1843.6</td>
+<td align="right">0.16</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">7</td>
+<td align="right">4</td>
+<td align="right">351.2</td>
+<td align="right">46.9</td>
+<td align="right">0.13</td>
+<td align="right">11263.3</td>
+<td align="right">1874.0</td>
+<td align="right">0.17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">17</td>
+<td align="right">386.5</td>
+<td align="right">113.1</td>
+<td align="right">0.29</td>
+<td align="right">11502.5</td>
+<td align="right">2638.9</td>
+<td align="right">0.23</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">396.3</td>
+<td align="right">71.3</td>
+<td align="right">0.18</td>
+<td align="right">11943.5</td>
+<td align="right">2006.9</td>
+<td align="right">0.17</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">373.5</td>
+<td align="right">71.8</td>
+<td align="right">0.19</td>
+<td align="right">11401.1</td>
+<td align="right">2231.2</td>
+<td align="right">0.20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">342.7</td>
+<td align="right">69.5</td>
+<td align="right">0.20</td>
+<td align="right">11594.7</td>
+<td align="right">2920.8</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">17</td>
+<td align="right">386.5</td>
+<td align="right">113.1</td>
+<td align="right">0.29</td>
+<td align="right">11502.5</td>
+<td align="right">2638.9</td>
+<td align="right">0.23</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">388.7</td>
+<td align="right">17.4</td>
+<td align="right">0.04</td>
+<td align="right">12354.8</td>
+<td align="right">1386.0</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">373.5</td>
+<td align="right">71.8</td>
+<td align="right">0.19</td>
+<td align="right">11401.1</td>
+<td align="right">2231.2</td>
+<td align="right">0.20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">342.7</td>
+<td align="right">69.5</td>
+<td align="right">0.20</td>
+<td align="right">11594.7</td>
+<td align="right">2920.8</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">17</td>
+<td align="right">386.5</td>
+<td align="right">113.1</td>
+<td align="right">0.29</td>
+<td align="right">11502.5</td>
+<td align="right">2638.9</td>
+<td align="right">0.23</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">373.5</td>
+<td align="right">71.8</td>
+<td align="right">0.19</td>
+<td align="right">11401.1</td>
+<td align="right">2231.2</td>
+<td align="right">0.20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">342.7</td>
+<td align="right">69.5</td>
+<td align="right">0.20</td>
+<td align="right">11594.7</td>
+<td align="right">2920.8</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">17</td>
+<td align="right">386.5</td>
+<td align="right">113.1</td>
+<td align="right">0.29</td>
+<td align="right">11502.5</td>
+<td align="right">2638.9</td>
+<td align="right">0.23</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">373.5</td>
+<td align="right">71.8</td>
+<td align="right">0.19</td>
+<td align="right">11401.1</td>
+<td align="right">2231.2</td>
+<td align="right">0.20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">342.7</td>
+<td align="right">69.5</td>
+<td align="right">0.20</td>
+<td align="right">11594.7</td>
+<td align="right">2920.8</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">17</td>
+<td align="right">386.5</td>
+<td align="right">113.1</td>
+<td align="right">0.29</td>
+<td align="right">11502.5</td>
+<td align="right">2638.9</td>
+<td align="right">0.23</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">373.5</td>
+<td align="right">71.8</td>
+<td align="right">0.19</td>
+<td align="right">11401.1</td>
+<td align="right">2231.2</td>
+<td align="right">0.20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">342.7</td>
+<td align="right">69.5</td>
+<td align="right">0.20</td>
+<td align="right">11594.7</td>
+<td align="right">2920.8</td>
+<td align="right">0.25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NaN</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
 <p>Also, it is possible to compute Pearson correlations between the different parameters and number of records, and/or the gas production average.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#&gt; Daily data:</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;           param1 param2 min_time records_d cows_d mean_dCH4 CV_dCH4</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; param1      1.00      0     0.00     -0.62  -0.71     -0.77   -0.75</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; param2      0.00      1     0.00      0.00   0.00      0.00    0.00</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; min_time    0.00      0     1.00     -0.74  -0.65     -0.28   -0.25</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; records_d  -0.62      0    -0.74      1.00   0.90      0.55    0.66</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; cows_d     -0.71      0    -0.65      0.90   1.00      0.82    0.80</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; mean_dCH4  -0.77      0    -0.28      0.55   0.82      1.00    0.75</span></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; CV_dCH4    -0.75      0    -0.25      0.66   0.80      0.75    1.00</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Weekly data:</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;           param1 param2 min_time records_w cows_w mean_wCH4 CV_wCH4</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; param1      1.00  -0.25    -0.35     -0.30  -0.29     -0.53   -0.05</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; param2     -0.25   1.00    -0.24     -0.37  -0.33     -0.11   -0.08</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; min_time   -0.35  -0.24     1.00     -0.45  -0.47      0.49   -0.21</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; records_w  -0.30  -0.37    -0.45      1.00   0.98      0.11    0.23</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; cows_w     -0.29  -0.33    -0.47      0.98   1.00      0.12    0.27</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; mean_wCH4  -0.53  -0.11     0.49      0.11   0.12      1.00   -0.46</span></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; CV_wCH4    -0.05  -0.08    -0.21      0.23   0.27     -0.46    1.00</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#&gt; Daily data:</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;           param1 param2 min_time records_d cows_d mean_dCH4 CV_dCH4</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; param1      1.00      0     0.00     -0.62  -0.71     -0.77   -0.75</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; param2      0.00      1     0.00      0.00   0.00      0.00    0.00</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; min_time    0.00      0     1.00     -0.74  -0.65     -0.28   -0.25</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; records_d  -0.62      0    -0.74      1.00   0.90      0.55    0.66</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; cows_d     -0.71      0    -0.65      0.90   1.00      0.82    0.80</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; mean_dCH4  -0.77      0    -0.28      0.55   0.82      1.00    0.75</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; CV_dCH4    -0.75      0    -0.25      0.66   0.80      0.75    1.00</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Weekly data:</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;           param1 param2 min_time records_w cows_w mean_wCH4 CV_wCH4</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; param1      1.00  -0.25    -0.35     -0.30  -0.29     -0.53   -0.05</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; param2     -0.25   1.00    -0.24     -0.37  -0.33     -0.10   -0.06</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; min_time   -0.35  -0.24     1.00     -0.45  -0.47      0.49   -0.21</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; records_w  -0.30  -0.37    -0.45      1.00   0.98      0.11    0.23</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; cows_w     -0.29  -0.33    -0.47      0.98   1.00      0.12    0.26</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; mean_wCH4  -0.53  -0.10     0.49      0.11   0.12      1.00   -0.46</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; CV_wCH4    -0.05  -0.06    -0.21      0.23   0.26     -0.46    1.00</span></span></code></pre></div>
 <p>That gives the user an idea of what are the pros and cons of being more or less conservative when processing GreenFeed data for analysis. In general, the more conservative the parameters are, the fewer records are retained in the data.</p>
 </div>
 <div class="section level2">
