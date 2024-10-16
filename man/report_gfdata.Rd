@@ -55,28 +55,4 @@ report_gfdata(
   plot_opt = "All"
 )
 \dontshow{\}) # examplesIf}
-# Create a Final Report in PDF format from the finalized data received from C-Lock Inc.
-# Note that Unit could be numeric or character (It will use to print in the PDF)
-
-# File is a list of reports from C-Lock inc.
-# it could be one or multiples depend on the number of units
-file <- list(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
-
-# By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases
-
-# Is it possible to include a file with Farm IDs to use in the reports
-# The file structure should be: FarmName | RFID
-
-report_gfdata(
-  input_type = "final",
-  exp = "StudyName",
-  unit = 1,
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  save_dir = tempdir(),
-  plot_opt = "All",
-  rfid_file = NA,
-  file_path = file
-)
-
 }
