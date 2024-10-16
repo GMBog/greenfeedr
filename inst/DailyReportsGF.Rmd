@@ -228,7 +228,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
             legend.position = "none"
           ) +
           geom_hline(yintercept = mean(.$daily_CH4), linetype = "dashed", color = "blue", linewidth = 0.6) +
-          scale_y_continuous(breaks = seq(0, max(.$daily_CH4), by = 100))
+          scale_y_continuous(breaks = seq(0, max(.$daily_CH4), by = 50))
       }
     plots <- c(plots, list(p1))
   }
