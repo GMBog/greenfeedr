@@ -10,8 +10,7 @@ has_credentials()
 A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise
 }
 \description{
-Helper function to check if necessary
-    API credentials are available in the environment.
+Check if necessary API credentials are available in the environment.
 }
 \examples{
 # Example 1: When environment variables are set

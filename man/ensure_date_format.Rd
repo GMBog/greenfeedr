@@ -13,7 +13,7 @@ ensure_date_format(date_input)
 A character string representing the date in 'YYYY-MM-DD' format
 }
 \description{
-Helper function to check date format.
+Check date format.
     If the format is wrong 'NA' an error message is printed, else it will
     formatted the date in the correct way (YYYY-MM-DD)
 }

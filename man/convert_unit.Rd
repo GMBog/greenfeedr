@@ -13,7 +13,8 @@ convert_unit(unit)
 A character string of the unit(s) in the correct comma-separated format.
 }
 \description{
-Processes the parameter `unit` to format it correctly as a comma-separated string, regardless of whether it's provided as a numeric, character, or list/vector.
+Processes the parameter unit to format it correctly as a comma-separated string,
+    regardless of whether it's provided as a numeric, character, or list/vector.
 }
 \examples{
 # Example 1: Providing unit as a character vector

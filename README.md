@@ -55,9 +55,7 @@ the daily records obtained.
 
 The data looks like (first 5 cols):
 
-<div style="font-size: 12px;">
-
-<table>
+<table style="font-size: 12px;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -267,8 +265,6 @@ O2 Massflow (g/d)
 </tbody>
 </table>
 
-</div>
-
 The first step is to investigate the total number of records, records
 per day, and days with records per week we have in our GreenFeed data.
 
@@ -375,9 +371,7 @@ data <- param_combinations %>%
 Finally, the results from our function will be placed in a data frame
 with the following structure:
 
-<div style="font-size: 12px;">
-
-<table>
+<table style="font-size: 12px;">
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -1032,8 +1026,6 @@ CV_wCO2
 </tr>
 </tbody>
 </table>
-
-</div>
 
 That gives the user an idea of what are the pros and cons of being more
 or less conservative when processing GreenFeed data for analysis. In

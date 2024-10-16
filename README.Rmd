@@ -70,10 +70,8 @@ The data looks like (first 5 cols):
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 
 # Display the table with reduced font size using inline CSS
-cat('<div style="font-size: 12px;">')
 finaldata$RFID <- as.character(finaldata$RFID)
-knitr::kable(finaldata[1:6, c(1,3:10)], format = "html")
-cat('</div>')
+cat(knitr::kable(finaldata[1:6, c(1, 3:10)], format = "html", table.attr = "style='font-size: 12px;'"))
 ```
 
 The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 
@@ -176,9 +174,7 @@ data <- param_combinations %>%
 Finally, the results from our function will be placed in a data frame with the following structure:
 
 ```{r Results table, echo = FALSE, message = FALSE, results = 'asis'}
-cat('<div style="font-size: 12px;">')
-knitr::kable(data[1:10,], format = "html")
-cat('</div>')
+cat(knitr::kable(data[1:10,], format = "html", table.attr = "style='font-size: 12px;'"))
 ```
 
 That gives the user an idea of what are the pros and cons of being more or less conservative when processing GreenFeed data for analysis. In general, the more conservative the parameters are, the fewer records are retained in the data.

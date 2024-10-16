@@ -16,13 +16,13 @@ Authors@R:
            role = c("ctb"))
     )
 Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
-Description: greenfeedr provides functions for downloading, processing, and reporting GreenFeed data. The
+Description: Functions for downloading, processing, and reporting GreenFeed data. The
     GreenFeed system generates large amount of daily data that could be overwhelming for users.
     So, the first step is to retrieve data from C-Lock system so use `get_gfdata()` to download via API.
     Also, other function such as `report_gfdata()` allows to download and report daily and final data from GreenFeed.
     The function `process_gfdata()` process daily or final data for further analysis. Two more functions as
     `pellin()` and `viseat()` helps for processing and checking pellet intakes and visits to the GreenFeed.
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
