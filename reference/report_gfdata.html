@@ -15,7 +15,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">greenfeedr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,47 +130,6 @@
 <span class="r-in"><span>  plot_opt <span class="op">=</span> <span class="st">"All"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span><span class="co"># Create a Final Report in PDF format from the finalized data received from C-Lock Inc.</span></span></span>
-<span class="r-in"><span><span class="co"># Note that Unit could be numeric or character (It will use to print in the PDF)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># File is a list of reports from C-Lock inc.</span></span></span>
-<span class="r-in"><span><span class="co"># it could be one or multiples depend on the number of units</span></span></span>
-<span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"StudyName_FinalReport.xlsx"</span>, package <span class="op">=</span> <span class="st">"greenfeedr"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># By default `report_gfdata()` plot only methane (CH4), but here we defined to plot "All" gases</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Is it possible to include a file with Farm IDs to use in the reports</span></span></span>
-<span class="r-in"><span><span class="co"># The file structure should be: FarmName | RFID</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">report_gfdata</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"final"</span>,</span></span>
-<span class="r-in"><span>  exp <span class="op">=</span> <span class="st">"StudyName"</span>,</span></span>
-<span class="r-in"><span>  unit <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span></span>
-<span class="r-in"><span>  end_date <span class="op">=</span> <span class="st">"2024-05-25"</span>,</span></span>
-<span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  plot_opt <span class="op">=</span> <span class="st">"All"</span>,</span></span>
-<span class="r-in"><span>  rfid_file <span class="op">=</span> <span class="cn">NA</span>,</span></span>
-<span class="r-in"><span>  file_path <span class="op">=</span> <span class="va">file</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> No valid data provided. Please include a valid 'rfid_file' parameter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> processing file: FinalReportsGF.Rmd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1/8                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2/8 [libraries]                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3/8                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4/8 [Data per cow]               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5/8                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6/8 [Data per day]               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7/8                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8/8 [Gas data production per cow]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> output file: FinalReportsGF.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /opt/hostedtoolcache/pandoc/3.1.11/x64/pandoc +RTS -K512m -RTS FinalReportsGF.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /tmp/Rtmpk9dBGq/FinalReport_StudyName.tex --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /home/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --highlight-style tango --pdf-engine pdflatex --variable graphics --variable 'geometry:margin=1in' </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>error in running command</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ! sh: 1: pdflatex: not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /tmp/Rtmpk9dBGq/FinalReport_StudyName.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See FinalReport_StudyName.log for more info.</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
