@@ -36,3 +36,4 @@ filter_within_range(data, cutoff = 1)
 # Explanation: All values except 100 fall within 1 standard deviation from the mean.
 
 }
+\keyword{internal}

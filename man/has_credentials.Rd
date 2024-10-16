@@ -30,3 +30,4 @@ Sys.unsetenv("API_USER")
 Sys.unsetenv("API_PASS")
 
 }
+\keyword{internal}

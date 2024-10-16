@@ -36,3 +36,4 @@ invalid_file <- process_rfid_data("path/to/rfid_data.docx")
 print(invalid_file)
 
 }
+\keyword{internal}

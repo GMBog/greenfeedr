@@ -22,6 +22,7 @@
 #' Sys.unsetenv("API_PASS")
 #'
 #' @export
+#' @keywords internal
 has_credentials <- function() {
   !is.na(Sys.getenv("API_USER", unset = NA)) && !is.na(Sys.getenv("API_PASS", unset = NA))
 }
@@ -54,6 +55,7 @@ has_credentials <- function() {
 #' )
 #'
 #' @export
+#' @keywords internal
 ensure_date_format <- function(date_input) {
   # Attempt to parse the input into a Date object
   date_obj <- tryCatch(
@@ -106,6 +108,7 @@ ensure_date_format <- function(date_input) {
 #' # Explanation: All values except 100 fall within 1 standard deviation from the mean.
 #'
 #' @export
+#' @keywords internal
 filter_within_range <- function(v, cutoff) {
   mean_v <- mean(v, na.rm = TRUE)
   sd_v <- sd(v, na.rm = TRUE)
@@ -143,6 +146,7 @@ filter_within_range <- function(v, cutoff) {
 #' print(invalid_file)
 #'
 #' @export
+#' @keywords internal
 process_rfid_data <- function(rfid_file) {
   # Standardize column names function
   standardize_columns <- function(df) {
@@ -226,6 +230,7 @@ process_rfid_data <- function(rfid_file) {
 #' convert_unit(unit)
 #'
 #' @export
+#' @keywords internal
 convert_unit <- function(unit) {
   if (is.numeric(unit)) {
     unit <- as.character(unit)
