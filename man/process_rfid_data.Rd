@@ -13,7 +13,7 @@ process_rfid_data(rfid_file)
 A data frame with standardized column names (`FarmName` and `RFID`). If the input is invalid or if no valid data is provided, the function returns `NULL`.
 }
 \description{
-Processes RFID data from animals in the study
+Processes RFID data from animals in the study.
 }
 \examples{
 # Example with a data frame
@@ -22,18 +22,18 @@ df <- data.frame(
   V2 = c("12345", "67890", "54321")
 )
 processed_df <- process_rfid_data(df)
-print(processed_df)
+message(processed_df)
 
 # Example with invalid input
 invalid_data <- process_rfid_data(NULL)
 # Expected output: message "RFID is NA. It is recommended to include it." and NULL
-print(invalid_data)
+message(invalid_data)
 
 # Example with unsupported file format
 # Assuming 'rfid_data.docx' is an unsupported file format
 invalid_file <- process_rfid_data("path/to/rfid_data.docx")
 # Expected output: error message "Unsupported file format."
-print(invalid_file)
+message(invalid_file)
 
 }
 \keyword{internal}

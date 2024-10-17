@@ -2,9 +2,9 @@
 % Please edit documentation in R/viseat.R
 \name{viseat}
 \alias{viseat}
-\title{Process GreenFeed Visits}
+\title{Process 'GreenFeed' Visits}
 \arguments{
-\item{file_path}{a character string or list representing files(s) with feedtimes from C-Lock.}
+\item{file_path}{a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'.}
 
 \item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
 
@@ -12,20 +12,20 @@
 
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID}
+\item{rfid_file}{a character string representing the file with individual RFIDs.  The order should be Visual ID (col1) and RFID (col2)}
 }
 \value{
 A list of two data frames:
-  \item{visits_per_unit }{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
-  \item{visits_per_animal }{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
+  \item{visits_per_unit }{Data frame with daily processed 'GreenFeed' data, including columns for VisualID, Date, Time, number of drops, and visits.}
+  \item{visits_per_animal }{Data frame with weekly processed 'GreenFeed' data, including columns for VisualID, total drops, total visits, mean drops, and mean visits.}
 }
 \description{
-Processes GreenFeed visits and food drops for a requested period.
-     Generates a list of animals not visiting the GreenFeed to manage them,
-     and a description of animals visiting the GreenFeed.
+Processes 'GreenFeed' visits and food drops for a requested period.
+     Generates a list of animals not visiting the 'GreenFeed' to manage them,
+     and a description of animals visiting the 'GreenFeed'.
 }
 \examples{
-# You should provide the 'feedtimes' files.
+# You should provide the feedtimes files.
 # it could be a list of files if you have data from multiple units to combine
 path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 

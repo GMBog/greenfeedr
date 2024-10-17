@@ -49,14 +49,14 @@ studies <- list(
     Unit = c(2, 3),
     StartDate = "2024-01-20",
     EndDate = Sys.Date(),
-    save_dir = "/Downloads/Experiment_01/"
+    save_dir = "/tempdir()/Experiment_01/"
   ),
   list(
     Experiment = "Experiment_02",
     Unit = c(212),
     StartDate = "2024-02-01",
     EndDate = Sys.Date(),
-    save_dir = "/Downloads/Experiment_02"
+    save_dir = "/tempdir()/Experiment_02/"
   )
 )
 

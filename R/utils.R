@@ -1,7 +1,7 @@
 #' @name has_credentials
-#' @title Check for API Credentials
+#' @title Check for 'API' Credentials
 #'
-#' @description Check if necessary API credentials are available in the environment.
+#' @description Check if necessary 'API' credentials are available in the environment.
 #'
 #' @return A logical value: `TRUE` if both `API_USER` and `API_PASS` environment variables are set (i.e., not `NA`); `FALSE` otherwise
 #' @examples
@@ -30,9 +30,8 @@ has_credentials <- function() {
 #' @name ensure_date_format
 #' @title Check date format and transform in a usable one
 #'
-#' @description Check date format.
-#'     If the format is wrong 'NA' an error message is printed, else it will
-#'     formatted the date in the correct way (YYYY-MM-DD)
+#' @description Check date format. If the format is wrong ('NA') an error message is printed,
+#'     else it will formatted the date in the correct way (YYYY-MM-DD)
 #'
 #' @param date_input Date included as input
 #'
@@ -82,7 +81,7 @@ ensure_date_format <- function(date_input) {
 #' @name filter_within_range
 #' @title Detect outliers in data using mean and standard deviation
 #'
-#' @description Detect outliers using the mean and sd
+#' @description Detect outliers using the mean and standard deviation.
 #'
 #' @param v A vector with data
 #' @param cutoff A threshold or cutoff value that defines the range (e.g., 2.5)
@@ -118,7 +117,7 @@ filter_within_range <- function(v, cutoff) {
 #' @name process_rfid_data
 #' @title Process RFID Data
 #'
-#' @description Processes RFID data from animals in the study
+#' @description Processes RFID data from animals in the study.
 #'
 #' @param rfid_file Path or data frame containing RFID data.
 #'
@@ -131,18 +130,18 @@ filter_within_range <- function(v, cutoff) {
 #'   V2 = c("12345", "67890", "54321")
 #' )
 #' processed_df <- process_rfid_data(df)
-#' print(processed_df)
+#' message(processed_df)
 #'
 #' # Example with invalid input
 #' invalid_data <- process_rfid_data(NULL)
 #' # Expected output: message "RFID is NA. It is recommended to include it." and NULL
-#' print(invalid_data)
+#' message(invalid_data)
 #'
 #' # Example with unsupported file format
 #' # Assuming 'rfid_data.docx' is an unsupported file format
 #' invalid_file <- process_rfid_data("path/to/rfid_data.docx")
 #' # Expected output: error message "Unsupported file format."
-#' print(invalid_file)
+#' message(invalid_file)
 #'
 #' @export
 #' @keywords internal
@@ -203,12 +202,12 @@ process_rfid_data <- function(rfid_file) {
 
 
 #' @name convert_unit
-#' @title Convert GreenFeed Unit Number
+#' @title Convert 'GreenFeed' Unit Number
 #'
 #' @description Processes the parameter unit to format it correctly as a comma-separated string,
-#'     regardless of whether it's provided as a numeric, character, or list/vector.
+#'     regardless of whether it is provided as a numeric, character, or list/vector.
 #'
-#' @param unit Number of the GreenFeed unit(s). Can be a numeric, character, list, or vector.
+#' @param unit Number of the 'GreenFeed' unit(s). Can be a numeric, character, list, or vector.
 #'
 #' @return A character string of the unit(s) in the correct comma-separated format.
 #'

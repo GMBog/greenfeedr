@@ -1,11 +1,10 @@
 #' @name process_gfdata
-#' @title Process Daily and Final GreenFeed Data
+#' @title Process Daily and Final 'GreenFeed' Data
 #'
-#' @description Processes and calculates daily and weekly averages of GreenFeed data.
-#'     Handles data filtering, aggregation, and summarization to facilitate
-#'     further analysis and reporting.
+#' @description Processes and calculates daily and weekly averages of 'GreenFeed' data.
+#'     Handles data filtering, aggregation, and summarization to facilitate further analysis.
 #'
-#' @param data a data frame with daily or finalized GreenFeed data
+#' @param data a data frame with daily or finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param param1 an integer representing the number of records per day to be consider for analysis
@@ -13,8 +12,8 @@
 #' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2
 #'
 #' @return A list of two data frames:
-#'   \item{daily_data }{data frame with daily processed GreenFeed data}
-#'   \item{weekly_data }{data frame with weekly processed GreenFeed data}
+#'   \item{daily_data }{data frame with daily processed 'GreenFeed' data}
+#'   \item{weekly_data }{data frame with weekly processed 'GreenFeed' data}
 #'
 #' @examples
 #' file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
@@ -25,7 +24,8 @@
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
 #'   param1 = 2,
-#'   param2 = 3
+#'   param2 = 3,
+#'   min_time = 2
 #' )
 #' head(gf_data)
 #'
@@ -229,17 +229,17 @@ process_gfdata <- function(data, start_date, end_date,
 
 
   # Description of mean, sd, and CV for weekly gases
-  print(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
-  print(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
+  message(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
-  print(paste0("CO2: ", round(mean(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2)))
-  print(paste0("CO2 CV = ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_df$CO2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("CO2: ", round(mean(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2)))
+  message(paste0("CO2 CV = ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_df$CO2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
-  print(paste0("O2: ", round(mean(weekly_df$O2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE), 2)))
-  print(paste0("O2 CV = ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE) / mean(weekly_df$O2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("O2: ", round(mean(weekly_df$O2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE), 2)))
+  message(paste0("O2 CV = ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE) / mean(weekly_df$O2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
-  print(paste0("H2: ", round(mean(weekly_df$H2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE), 2)))
-  print(paste0("H2 CV = ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE) / mean(weekly_df$H2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("H2: ", round(mean(weekly_df$H2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE), 2)))
+  message(paste0("H2 CV = ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE) / mean(weekly_df$H2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
 
   # Return a list of data frames

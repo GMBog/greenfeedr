@@ -2,19 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{convert_unit}
 \alias{convert_unit}
-\title{Convert GreenFeed Unit Number}
+\title{Convert 'GreenFeed' Unit Number}
 \usage{
 convert_unit(unit)
 }
 \arguments{
-\item{unit}{Number of the GreenFeed unit(s). Can be a numeric, character, list, or vector.}
+\item{unit}{Number of the 'GreenFeed' unit(s). Can be a numeric, character, list, or vector.}
 }
 \value{
 A character string of the unit(s) in the correct comma-separated format.
 }
 \description{
 Processes the parameter unit to format it correctly as a comma-separated string,
-    regardless of whether it's provided as a numeric, character, or list/vector.
+    regardless of whether it is provided as a numeric, character, or list/vector.
 }
 \examples{
 # Example 1: Providing unit as a character vector

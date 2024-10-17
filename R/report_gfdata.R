@@ -1,28 +1,28 @@
 #' @name report_gfdata
-#' @title Download and Report GreenFeed Data
+#' @title Download and Report 'GreenFeed' Data
 #'
-#' @description Generates PDF reports of daily and final GreenFeed data.
-#'     If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
-#'     and generates a PDF report to with number of animals, records, and gas production of the ongoing study.
-#'     But, if option "final" is used, final data should be provided to generates a PDF report
-#'     to evaluate all GreenFeed data obtained from the finalized study.
+#' @description Generates PDF reports of daily and final 'GreenFeed' data.
+#'     If the option daily is used, data is retrieved from 'C-Lock Inc.' server via an 'API' and
+#'     generates a PDF report to with number of animals, records, and gases production.
+#'     However, if the option final is used, the finalized data should be provided to generates a PDF report
+#'     to evaluate all 'GreenFeed' data obtained from the finalized study.
 #'
-#' @param input_type a character string representing type of data (options: "daily" or "final")
+#' @param input_type a character string representing type of data (options: "daily" and "final")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
-#' @param unit numeric or character vector, or a list representing one or more GreenFeed unit numbers
+#' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param save_dir a character string representing the directory to save the output file
-#' @param plot_opt a character string representing the gas(es) to plot (options: 'All', 'CH4', 'CO2', 'O2', 'H2')
-#' @param rfid_file a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)
-#' @param user a character string representing the user name to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored
-#' @param pass a character string representing password to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored
-#' @param file_path A list of file paths containing the final report(s) from the GreenFeed system. If `input_type` is "final", this parameter is ignored
+#' @param plot_opt a character string representing the gas(es) to plot (options: "All", "CH4", "CO2", "O2", "H2")
+#' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
+#' @param user a character string representing the user name to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
+#' @param pass a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
+#' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored
 #'
-#' @return A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records
+#' @return A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or final records
 #'
 #' @examplesIf has_credentials()
-#' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+#' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
 #' user <- Sys.getenv("API_USER")
 #' pass <- Sys.getenv("API_PASS")
 #'
@@ -54,7 +54,7 @@
 utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec", "Gas_Data"))
 
 report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys.Date(),
-                          save_dir = getwd(), plot_opt = "CH4", rfid_file = NULL,
+                          save_dir = tempdir(), plot_opt = "CH4", rfid_file = NULL,
                           user = NA, pass = NA, file_path) {
   # Ensure unit is a comma-separated string
   unit <- convert_unit(unit)
@@ -84,12 +84,12 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
       "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
       "&st=", start_date, "&et=", end_date, "%2012:00:00"
     )
-    print(URL)
+    message(URL)
 
     req <- httr::POST(URL, body = list(token = TOK))
     httr::stop_for_status(req)
     a <- httr::content(req, as = "text")
-    print(a)
+    message(a)
 
     # Split the lines
     perline <- stringr::str_split(a, "\\n")[[1]]
@@ -126,7 +126,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
       dir.create(save_dir, recursive = TRUE)
     }
 
-    # Save GreenFeed data as a csv file in the specified directory
+    # Save 'GreenFeed' data as a csv file in the specified directory
     readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
 
 
@@ -142,7 +142,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
       }
     }
 
-    # Dataframe (df) contains daily GreenFeed data
+    # Dataframe (df) contains daily 'GreenFeed' data
     df <- df %>%
       ## Remove "unknown IDs" and leading zeros from RFID col
       dplyr::filter(RFID != "unknown") %>%
@@ -205,7 +205,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
         "AirflowCf"
       )
 
-      # df contains finalized GreenFeed data
+      # df contains finalized 'GreenFeed' data
       df <- df %>%
         ## Remove "unknown IDs" and leading zeros from RFID col
         dplyr::filter(RFID != "unknown") %>%

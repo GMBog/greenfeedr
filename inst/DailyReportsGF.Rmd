@@ -27,7 +27,7 @@ library(stringr)
 if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
   kbl(rfid_file, "simple")
 } else {
-  print("The 'rfid_file' is not provided.")
+  message("The 'rfid_file' is not provided.")
 }
 ```
 
@@ -326,7 +326,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
         }
       plots <- c(plots, list(p4))
     } else {
-      print("No hydrogen (H2) data from GreenFeed")
+      message("No hydrogen (H2) data from GreenFeed")
     }
   }
 
@@ -336,6 +336,6 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
 # Call the function and display the plots
 plots <- generate_plots(df, group_var, plot_opt)
 for (p in plots) {
-  print(p)
+  message(p)
 }
 ```

@@ -1,21 +1,21 @@
 #' @name pellin
-#' @title Process GreenFeed Pellet Intakes
+#' @title Process 'GreenFeed' Pellet Intakes
 #'
-#' @description Processes the feedtimes file from GreenFeed system,
+#' @description Processes the "feedtimes" file from 'GreenFeed' system,
 #'     including visits and food drops across a specific period, and it is used
 #'     to calculate pellet intakes per animal from all units.
 #'     Aggregates data to provide insights into the feeding behavior
 #'     and pellet consumption of the animals during a study.
 #'
-#' @param file_path a character string or list representing files(s) with feedtimes from C-Lock
-#' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers. The order should match with feedtimes files
+#' @param file_path a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'
+#' @param unit numeric or character vector or list representing one or more 'GreenFeed' unit numbers. The order should match with "feedtimes" files
 #' @param gcup a numeric value representing the grams of pellets per cup.
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param save_dir a character string representing the directory to save the output file
-#' @param rfid_file a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)
+#' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
 #'
-#' @return An Excel file with pellet intakes for all animals and days within the specified period is saved to `save_dir`.
+#' @return An Excel file with pellet intakes for all animals and days within the specified period is saved to save_dir.
 #'     The file is named "Pellet_Intakes_YYYY-MM-DD_YYYY-MM-DD.csv".
 #'
 #' @examples
@@ -25,7 +25,7 @@
 #'
 #' # You must include the grams of pellets per cup based on the result obtained from the 10-drops test
 #'
-#' # If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and
+#' # If the user include an rfid file, the structure should be in col1 AnimalName or Visual ID, and
 #' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
 #' RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 #'
@@ -56,7 +56,7 @@ utils::globalVariables(c(
 ))
 
 pellin <- function(file_path, unit, gcup, start_date, end_date,
-                   save_dir = getwd(), rfid_file = NULL) {
+                   save_dir = tempdir(), rfid_file = NULL) {
   message("Please set the 'gcup' parameter based on the 10-drops test.
            If units have different gram values, define 'gcup' as a vector with an element for each unit.")
 
@@ -88,7 +88,7 @@ pellin <- function(file_path, unit, gcup, start_date, end_date,
 
 
 
-  # If rfid_file provided, filter and get animal ID not visiting the GreenFeed units
+  # If rfid_file provided, filter and get animal ID not visiting the 'GreenFeed' units
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df[df$CowTag %in% rfid_file$RFID, ]
     noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]

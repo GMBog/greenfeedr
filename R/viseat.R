@@ -1,23 +1,23 @@
 #' @name viseat
-#' @title Process GreenFeed Visits
+#' @title Process 'GreenFeed' Visits
 #'
-#' @description Processes GreenFeed visits and food drops for a requested period.
-#'      Generates a list of animals not visiting the GreenFeed to manage them,
-#'      and a description of animals visiting the GreenFeed.
+#' @description Processes 'GreenFeed' visits and food drops for a requested period.
+#'      Generates a list of animals not visiting the 'GreenFeed' to manage them,
+#'      and a description of animals visiting the 'GreenFeed'.
 #'
-#' @param file_path a character string or list representing files(s) with feedtimes from C-Lock.
+#' @param file_path a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'.
 #' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
-#' @param rfid_file a character string representing the file with individual RFIDs. The order should be col1=FarmName and col2=RFID
+#' @param rfid_file a character string representing the file with individual RFIDs.  The order should be Visual ID (col1) and RFID (col2)
 #'
 #' @return A list of two data frames:
-#'   \item{visits_per_unit }{Data frame with daily processed GreenFeed data, including columns for FarmName, Date, Time, number of drops, and visits.}
-#'   \item{visits_per_animal }{Data frame with weekly processed GreenFeed data, including columns for FarmName, total drops, total visits, mean drops, and mean visits.}
+#'   \item{visits_per_unit }{Data frame with daily processed 'GreenFeed' data, including columns for VisualID, Date, Time, number of drops, and visits.}
+#'   \item{visits_per_animal }{Data frame with weekly processed 'GreenFeed' data, including columns for VisualID, total drops, total visits, mean drops, and mean visits.}
 #'
 #'
 #' @examples
-#' # You should provide the 'feedtimes' files.
+#' # You should provide the feedtimes files.
 #' # it could be a list of files if you have data from multiple units to combine
 #' path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 #'
@@ -79,7 +79,7 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
     dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
 
 
-  # If rfid_file provided, filter and get animal ID not visiting the GreenFeed units
+  # If rfid_file provided, filter and get animal ID not visiting the 'GreenFeed' units
   df <- df[df$CowTag %in% rfid_file$RFID, ]
   noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]
 
@@ -103,7 +103,7 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
       color = "black",
       position = position_dodge(0.9), size = 3.8
     )
-  print(plotFID)
+  message(plotFID)
 
   # Create a data frame with number of drops and visits per day per animal
   daily_visits <- df %>%

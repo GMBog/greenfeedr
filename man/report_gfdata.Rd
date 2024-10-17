@@ -2,13 +2,13 @@
 % Please edit documentation in R/report_gfdata.R
 \name{report_gfdata}
 \alias{report_gfdata}
-\title{Download and Report GreenFeed Data}
+\title{Download and Report 'GreenFeed' Data}
 \arguments{
-\item{input_type}{a character string representing type of data (options: "daily" or "final")}
+\item{input_type}{a character string representing type of data (options: "daily" and "final")}
 
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
-\item{unit}{numeric or character vector, or a list representing one or more GreenFeed unit numbers}
+\item{unit}{numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
@@ -16,29 +16,29 @@
 
 \item{save_dir}{a character string representing the directory to save the output file}
 
-\item{plot_opt}{a character string representing the gas(es) to plot (options: 'All', 'CH4', 'CO2', 'O2', 'H2')}
+\item{plot_opt}{a character string representing the gas(es) to plot (options: "All", "CH4", "CO2", "O2", "H2")}
 
-\item{rfid_file}{a character string representing the file with individual IDs. The order should be AnimalName (col1) and RFID (col2)}
+\item{rfid_file}{a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)}
 
-\item{user}{a character string representing the user name to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored}
+\item{user}{a character string representing the user name to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 
-\item{pass}{a character string representing password to logging into GreenFeed system. If `input_type` is "final", this parameter is ignored}
+\item{pass}{a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 
-\item{file_path}{A list of file paths containing the final report(s) from the GreenFeed system. If `input_type` is "final", this parameter is ignored}
+\item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 }
 \value{
-A CSV file with daily GreenFeed data and a PDF report with a description of the daily or final records
+A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or final records
 }
 \description{
-Generates PDF reports of daily and final GreenFeed data.
-    If option "daily" is used, data is retrieved from C-Lock server via an application programming interface (API)
-    and generates a PDF report to with number of animals, records, and gas production of the ongoing study.
-    But, if option "final" is used, final data should be provided to generates a PDF report
-    to evaluate all GreenFeed data obtained from the finalized study.
+Generates PDF reports of daily and final 'GreenFeed' data.
+    If the option daily is used, data is retrieved from 'C-Lock Inc.' server via an 'API' and
+    generates a PDF report to with number of animals, records, and gases production.
+    However, if the option final is used, the finalized data should be provided to generates a PDF report
+    to evaluate all 'GreenFeed' data obtained from the finalized study.
 }
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+# Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
 user <- Sys.getenv("API_USER")
 pass <- Sys.getenv("API_PASS")
 

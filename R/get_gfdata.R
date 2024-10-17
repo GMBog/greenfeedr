@@ -1,23 +1,22 @@
 #' @name get_gfdata
-#' @title Download Daily GreenFeed Data via API
+#' @title Download Daily 'GreenFeed' Data via 'API'
 #'
-#' @description Downloads daily GreenFeed data from the C-Lock Inc. server
-#'     via an application programming interface (API). Retrieves data
-#'     based on specified parameters such as login information, date range and units,
-#'     and provides an Excel file with the GreenFeed data.
+#' @description Downloads daily 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
+#'     Retrieves data based on specified parameters (login, date range and units), and
+#'     provides a CSV file with the 'GreenFeed' daily data.
 #'
-#' @param user a character string representing the user name to logging into GreenFeed system
-#' @param pass a character string representing password to logging into GreenFeed system
+#' @param user a character string representing the user name to logging into 'GreenFeed' system
+#' @param pass a character string representing password to logging into 'GreenFeed' system
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
-#' @param unit numeric or character vector, or a list representing one or more GreenFeed unit numbers
+#' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param save_dir a character string representing the directory to save the output file
 #'
-#' @return A CSV file with daily GreenFeed data in the specified directory
+#' @return A CSV file with daily 'GreenFeed' data in the specified directory
 #'
 #' @examplesIf has_credentials()
-#' # Please replace "your_username" and "your_password" with your actual GreenFeed credentials.
+#' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
 #' user <- Sys.getenv("API_USER")
 #' pass <- Sys.getenv("API_PASS")
 #' exp <- "StudyName"
@@ -36,7 +35,7 @@
 #' @import stringr
 
 get_gfdata <- function(user, pass, exp = NA, unit,
-                       start_date, end_date = Sys.Date(), save_dir = getwd()) {
+                       start_date, end_date = Sys.Date(), save_dir = tempdir()) {
   # Ensure unit is a comma-separated string
   unit <- convert_unit(unit)
 
@@ -54,7 +53,7 @@ get_gfdata <- function(user, pass, exp = NA, unit,
     "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
     "&st=", start_date, "&et=", end_date, "%2012:00:00"
   )
-  print(URL)
+  message(URL)
 
   req <- httr::POST(URL, body = list(token = TOK))
   httr::stop_for_status(req)

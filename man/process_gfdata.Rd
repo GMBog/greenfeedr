@@ -2,9 +2,9 @@
 % Please edit documentation in R/process_gfdata.R
 \name{process_gfdata}
 \alias{process_gfdata}
-\title{Process Daily and Final GreenFeed Data}
+\title{Process Daily and Final 'GreenFeed' Data}
 \arguments{
-\item{data}{a data frame with daily or finalized GreenFeed data}
+\item{data}{a data frame with daily or finalized 'GreenFeed' data}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 
@@ -18,13 +18,12 @@
 }
 \value{
 A list of two data frames:
-  \item{daily_data }{data frame with daily processed GreenFeed data}
-  \item{weekly_data }{data frame with weekly processed GreenFeed data}
+  \item{daily_data }{data frame with daily processed 'GreenFeed' data}
+  \item{weekly_data }{data frame with weekly processed 'GreenFeed' data}
 }
 \description{
-Processes and calculates daily and weekly averages of GreenFeed data.
-    Handles data filtering, aggregation, and summarization to facilitate
-    further analysis and reporting.
+Processes and calculates daily and weekly averages of 'GreenFeed' data.
+    Handles data filtering, aggregation, and summarization to facilitate further analysis.
 }
 \examples{
 file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
@@ -35,7 +34,8 @@ gf_data <- process_gfdata(
   start_date = "2024-05-13",
   end_date = "2024-05-25",
   param1 = 2,
-  param2 = 3
+  param2 = 3,
+  min_time = 2
 )
 head(gf_data)
 
