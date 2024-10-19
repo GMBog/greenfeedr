@@ -336,6 +336,6 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
 # Call the function and display the plots
 plots <- generate_plots(df, group_var, plot_opt)
 for (p in plots) {
-  message(p)
+  print(p)
 }
 ```

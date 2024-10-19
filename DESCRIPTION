@@ -19,7 +19,7 @@ Maintainer: Guillermo Martinez-Boggio <guillermo.martinezboggio@wisc.edu>
 Description: Downloading, Processing, and Reporting 'GreenFeed' Data.
     The 'GreenFeed' system generates substantial amounts of daily data, which can be overwhelming for users. 
     This package facilitates data retrieval and reporting from the 'GreenFeed' system using a streamlined process. 
-    Users can retrieve data from the 'C-Lock' system via an 'API' using the get_gfdata() function. 
+    Users can retrieve data from the 'C-Lock Inc.' system via an 'API' using the get_gfdata() function. 
     Additionally, the report_gfdata() function allows users to generate both daily and final reports from 'GreenFeed' data. 
     The process_gfdata() function further processes this data for analysis. 
     For pellet intake processing and visit checks, the package also provides the pellin() and viseat() functions, 
