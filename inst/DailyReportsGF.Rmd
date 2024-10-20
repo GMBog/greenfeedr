@@ -229,7 +229,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           ) +
           geom_hline(yintercept = mean(.$daily_CH4), linetype = "dashed", color = "blue", linewidth = 0.6) +
           scale_y_continuous(
-            limits = c(0, max(.$daily_CH4) * 1.1),
+            limits = c(0, max(.$daily_CH4)),
             breaks = seq(0, max(.$daily_CH4), by = 50)
             )
       }
@@ -263,7 +263,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           ) +
           geom_hline(yintercept = mean(.$daily_CO2), linetype = "dashed", color = "red", linewidth = 0.6) +
           scale_y_continuous(
-            limits = c(0, max(.$daily_CO2) * 1.1),
+            limits = c(0, max(.$daily_CO2)),
             breaks = seq(0, max(.$daily_CO2), by = 2000)
             )
       }
@@ -297,7 +297,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           ) +
           geom_hline(yintercept = mean(.$daily_O2), linetype = "dashed", color = "orange", linewidth = 0.6) +
           scale_y_continuous(
-            limits = c(0, max(.$daily_O2) * 1.1),
+            limits = c(0, max(.$daily_O2)),
             breaks = seq(0, max(.$daily_O2), by = 2000)
             )
       }
@@ -332,7 +332,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
             ) +
             geom_hline(yintercept = mean(.$daily_H2), linetype = "dashed", color = "purple", linewidth = 0.6) +
             scale_y_continuous(
-              limits = c(0, max(.$daily_H2) * 1.1),
+              limits = c(0, max(.$daily_H2)),
               breaks = seq(0, max(.$daily_H2), by = 0.5)
               )
         }
