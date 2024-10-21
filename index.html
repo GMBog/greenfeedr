@@ -14,8 +14,8 @@
 <link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Process and Report GreenFeed Data">
-<meta name="description" content="Downloading, Processing, and Reporting GreenFeed Data. The GreenFeed system generates substantial amounts of daily data, which can be overwhelming for users. This package facilitates data retrieval and reporting from the GreenFeed system using a streamlined process. Users can retrieve data from the C-Lock Inc. system via an API using the get_gfdata() function. Additionally, the report_gfdata() function allows users to generate both daily and final reports from GreenFeed data. The process_gfdata() function further processes this data for analysis. For pellet intake processing and visit checks, the package also provides the pellin() and viseat() functions, ensuring a comprehensive toolset for managing and analyzing GreenFeed data.">
-<meta property="og:description" content="Downloading, Processing, and Reporting GreenFeed Data. The GreenFeed system generates substantial amounts of daily data, which can be overwhelming for users. This package facilitates data retrieval and reporting from the GreenFeed system using a streamlined process. Users can retrieve data from the C-Lock Inc. system via an API using the get_gfdata() function. Additionally, the report_gfdata() function allows users to generate both daily and final reports from GreenFeed data. The process_gfdata() function further processes this data for analysis. For pellet intake processing and visit checks, the package also provides the pellin() and viseat() functions, ensuring a comprehensive toolset for managing and analyzing GreenFeed data.">
+<meta name="description" content="Downloading, Processing, and Reporting GreenFeed Data. The GreenFeed system generates substantial amounts of daily data, which can be overwhelming for users. This package facilitates data retrieval and reporting from the GreenFeed system using a streamlined process. Users can retrieve data from the C-Lock system via an API using the get_gfdata() function. Additionally, the report_gfdata() function allows users to generate both daily and final reports from GreenFeed data. The process_gfdata() function further processes this data for analysis. For pellet intake processing and visit checks, the package also provides the pellin() and viseat() functions, ensuring a comprehensive toolset for managing and analyzing GreenFeed data.">
+<meta property="og:description" content="Downloading, Processing, and Reporting GreenFeed Data. The GreenFeed system generates substantial amounts of daily data, which can be overwhelming for users. This package facilitates data retrieval and reporting from the GreenFeed system using a streamlined process. Users can retrieve data from the C-Lock system via an API using the get_gfdata() function. Additionally, the report_gfdata() function allows users to generate both daily and final reports from GreenFeed data. The process_gfdata() function further processes this data for analysis. For pellet intake processing and visit checks, the package also provides the pellin() and viseat() functions, ensuring a comprehensive toolset for managing and analyzing GreenFeed data.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -94,9 +94,10 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the released version of <code>greenfeedr</code> from <a href="https://CRAN.R-project.org/package=greenfeedr" class="external-link">CRAN</a> with:</p>
+<p>You can install the development version of greenfeedr from <a href="https://github.com/GMBog/greenfeedr" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"greenfeedr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"GMBog/greenfeedr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -1108,7 +1109,6 @@ CV_wCO2
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://CRAN.R-project.org/package=greenfeedr" class="external-link"><img src="https://www.r-pkg.org/badges/version/greenfeedr" alt="CRAN Status"></a></li>
 <li><a href="https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
