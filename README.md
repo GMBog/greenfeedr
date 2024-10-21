@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN
+Status](https://www.r-pkg.org/badges/version/greenfeedr)](https://CRAN.R-project.org/package=greenfeedr)
 [![R-CMD-check](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/GMBog/greenfeedr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -33,12 +35,11 @@ More complete information about how to use greenfeedr can be found in:
 
 ## Installation
 
-You can install the development version of greenfeedr from
-[GitHub](https://github.com/GMBog/greenfeedr) with:
+You can install the released version of `greenfeedr` from
+[CRAN](https://CRAN.R-project.org/package=greenfeedr) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("GMBog/greenfeedr")
+install.packages("greenfeedr")
 ```
 
 ## Usage
