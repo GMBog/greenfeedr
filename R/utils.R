@@ -178,7 +178,6 @@ process_rfid_data <- function(rfid_file) {
           rfid_file <- readr::read_csv(rfid_file, col_types = readr::cols(.default = readr::col_character()))
         } else if (file_extension %in% c("xls", "xlsx")) {
           rfid_file <- readxl::read_excel(rfid_file) %>%
-            dplyr::select(1:2) %>%
             dplyr::mutate(across(everything(), as.character))
         } else if (file_extension == "txt") {
           rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
