@@ -27,6 +27,7 @@ The greenfeedr makes these steps fast and easy:
 This document introduces you to greenfeedr's set of tools, and shows you how to apply them to data frames.
 
 ```{r setup}
+#install.packages("greenfeedr")
 library(greenfeedr)
 ```
 

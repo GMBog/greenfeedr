@@ -45,7 +45,7 @@ plot1 <- ggplot(as.data.frame(table(as.Date(df$StartTime))), aes(x = Var1, y = F
   labs(
     title = "Total Records Per Day",
     x = "",
-    y = "Total records"
+    y = "Total Records"
   ) +
   geom_text(aes(label = Freq), vjust = -0.5, color = "black", size = 2.2, position = position_dodge(width = 0.9)) +
   theme_classic() +
@@ -58,7 +58,7 @@ plot1 <- ggplot(as.data.frame(table(as.Date(df$StartTime))), aes(x = Var1, y = F
 
 plot1
 
-# Plot 2: Methane production per day (It is used as a reference for gas production per day)
+# Plot 2: Plot including normalized CH4 and CO2 to check daily gases production
 # Normalize data and create plot
 plot2 <- df %>%
   dplyr::mutate(
@@ -113,8 +113,8 @@ farmname_order <- df %>%
   dplyr::pull(!!sym(group_var))
 
 
-# Plot 1: Total number of records per animal
-plot1 <- df %>%
+# Plot 3: Plot including the total number of records per animal
+plot3 <- df %>%
   dplyr::mutate(day = as.Date(EndTime)) %>%
   dplyr::group_by(!!sym(group_var), day) %>%
   dplyr::summarise(
@@ -144,7 +144,7 @@ plot1 <- df %>%
 
 
 # Helper function for plotting distribution
-plot2 <- df %>%
+plot4 <- df %>%
   dplyr::mutate(AMPM = case_when(
     HourOfDay >= 22 ~ "10PM-4AM",
     HourOfDay < 4 ~ "10PM-4AM",
@@ -163,7 +163,7 @@ plot2 <- df %>%
   labs(
     title = "Daily Records Distribution",
     x = "",
-    y = "Percentage Of Total Records",
+    y = "Percentage of Total Records",
     fill = "Time-Windows (24h)"
   ) +
   theme_classic() +
@@ -178,8 +178,8 @@ plot2 <- df %>%
 
 
 # Create the plots
-plot1
-plot2
+plot3
+plot4
 ```
 
 \newpage
@@ -189,7 +189,7 @@ plot2
 ```{r Gas data production per cow, message=FALSE, warning=FALSE, echo=FALSE, fig.height=3, fig.width=7}
 ## The daily averages for different gases is calculated as the weighted mean using visit time to the GreenFeed (or 'GoodDataDuration')
 
-# Function to generate plots
+# Function to generate plots with daily gas production per animal
 generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO2", "H2")) {
   # Convert to lowercase to avoid case sensitivity issues
   plot_opt <- tolower(plot_opt)

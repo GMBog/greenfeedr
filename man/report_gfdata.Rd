@@ -27,14 +27,13 @@
 \item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 }
 \value{
-A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or final records
+A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
 }
 \description{
-Generates PDF reports of daily and final 'GreenFeed' data.
-    If the option daily is used, data is retrieved from 'C-Lock Inc.' server via an 'API' and
-    generates a PDF report to with number of animals, records, and gases production.
-    However, if the option final is used, the finalized data should be provided to generates a PDF report
-    to evaluate all 'GreenFeed' data obtained from the finalized study.
+Generates a PDF report of daily and finalized 'GreenFeed' data.
+    The report includes: number of animals using 'GreenFeed' and plots with distribution of records and gas production.
+    If the daily option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
+    otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 }
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

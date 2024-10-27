@@ -34,7 +34,7 @@ A CSV file with daily 'GreenFeed' data in the specified directory
 }
 \description{
 Downloads daily 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
-    Retrieves data based on specified parameters (login, date range and units), and
+    Retrieves data based on specified parameters (login, date range, and units), and
     provides a CSV file with the 'GreenFeed' daily data.
 }
 \examples{

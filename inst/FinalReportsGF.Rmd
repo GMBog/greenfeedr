@@ -80,7 +80,7 @@ generate_combined_plot <- function(df, plot_opt) {
     labs(
       title = "Gas Production Across The Day",
       x = "",
-      y = "Normalize Gas Value",
+      y = "Normalized Gas Value",
       color = "Gas type"
     ) +
     scale_x_continuous(

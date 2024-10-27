@@ -1,5 +1,5 @@
 #' @name process_gfdata
-#' @title Process Daily and Final 'GreenFeed' Data
+#' @title Process Daily and Finalized 'GreenFeed' Data
 #'
 #' @description Processes and calculates daily and weekly averages of 'GreenFeed' data.
 #'     Handles data filtering, aggregation, and summarization to facilitate further analysis.

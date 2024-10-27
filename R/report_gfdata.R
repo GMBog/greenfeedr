@@ -1,11 +1,10 @@
 #' @name report_gfdata
 #' @title Download and Report 'GreenFeed' Data
 #'
-#' @description Generates PDF reports of daily and final 'GreenFeed' data.
-#'     If the option daily is used, data is retrieved from 'C-Lock Inc.' server via an 'API' and
-#'     generates a PDF report to with number of animals, records, and gases production.
-#'     However, if the option final is used, the finalized data should be provided to generates a PDF report
-#'     to evaluate all 'GreenFeed' data obtained from the finalized study.
+#' @description Generates a PDF report of daily and finalized 'GreenFeed' data.
+#'     The report includes: number of animals using 'GreenFeed' and plots with distribution of records and gas production.
+#'     If the daily option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
+#'     otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 #'
 #' @param input_type a character string representing type of data (options: "daily" and "final")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
@@ -19,7 +18,7 @@
 #' @param pass a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
 #' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored
 #'
-#' @return A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or final records
+#' @return A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
