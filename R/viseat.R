@@ -103,7 +103,7 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
       color = "black",
       position = position_dodge(0.9), size = 3.8
     )
-  message(plotFID)
+  print(plotFID)
 
   # Create a data frame with number of drops and visits per day per animal
   daily_visits <- df %>%
@@ -114,7 +114,7 @@ viseat <- function(file_path, unit, start_date, end_date, rfid_file = NA) {
       Date = as.character(as.Date(FeedTime)),
       Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
     ) %>%
-    dplyr::relocate(Date, Time, FarmName, .after = unit) %>%
+    dplyr::relocate(Date, Time, FarmName, .after = FID) %>%
     dplyr::select(-FeedTime) %>%
     # Number of drops per cow per day
     dplyr::group_by(FarmName, Date) %>%

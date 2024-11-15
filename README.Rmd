@@ -168,13 +168,12 @@ process_and_summarize <- function(param1, param2, min_time) {
 # Apply helper function to all combinations and combine results into a data frame
 data <- param_combinations %>%
   purrr::pmap_dfr(process_and_summarize)
-
 ```
 
 Finally, the results from our function will be placed in a data frame with the following structure:
 
 ```{r Results table, echo = FALSE, message = FALSE, results = 'asis'}
-cat(knitr::kable(data[1:10,], format = "html", table.attr = "style='font-size: 12px;'"))
+cat(knitr::kable(data[1:10, ], format = "html", table.attr = "style='font-size: 12px;'"))
 ```
 
 That gives the user an idea of what are the pros and cons of being more or less conservative when processing GreenFeed data for analysis. In general, the more conservative the parameters are, the fewer records are retained in the data.

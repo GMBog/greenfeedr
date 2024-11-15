@@ -47,6 +47,7 @@ Here we present an example of how to use `process_gfdata()`:
 
 ``` r
 library(greenfeedr)
+#> Warning: package 'greenfeedr' was built under R version 4.4.1
 ```
 
 Note that we received the finalized data (or Summarized Data) for our

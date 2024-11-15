@@ -231,7 +231,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           scale_y_continuous(
             limits = c(0, max(.$daily_CH4)),
             breaks = seq(0, max(.$daily_CH4), by = 50)
-            )
+          )
       }
     plots <- c(plots, list(p1))
   }
@@ -265,7 +265,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           scale_y_continuous(
             limits = c(0, max(.$daily_CO2)),
             breaks = seq(0, max(.$daily_CO2), by = 2000)
-            )
+          )
       }
     plots <- c(plots, list(p3))
   }
@@ -299,7 +299,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
           scale_y_continuous(
             limits = c(0, max(.$daily_O2)),
             breaks = seq(0, max(.$daily_O2), by = 2000)
-            )
+          )
       }
     plots <- c(plots, list(p2))
   }
@@ -334,7 +334,7 @@ generate_plots <- function(data, group_var, plot_opt = c("All", "CH4", "O2", "CO
             scale_y_continuous(
               limits = c(0, max(.$daily_H2)),
               breaks = seq(0, max(.$daily_H2), by = 0.5)
-              )
+            )
         }
       plots <- c(plots, list(p4))
     } else {
