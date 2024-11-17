@@ -84,15 +84,15 @@ ensure_date_format <- function(date_input) {
 #' @description Detect outliers using the mean and standard deviation.
 #'
 #' @param v A vector with data
-#' @param cutoff A threshold or cutoff value that defines the range (e.g., 2.5)
+#' @param cutoff A threshold or cutoff value that defines the range (e.g., 3)
 #'
 #' @return A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
 #' @examples
 #' # Sample data
 #' data <- c(10, 12, 14, 15, 20, 25, 30, 100)
 #'
-#' # Detect values within 2.5 standard deviations from the mean
-#' filter_within_range(data, cutoff = 2.5)
+#' # Detect values within 3 standard deviations from the mean
+#' filter_within_range(data, cutoff = 3)
 #'
 #' # Result:
 #' # [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE

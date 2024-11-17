@@ -9,7 +9,8 @@
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param param1 an integer representing the number of records per day to be consider for analysis
 #' @param param2 an integer representing the number of days with records per week to be consider for analysis
-#' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2
+#' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)
+#' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
 #'
 #' @return A list of two data frames:
 #'   \item{daily_data }{data frame with daily processed 'GreenFeed' data}
@@ -43,7 +44,7 @@ utils::globalVariables(c(
 ))
 
 process_gfdata <- function(data, start_date, end_date,
-                           param1, param2, min_time = 2) {
+                           param1, param2, min_time = 2, cutoff = 3) {
   # Check date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
@@ -174,7 +175,7 @@ process_gfdata <- function(data, start_date, end_date,
     dplyr::filter(
       dplyr::if_all(
         c(CH4GramsPerDay, CO2GramsPerDay),
-        ~ filter_within_range(.x, 2.5)
+        ~ filter_within_range(.x, cutoff)
       ),
 
       ## Retain records with valid CH4 and CO2, even if O2 or H2 are NA
