@@ -9,7 +9,7 @@ filter_within_range(v, cutoff)
 \arguments{
 \item{v}{A vector with data}
 
-\item{cutoff}{A threshold or cutoff value that defines the range (e.g., 2.5)}
+\item{cutoff}{A threshold or cutoff value that defines the range (e.g., 3)}
 }
 \value{
 A logical vector of the same length as `v`, where each element is `TRUE` if the corresponding value in `v` falls within the specified range, and `FALSE` otherwise.
@@ -21,8 +21,8 @@ Detect outliers using the mean and standard deviation.
 # Sample data
 data <- c(10, 12, 14, 15, 20, 25, 30, 100)
 
-# Detect values within 2.5 standard deviations from the mean
-filter_within_range(data, cutoff = 2.5)
+# Detect values within 3 standard deviations from the mean
+filter_within_range(data, cutoff = 3)
 
 # Result:
 # [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE

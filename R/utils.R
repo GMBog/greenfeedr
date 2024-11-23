@@ -1,3 +1,13 @@
+
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage(
+    "# Guillermo Martinez-Boggio\n",
+    "# To cite, use: Martinez-Boggio et al. (2024). greenfeedr: an R-package for processing and reporting GreenFeed data\n",
+    "# Type 'help(greenfeedr)' for summary information"
+  )
+}
+
+
 #' @name has_credentials
 #' @title Check for 'API' Credentials
 #'

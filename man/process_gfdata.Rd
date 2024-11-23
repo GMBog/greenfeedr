@@ -14,7 +14,9 @@
 
 \item{param2}{an integer representing the number of days with records per week to be consider for analysis}
 
-\item{min_time}{an integer representing the minimum number of minutes for a records to be consider for analysis. By default min_time is 2}
+\item{min_time}{an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)}
+
+\item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
 }
 \value{
 A list of two data frames:
