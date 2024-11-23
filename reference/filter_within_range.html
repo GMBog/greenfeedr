@@ -58,7 +58,7 @@
 
 
 <dt id="arg-cutoff">cutoff<a class="anchor" aria-label="anchor" href="#arg-cutoff"></a></dt>
-<dd><p>A threshold or cutoff value that defines the range (e.g., 2.5)</p></dd>
+<dd><p>A threshold or cutoff value that defines the range (e.g., 3)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -71,8 +71,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Sample data</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span>, <span class="fl">14</span>, <span class="fl">15</span>, <span class="fl">20</span>, <span class="fl">25</span>, <span class="fl">30</span>, <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Detect values within 2.5 standard deviations from the mean</span></span></span>
-<span class="r-in"><span><span class="fu">filter_within_range</span><span class="op">(</span><span class="va">data</span>, cutoff <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Detect values within 3 standard deviations from the mean</span></span></span>
+<span class="r-in"><span><span class="fu">filter_within_range</span><span class="op">(</span><span class="va">data</span>, cutoff <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Result:</span></span></span>
