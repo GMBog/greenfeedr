@@ -86,7 +86,12 @@ GreenFeed data</li>
 you how to apply them to data frames.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("greenfeedr")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">#&gt;   object 'type_sum.accel' not found</span></span>
+<span><span class="co">#&gt; Thank you for using the greenfeedr package!</span></span>
+<span><span class="co">#&gt; Cite: Martinez-Boggio et al. (2024). Greenfeedr: an R-package for processing and reporting GreenFeed data.</span></span>
+<span><span class="co">#&gt; Type 'help(greenfeedr)' for summary information</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="download-data-with-get_gfdata">Download data with <code>get_gfdata()</code><a class="anchor" aria-label="anchor" href="#download-data-with-get_gfdata"></a>
 </h2>
@@ -323,7 +328,7 @@ with an element for each unit.</p>
 <span><span class="co">#&gt; Please set the 'gcup' parameter based on the 10-drops test.</span></span>
 <span><span class="co">#&gt;            If units have different gram values, define 'gcup' as a vector with an element for each unit.</span></span>
 <span><span class="co">#&gt; RFID is NULL. It is recommended to include it.</span></span>
-<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpzGZKa3</span></span>
+<span><span class="co">#&gt; Pellet intakes file created and saved to /tmp/RtmpSibrZR</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
