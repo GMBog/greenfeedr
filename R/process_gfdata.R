@@ -79,8 +79,9 @@ process_gfdata <- function(data, start_date, end_date,
       data <- data %>%
         ## Remove leading zeros from RFID col to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID and negative values.
-        dplyr::filter(RFID != "unknown") %>%
+        ## Remove records with unknown ID and airflow below 25 l/s
+        dplyr::filter(RFID != "unknown",
+                      AirflowLitersPerSec >= 25) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
         dplyr::mutate(
           CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
@@ -134,8 +135,9 @@ process_gfdata <- function(data, start_date, end_date,
       data <- data %>%
         ## Remove "unknown IDs" and leading zeros from RFID col
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID and negative values.
-        dplyr::filter(RFID != "unknown") %>%
+        ## Remove records with unknown ID and airflow below 25 l/s
+        dplyr::filter(RFID != "unknown",
+                      AirflowLitersPerSec >= 25) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
         dplyr::mutate(
           CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
