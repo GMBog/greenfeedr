@@ -11,7 +11,18 @@
 #' @return Data frame including records removed from daily and final reports.
 #'
 #' @examples
-#' @export
+#' start_date <- "2024-05-13"
+#' end_date <- "2024-05-20"
+#'
+#' dailyrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+#' finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+#'
+#' data <- compare_gfdata(dailyrep,
+#'                       finalrep,
+#'                       start_date,
+#'                       end_date)
+#'
+#' @export compare_gfdata
 #'
 #' @import dplyr
 #' @importFrom dplyr %>%
@@ -29,7 +40,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   end_date <- ensure_date_format(end_date)
 
   # Open daily data
-  daily_data <- readr::read_csv(dailyrep)
+  daily_data <- readr::read_csv(dailyrep, show_col_types = FALSE)
 
   # Open final data
   final_data <- readxl::read_excel(finalrep)
@@ -50,25 +61,39 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     "AirflowCf"
   )
 
-  # Process data
+  # List of datasets
   list_of_data <- list(daily_data, final_data)
 
+  # Process data
   for (i in seq_along(list_of_data)) {
     data <- list_of_data[[i]]
-
-    data$RFID <- gsub("^0+", "", data$RFID)
-
     data <- data %>%
+      ## Remove leading zeros from RFID column to match with IDs
+      dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
+      ## Change date format if it is character
+      dplyr::mutate(
+        StartTime = ifelse(
+          is.character(StartTime),
+          as.Date(as.POSIXct(StartTime, format = "%m/%d/%y")),
+          as.Date(StartTime, origin = "1899-12-30") # For Excel date format
+        ),
+        EndTime = ifelse(
+          is.character(EndTime),
+          as.Date(as.POSIXct(EndTime, format = "%m/%d/%y")),
+          as.Date(EndTime, origin = "1899-12-30") # For Excel date format
+        )
+      ) %>%
+      ## Filter out records before and after study dates, NULL records, and low airflow (threshold value recommended by C-Lock Inc.)
       dplyr::filter(
         as.Date(StartTime) >= as.Date(start_date),
         as.Date(StartTime) <= as.Date(end_date),
-        CH4GramsPerDay > 0
+        CH4GramsPerDay > 0,
+        AirflowLitersPerSec >= 25
       ) %>%
+      ## Remove duplicate records
       dplyr::distinct_at(vars(1:5), .keep_all = TRUE)
 
-    data <- data[data$AirflowLitersPerSec >= 25, ]
-
-    # Store the manipulated data back in the list_of_data
+    # Store the processed data back in the list_of_data
     list_of_data[[i]] <- data
 
     # Move the modified data back to the original data frames
@@ -79,7 +104,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     }
   }
 
-  ### Difference in number of records from initial data
+  # Difference in number of records from initial data
   records_out_finalrep <- anti_join(daily_data, final_data,
     by = c(
       "RFID",
@@ -102,7 +127,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
 
   message("During the data processing ", nrow(records_out_dailyrep), " records were added to the finalized data")
 
-  ### Join daily and final data
+  # Join daily and final data
   daily_data$group <- "D"
   final_data$group <- "F"
   all_data <- rbind(
@@ -110,7 +135,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     final_data[, c(1:6, 8:9, 26)]
   )
 
-  ### Distribution of the CH4 and CO2 for both datasets
+  # Distribution of the CH4 and CO2 for both datasets
   plot1 <- ggplot(data = all_data, aes(x = group, y = CH4GramsPerDay, fill = group)) +
     geom_boxplot() +
     stat_summary(fun = mean, geom = "text",
@@ -151,7 +176,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   print(plot1)
   print(plot2)
 
-  ### Comparison of CH4 values for each dataset
+  # Comparison of CH4 values for each dataset
   joined_data <- dplyr::inner_join(daily_data, final_data,
     by = c(
       "RFID",

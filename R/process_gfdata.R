@@ -58,7 +58,7 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Function to read and process each file
   process_data <- function(data) {
-    if (ncol(data) >= 25) {
+    if (ncol(data) >= 25) { # Daily data always have 25 columns or more
       names(data)[1:14] <- c(
         "RFID",
         "AnimalName",
@@ -77,9 +77,9 @@ process_gfdata <- function(data, start_date, end_date,
       )
 
       data <- data %>%
-        ## Remove leading zeros from RFID col to match with IDs
+        ## Remove leading zeros from RFID column to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID and airflow below 25 l/s
+        ## Remove records with unknown ID and airflow below 25 l/s (threshold value recommended by C-Lock Inc.)
         dplyr::filter(RFID != "unknown",
                       AirflowLitersPerSec >= 25) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
@@ -89,17 +89,18 @@ process_gfdata <- function(data, start_date, end_date,
           O2GramsPerDay = ifelse(O2GramsPerDay <= 0, NA, O2GramsPerDay),
           H2GramsPerDay = ifelse(H2GramsPerDay <= 0, NA, H2GramsPerDay)
         ) %>%
-        ## Convert EndTime to date and modify GoodDataDuration
+        ## Change format of 'StartTime' and 'GoodDataDuration' columns
         dplyr::mutate(
-          day = as.Date(EndTime),
-
+          day = as.Date(StartTime),
           ## Suppress warnings from coercion issues with GoodDataDuration
           GoodDataDuration = suppressWarnings(
             case_when(
-              nchar(GoodDataDuration) == 8 ~ as.numeric(substr(GoodDataDuration, 1, 2)) * 60 + # HH:MM:SS format
+              # HH:MM:SS format
+              nchar(GoodDataDuration) == 8 ~ as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +
                 as.numeric(substr(GoodDataDuration, 4, 5)) +
                 as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
-              nchar(GoodDataDuration) > 8 ~ as.numeric(substr(GoodDataDuration, 12, 13)) * 60 + # YYYY-MM-DD HH:MM:SS format
+              # YYYY-MM-DD HH:MM:SS format
+              nchar(GoodDataDuration) > 8 ~ as.numeric(substr(GoodDataDuration, 12, 13)) * 60 +
                 as.numeric(substr(GoodDataDuration, 15, 16)) +
                 as.numeric(substr(GoodDataDuration, 18, 19)) / 60,
               TRUE ~ NA_real_
@@ -107,7 +108,7 @@ process_gfdata <- function(data, start_date, end_date,
           ),
           GoodDataDuration = round(GoodDataDuration, 2)
         )
-    } else {
+    } else { # Finalized data always have less than 21 columns
       names(data) <- c(
         "FeederID",
         "AnimalName",
@@ -133,9 +134,9 @@ process_gfdata <- function(data, start_date, end_date,
       )
 
       data <- data %>%
-        ## Remove "unknown IDs" and leading zeros from RFID col
+        ## Remove leading zeros from RFID column to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        ## Remove records with unknown ID and airflow below 25 l/s
+        ## Remove records with unknown ID and airflow below 25 l/s (threshold value recommended by C-Lock Inc.)
         dplyr::filter(RFID != "unknown",
                       AirflowLitersPerSec >= 25) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
@@ -171,7 +172,7 @@ process_gfdata <- function(data, start_date, end_date,
   # Combine files into one data frame
   df <- process_data(data)
 
-  # Computing daily production of gases
+  # Calculation of average daily gas production
   daily_df <- df %>%
     ## Filter by conditions where CH4 and CO2 must be within range, but allow O2 and H2 to be NA
     dplyr::filter(
@@ -209,7 +210,7 @@ process_gfdata <- function(data, start_date, end_date,
     ## Select columns
     dplyr::select(RFID, week, day, n, minutes, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
-  # Computing weekly production of gases
+  # Calculation of average weekly gas production
   weekly_df <- daily_df %>%
     ## Group by animal and week
     dplyr::group_by(RFID, week) %>%

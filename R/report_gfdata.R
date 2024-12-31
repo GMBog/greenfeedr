@@ -16,7 +16,7 @@
 #' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
 #' @param user a character string representing the user name to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
 #' @param pass a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
-#' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored
+#' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "daily", this parameter is ignored
 #'
 #' @return A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
 #'

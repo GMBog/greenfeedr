@@ -18,3 +18,16 @@ Data frame including records removed from daily and final reports.
 \description{
 Compare daily and finalized 'GreenFeed' data.
 }
+\examples{
+start_date <- "2024-05-13"
+end_date <- "2024-05-20"
+
+dailyrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
+
+data <- compare_gfdata(dailyrep,
+                      finalrep,
+                      start_date,
+                      end_date)
+
+}

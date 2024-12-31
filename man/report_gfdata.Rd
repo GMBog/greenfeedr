@@ -24,7 +24,7 @@
 
 \item{pass}{a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 
-\item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "final", this parameter is ignored}
+\item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "daily", this parameter is ignored}
 }
 \value{
 A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
