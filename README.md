@@ -16,7 +16,8 @@ GreenFeed data:
 
 - `get_gfdata()` downloads GreenFeed data via API.
 - `report_gfdata()` downloads and generates markdown reports of daily
-  and final GreenFeed data.
+  and finalized GreenFeed data.
+- `compare_gfdata()` compare daily and finalized GreenFeed data.
 - `process_gfdata()` processes and averages daily or final GreenFeed
   data.
 - `pellin()` processes pellet intakes from GreenFeed units.
@@ -47,7 +48,6 @@ Here we present an example of how to use `process_gfdata()`:
 
 ``` r
 library(greenfeedr)
-#> Warning: package 'greenfeedr' was built under R version 4.4.1
 ```
 
 Note that we received the finalized data (or Summarized Data) for our
@@ -446,25 +446,25 @@ CV_wCO2
 2
 </td>
 <td style="text-align:right;">
-184
+185
 </td>
 <td style="text-align:right;">
 25
 </td>
 <td style="text-align:right;">
-380.2
+381.6
 </td>
 <td style="text-align:right;">
-110.5
+113.1
 </td>
 <td style="text-align:right;">
-0.29
+0.30
 </td>
 <td style="text-align:right;">
-11429.1
+11452.4
 </td>
 <td style="text-align:right;">
-2531.7
+2574.3
 </td>
 <td style="text-align:right;">
 0.22
@@ -476,22 +476,22 @@ CV_wCO2
 19
 </td>
 <td style="text-align:right;">
-382.4
+384.3
 </td>
 <td style="text-align:right;">
-54.8
+58.1
 </td>
 <td style="text-align:right;">
-0.14
+0.15
 </td>
 <td style="text-align:right;">
-11488.1
+11526.1
 </td>
 <td style="text-align:right;">
-1428.0
+1475.2
 </td>
 <td style="text-align:right;">
-0.12
+0.13
 </td>
 </tr>
 <tr>
@@ -511,19 +511,19 @@ CV_wCO2
 20
 </td>
 <td style="text-align:right;">
-380.8
+384.9
 </td>
 <td style="text-align:right;">
-84.9
+88.5
 </td>
 <td style="text-align:right;">
-0.22
+0.23
 </td>
 <td style="text-align:right;">
-11450.6
+11546.1
 </td>
 <td style="text-align:right;">
-2076.6
+2098.8
 </td>
 <td style="text-align:right;">
 0.18
@@ -535,22 +535,22 @@ CV_wCO2
 15
 </td>
 <td style="text-align:right;">
-392.7
+395.7
 </td>
 <td style="text-align:right;">
-58.7
+63.0
 </td>
 <td style="text-align:right;">
-0.15
+0.16
 </td>
 <td style="text-align:right;">
-11630.5
+11696.2
 </td>
 <td style="text-align:right;">
-1421.7
+1487.1
 </td>
 <td style="text-align:right;">
-0.12
+0.13
 </td>
 </tr>
 <tr>
@@ -567,25 +567,25 @@ CV_wCO2
 75
 </td>
 <td style="text-align:right;">
-19
+18
 </td>
 <td style="text-align:right;">
-373.1
+376.4
 </td>
 <td style="text-align:right;">
-86.7
+93.8
 </td>
 <td style="text-align:right;">
-0.23
+0.25
 </td>
 <td style="text-align:right;">
-11394.2
+11457.5
 </td>
 <td style="text-align:right;">
-2185.9
+2291.4
 </td>
 <td style="text-align:right;">
-0.19
+0.20
 </td>
 <td style="text-align:right;">
 12
@@ -594,22 +594,22 @@ CV_wCO2
 10
 </td>
 <td style="text-align:right;">
-377.1
+382.4
 </td>
 <td style="text-align:right;">
-62.1
+73.9
 </td>
 <td style="text-align:right;">
-0.16
+0.19
 </td>
 <td style="text-align:right;">
-11458.8
+11574.9
 </td>
 <td style="text-align:right;">
-1429.4
+1626.9
 </td>
 <td style="text-align:right;">
-0.12
+0.14
 </td>
 </tr>
 <tr>
@@ -623,25 +623,25 @@ CV_wCO2
 2
 </td>
 <td style="text-align:right;">
-184
+185
 </td>
 <td style="text-align:right;">
 25
 </td>
 <td style="text-align:right;">
-380.2
+381.6
 </td>
 <td style="text-align:right;">
-110.5
+113.1
 </td>
 <td style="text-align:right;">
-0.29
+0.30
 </td>
 <td style="text-align:right;">
-11429.1
+11452.4
 </td>
 <td style="text-align:right;">
-2531.7
+2574.3
 </td>
 <td style="text-align:right;">
 0.22
@@ -653,19 +653,19 @@ CV_wCO2
 15
 </td>
 <td style="text-align:right;">
-389.9
+392.3
 </td>
 <td style="text-align:right;">
-50.4
+54.7
 </td>
 <td style="text-align:right;">
-0.13
+0.14
 </td>
 <td style="text-align:right;">
-11685.1
+11735.1
 </td>
 <td style="text-align:right;">
-1266.2
+1328.6
 </td>
 <td style="text-align:right;">
 0.11
@@ -688,19 +688,19 @@ CV_wCO2
 20
 </td>
 <td style="text-align:right;">
-380.8
+384.9
 </td>
 <td style="text-align:right;">
-84.9
+88.5
 </td>
 <td style="text-align:right;">
-0.22
+0.23
 </td>
 <td style="text-align:right;">
-11450.6
+11546.1
 </td>
 <td style="text-align:right;">
-2076.6
+2098.8
 </td>
 <td style="text-align:right;">
 0.18
@@ -712,22 +712,22 @@ CV_wCO2
 14
 </td>
 <td style="text-align:right;">
-380.5
+384.5
 </td>
 <td style="text-align:right;">
-51.6
+58.7
 </td>
 <td style="text-align:right;">
-0.14
+0.15
 </td>
 <td style="text-align:right;">
-11367.5
+11452.5
 </td>
 <td style="text-align:right;">
-1264.2
+1376.1
 </td>
 <td style="text-align:right;">
-0.11
+0.12
 </td>
 </tr>
 <tr>
@@ -744,49 +744,49 @@ CV_wCO2
 75
 </td>
 <td style="text-align:right;">
-19
+18
 </td>
 <td style="text-align:right;">
-373.1
+376.4
 </td>
 <td style="text-align:right;">
-86.7
+93.8
 </td>
 <td style="text-align:right;">
-0.23
+0.25
 </td>
 <td style="text-align:right;">
-11394.2
+11457.5
 </td>
 <td style="text-align:right;">
-2185.9
+2291.4
 </td>
 <td style="text-align:right;">
-0.19
+0.20
+</td>
+<td style="text-align:right;">
+7
 </td>
 <td style="text-align:right;">
 6
 </td>
 <td style="text-align:right;">
-5
+386.6
 </td>
 <td style="text-align:right;">
-359.4
+81.5
 </td>
 <td style="text-align:right;">
-41.9
+0.21
 </td>
 <td style="text-align:right;">
-0.12
+11779.6
 </td>
 <td style="text-align:right;">
-11310.2
+1914.3
 </td>
 <td style="text-align:right;">
-1595.7
-</td>
-<td style="text-align:right;">
-0.14
+0.16
 </td>
 </tr>
 <tr>
@@ -800,25 +800,25 @@ CV_wCO2
 2
 </td>
 <td style="text-align:right;">
-184
+185
 </td>
 <td style="text-align:right;">
 25
 </td>
 <td style="text-align:right;">
-380.2
+381.6
 </td>
 <td style="text-align:right;">
-110.5
+113.1
 </td>
 <td style="text-align:right;">
-0.29
+0.30
 </td>
 <td style="text-align:right;">
-11429.1
+11452.4
 </td>
 <td style="text-align:right;">
-2531.7
+2574.3
 </td>
 <td style="text-align:right;">
 0.22
@@ -830,22 +830,22 @@ CV_wCO2
 15
 </td>
 <td style="text-align:right;">
-380.2
+383.1
 </td>
 <td style="text-align:right;">
-48.1
+54.0
 </td>
 <td style="text-align:right;">
-0.13
+0.14
 </td>
 <td style="text-align:right;">
-11444.3
+11503.9
 </td>
 <td style="text-align:right;">
-1182.3
+1273.4
 </td>
 <td style="text-align:right;">
-0.10
+0.11
 </td>
 </tr>
 <tr>
@@ -865,46 +865,46 @@ CV_wCO2
 20
 </td>
 <td style="text-align:right;">
-380.8
+384.9
 </td>
 <td style="text-align:right;">
-84.9
+88.5
 </td>
 <td style="text-align:right;">
-0.22
+0.23
 </td>
 <td style="text-align:right;">
-11450.6
+11546.1
 </td>
 <td style="text-align:right;">
-2076.6
+2098.8
 </td>
 <td style="text-align:right;">
 0.18
 </td>
 <td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
 8
 </td>
 <td style="text-align:right;">
-7
+377.9
 </td>
 <td style="text-align:right;">
-361.5
+61.3
 </td>
 <td style="text-align:right;">
-38.8
+0.16
 </td>
 <td style="text-align:right;">
-0.11
+11527.1
 </td>
 <td style="text-align:right;">
-11247.0
+1440.0
 </td>
 <td style="text-align:right;">
-1250.1
-</td>
-<td style="text-align:right;">
-0.11
+0.12
 </td>
 </tr>
 <tr>
@@ -921,25 +921,25 @@ CV_wCO2
 75
 </td>
 <td style="text-align:right;">
-19
+18
 </td>
 <td style="text-align:right;">
-373.1
+376.4
 </td>
 <td style="text-align:right;">
-86.7
+93.8
 </td>
 <td style="text-align:right;">
-0.23
+0.25
 </td>
 <td style="text-align:right;">
-11394.2
+11457.5
 </td>
 <td style="text-align:right;">
-2185.9
+2291.4
 </td>
 <td style="text-align:right;">
-0.19
+0.20
 </td>
 <td style="text-align:right;">
 4
@@ -977,25 +977,25 @@ CV_wCO2
 2
 </td>
 <td style="text-align:right;">
-184
+185
 </td>
 <td style="text-align:right;">
 25
 </td>
 <td style="text-align:right;">
-380.2
+381.6
 </td>
 <td style="text-align:right;">
-110.5
+113.1
 </td>
 <td style="text-align:right;">
-0.29
+0.30
 </td>
 <td style="text-align:right;">
-11429.1
+11452.4
 </td>
 <td style="text-align:right;">
-2531.7
+2574.3
 </td>
 <td style="text-align:right;">
 0.22
@@ -1007,22 +1007,22 @@ CV_wCO2
 11
 </td>
 <td style="text-align:right;">
-378.1
+382.4
 </td>
 <td style="text-align:right;">
-50.6
+59.1
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+11297.5
+</td>
+<td style="text-align:right;">
+1455.6
 </td>
 <td style="text-align:right;">
 0.13
-</td>
-<td style="text-align:right;">
-11208.1
-</td>
-<td style="text-align:right;">
-1316.1
-</td>
-<td style="text-align:right;">
-0.12
 </td>
 </tr>
 </tbody>

@@ -96,7 +96,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     # Store the processed data back in the list_of_data
     list_of_data[[i]] <- data
 
-    # Move the modified data back to the original data frames
+    # Move the processed data back to the original data frames
     if (i == 1) {
       daily_data <- data
     } else if (i == 2) {
@@ -105,7 +105,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   }
 
   # Difference in number of records from initial data
-  records_out_finalrep <- anti_join(daily_data, final_data,
+  records_out_finalrep <- dplyr::anti_join(daily_data, final_data,
     by = c(
       "RFID",
       "FeederID",
@@ -116,7 +116,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
 
   message("During the data processing ", nrow(records_out_finalrep), " records were removed from the finalized data")
 
-  records_out_dailyrep <- anti_join(final_data, daily_data,
+  records_out_dailyrep <- dplyr::anti_join(final_data, daily_data,
     by = c(
       "RFID",
       "FeederID",
