@@ -22,13 +22,12 @@
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
-#' user <- Sys.getenv("API_USER")
-#' pass <- Sys.getenv("API_PASS")
-#'
 #' # The data range must be fewer than 180 days
 #' # Example without rfid_file (by default NA)
 #'
 #' report_gfdata(
+#'   user = "your_username",
+#'   pass = "your_password",
 #'   input_type = "daily",
 #'   exp = "StudyName",
 #'   unit = 1,

@@ -40,15 +40,16 @@ Downloads daily 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
-user <- Sys.getenv("API_USER")
-pass <- Sys.getenv("API_PASS")
-exp <- "StudyName"
-start_date <- "2024-01-01"
-end_date <- Sys.Date()
-save_dir <- tempdir()
-
 # Example with units as a vector
-unit <- c(304, 305)
-get_gfdata(user, pass, exp, unit, start_date, end_date, save_dir)
+
+get_gfdata(
+   user = "your_username",
+   pass = "your_password",
+   exp = "StudyName",
+   unit = c(304, 305),
+   start_date = "2024-01-01",
+   end_date = Sys.Date(),
+   save_dir = tempdir()
+   )
 \dontshow{\}) # examplesIf}
 }
