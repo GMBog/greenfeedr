@@ -81,11 +81,16 @@
 <span class="r-in"><span>            <span class="va">finalrep</span>,</span></span>
 <span class="r-in"><span>            start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span></span>
 <span class="r-in"><span>            end_date <span class="op">=</span> <span class="st">"2024-05-20"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::mutate(., StartTime = dplyr::case_when(is.character(StartTime) ~     as.Date(as.POSIXct(StartTime, format = "%m/%d/%y", tz = "UTC")),     is.numeric(StartTime) ~ as.Date(StartTime, origin = "1899-12-30"),     TRUE ~ as.Date(StartTime)), EndTime = dplyr::case_when(is.character(EndTime) ~     as.Date(as.POSIXct(EndTime, format = "%m/%d/%y", tz = "UTC")),     is.numeric(EndTime) ~ as.Date(EndTime, origin = "1899-12-30"),     TRUE ~ as.Date(EndTime))):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `StartTime = dplyr::case_when(...)`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `dplyr::case_when()`:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Failed to evaluate the right-hand side of formula 2.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `charToDate()`:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> character string is not in a standard unambiguous format</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There were 2 warnings in `dplyr::mutate()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> The first warning was:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In argument: `StartTime = dplyr::case_when(...)`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> All formats failed to parse. No formats found.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> During the data processing 256 records were removed from the finalized data</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> During the data processing 0 records were added to the finalized data</span>
+<span class="r-plt img"><img src="compare_gfdata-1.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="compare_gfdata-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
