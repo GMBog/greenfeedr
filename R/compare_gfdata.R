@@ -71,15 +71,22 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
       ## Change date format for StartTime and EndTime
       dplyr::mutate(
+        RFID = gsub("^0+", "", RFID),
         StartTime = dplyr::case_when(
-          is.character(StartTime) ~ as.Date(as.POSIXct(StartTime, format = "%m/%d/%y", tz = "UTC")),
-          is.numeric(StartTime) ~ as.Date(StartTime, origin = "1899-12-30"), # Excel date format
-          TRUE ~ as.Date(StartTime) # Default fallback
+          is.character(StartTime) ~ lubridate::parse_date_time(
+            StartTime,
+            orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
+            tz = "UTC"
+          ),
+          TRUE ~ lubridate::NA_POSIXct_
         ),
         EndTime = dplyr::case_when(
-          is.character(EndTime) ~ as.Date(as.POSIXct(EndTime, format = "%m/%d/%y", tz = "UTC")),
-          is.numeric(EndTime) ~ as.Date(EndTime, origin = "1899-12-30"), # Excel date format
-          TRUE ~ as.Date(EndTime) # Default fallback
+          is.character(EndTime) ~ lubridate::parse_date_time(
+            EndTime,
+            orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
+            tz = "UTC"
+          ),
+          TRUE ~ lubridate::NA_POSIXct_
         )
       ) %>%
       ## Filter out records before and after study dates, NULL records, and low airflow (threshold value recommended by C-Lock Inc.)
