@@ -69,17 +69,17 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     data <- data %>%
       ## Remove leading zeros from RFID column to match with IDs
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-      ## Change date format if it is character
+      ## Change date format for StartTime and EndTime
       dplyr::mutate(
-        StartTime = ifelse(
-          is.character(StartTime),
-          as.Date(as.POSIXct(StartTime, format = "%m/%d/%y")),
-          as.Date(StartTime, origin = "1899-12-30") # For Excel date format
+        StartTime = dplyr::case_when(
+          is.character(StartTime) ~ as.Date(as.POSIXct(StartTime, format = "%m/%d/%y", tz = "UTC")),
+          is.numeric(StartTime) ~ as.Date(StartTime, origin = "1899-12-30"), # Excel date format
+          TRUE ~ as.Date(StartTime) # Default fallback
         ),
-        EndTime = ifelse(
-          is.character(EndTime),
-          as.Date(as.POSIXct(EndTime, format = "%m/%d/%y")),
-          as.Date(EndTime, origin = "1899-12-30") # For Excel date format
+        EndTime = dplyr::case_when(
+          is.character(EndTime) ~ as.Date(as.POSIXct(EndTime, format = "%m/%d/%y", tz = "UTC")),
+          is.numeric(EndTime) ~ as.Date(EndTime, origin = "1899-12-30"), # Excel date format
+          TRUE ~ as.Date(EndTime) # Default fallback
         )
       ) %>%
       ## Filter out records before and after study dates, NULL records, and low airflow (threshold value recommended by C-Lock Inc.)
