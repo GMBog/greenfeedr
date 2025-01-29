@@ -67,35 +67,21 @@ compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
   for (i in seq_along(list_of_data)) {
     data <- list_of_data[[i]]
     data <- data %>%
-      ## Remove leading zeros from RFID column to match with IDs
+      # Remove leading zeros from RFID column to match with IDs
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-      ## Change date format for StartTime and EndTime only if they are character
-      # dplyr::mutate(
-      #   StartTime = dplyr::case_when(
-      #     is.character(StartTime) ~ lubridate::parse_date_time(
-      #       StartTime,
-      #       orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
-      #       tz = "UTC"
-      #     ),
-      #     TRUE ~ StartTime # Keep as is if already POSIXct
-      #   ),
-      #   EndTime = dplyr::case_when(
-      #     is.character(EndTime) ~ lubridate::parse_date_time(
-      #       EndTime,
-      #       orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
-      #       tz = "UTC"
-      #     ),
-      #     TRUE ~ EndTime # Keep as is if already POSIXct
-      #   )
-      # ) %>%
-      ## Filter out records before and after study dates, NULL records, and low airflow
+      # Check format of Date
+      dplyr::mutate(
+        StartTime = if (is.character(StartTime)) as.POSIXct(StartTime, format = "%m/%d/%y %H:%M") else StartTime,
+        EndTime = if (is.character(EndTime)) as.POSIXct(EndTime, format = "%m/%d/%y %H:%M") else EndTime
+      ) %>%
+      # Filter out records before and after study dates, NULL records, and low airflow
       dplyr::filter(
         as.Date(StartTime) >= as.Date(start_date),
         as.Date(StartTime) <= as.Date(end_date),
         CH4GramsPerDay > 0,
         AirflowLitersPerSec >= 25
       ) %>%
-      ## Remove duplicate records
+      # Remove duplicate records
       dplyr::distinct_at(vars(1:5), .keep_all = TRUE)
 
     # Store the processed data back in the list_of_data
