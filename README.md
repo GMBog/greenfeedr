@@ -27,7 +27,9 @@ Most of these use the same daily and final data from GreenFeed system.
 
 ## Citation
 
-More complete information about how to use greenfeedr can be found in:
+More information about how to use greenfeedr can be found in
+[Martinez-Boggio et
+al. (2024)](https://www.sciencedirect.com/science/article/pii/S266691022400187X).
 
 ## Cheat Sheet
 

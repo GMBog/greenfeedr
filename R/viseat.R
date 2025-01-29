@@ -9,7 +9,7 @@
 #' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
-#' @param rfid_file a character string representing the file with individual RFIDs.  The order should be Visual ID (col1) and RFID (col2)
+#' @param rfid_file a character string representing the file with individual RFIDs. The order should be Visual ID (col1) and RFID (col2)
 #'
 #' @return A list of two data frames:
 #'   \item{visits_per_unit }{Data frame with daily processed 'GreenFeed' data, including columns for VisualID, Date, Time, number of drops, and visits.}

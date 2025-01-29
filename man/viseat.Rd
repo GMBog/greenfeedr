@@ -12,7 +12,7 @@
 
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
-\item{rfid_file}{a character string representing the file with individual RFIDs.  The order should be Visual ID (col1) and RFID (col2)}
+\item{rfid_file}{a character string representing the file with individual RFIDs. The order should be Visual ID (col1) and RFID (col2)}
 }
 \value{
 A list of two data frames:
