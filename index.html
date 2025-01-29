@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">greenfeedr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,17 +71,17 @@
 <li>
 <code><a href="reference/get_gfdata.html">get_gfdata()</a></code> downloads GreenFeed data via API.</li>
 <li>
-<code><a href="reference/report_gfdata.html">report_gfdata()</a></code> downloads and generates markdown reports of daily and finalized GreenFeed data.</li>
+<code><a href="reference/report_gfdata.html">report_gfdata()</a></code> downloads and generates markdown reports of preliminary and finalized GreenFeed data.</li>
 <li>
-<code><a href="reference/compare_gfdata.html">compare_gfdata()</a></code> compare daily and finalized GreenFeed data.</li>
+<code><a href="reference/compare_gfdata.html">compare_gfdata()</a></code> compare preliminary and finalized GreenFeed data.</li>
 <li>
-<code><a href="reference/process_gfdata.html">process_gfdata()</a></code> processes and averages daily or final GreenFeed data.</li>
+<code><a href="reference/process_gfdata.html">process_gfdata()</a></code> processes and averages preliminary or finalized GreenFeed data.</li>
 <li>
 <code><a href="reference/pellin.html">pellin()</a></code> processes pellet intakes from GreenFeed units.</li>
 <li>
 <code><a href="reference/viseat.html">viseat()</a></code> processes GreenFeed visits.</li>
 </ul>
-<p>Most of these use the same daily and final data from GreenFeed system.</p>
+<p>Most of these use the same preliminary and finalized data from GreenFeed system.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
@@ -106,7 +106,7 @@
 <p>Here we present an example of how to use <code><a href="reference/process_gfdata.html">process_gfdata()</a></code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span></code></pre></div>
-<p>Note that we received the finalized data (or Summarized Data) for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.</p>
+<p>Note that we received the finalized data for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.</p>
 <p>The data looks like (first 5 cols):</p>
 <table style="font-size: 12px;" class="table">
 <thead><tr>
