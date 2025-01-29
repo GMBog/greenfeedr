@@ -1,0 +1,19 @@
+citHeader("To cite greenfeedr in publications, use:")
+
+bibentry(
+  bibtype = "Article",
+  title = "greenfeedr: an R-package for processing and reporting GreenFeed data",
+  author = c(
+    person("Guillermo", "Martinez-Boggio"),
+    person("Patrick", "Lutz"),
+    person("Meredith", "Harrison"),
+    person("Kent", "Weigel"),
+    person("Francisco", "Peñagaricano")
+  ),
+  journal = "JDS Communications",
+  year = 2024,
+  volume = "",
+  pages = "",
+  doi = "10.3168/jdsc.2024-0662",
+  url = "https://www.sciencedirect.com/science/article/pii/S266691022400187X"
+)

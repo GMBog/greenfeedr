@@ -4,7 +4,7 @@
 \alias{report_gfdata}
 \title{Download and Report 'GreenFeed' Data}
 \arguments{
-\item{input_type}{a character string representing type of data (options: "daily" and "final")}
+\item{input_type}{a character string representing type of data (options: "prelim" and "final")}
 
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
@@ -24,15 +24,15 @@
 
 \item{pass}{a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored}
 
-\item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "daily", this parameter is ignored}
+\item{file_path}{A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "prelim", this parameter is ignored}
 }
 \value{
-A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
+A CSV file with preliminary 'GreenFeed' data and a PDF report with a description of the preliminary or finalized data
 }
 \description{
-Generates a PDF report of daily and finalized 'GreenFeed' data.
+Generates a PDF report of preliminary and finalized 'GreenFeed' data.
     The report includes: number of animals using 'GreenFeed' and plots with distribution of records and gas production.
-    If the daily option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
+    If the preliminary option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
     otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 }
 \examples{
@@ -44,7 +44,7 @@ Generates a PDF report of daily and finalized 'GreenFeed' data.
 report_gfdata(
   user = "your_username",
   pass = "your_password",
-  input_type = "daily",
+  input_type = "prelim",
   exp = "StudyName",
   unit = 1,
   start_date = "2023-01-01",

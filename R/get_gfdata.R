@@ -1,9 +1,9 @@
 #' @name get_gfdata
-#' @title Download Daily 'GreenFeed' Data via 'API'
+#' @title Download Preliminary 'GreenFeed' Data via 'API'
 #'
-#' @description Downloads daily 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
+#' @description Downloads preliminary 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
 #'     Retrieves data based on specified parameters (login, date range, and units), and
-#'     provides a CSV file with the 'GreenFeed' daily data.
+#'     provides a CSV file with the 'GreenFeed' preliminary data.
 #'
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
@@ -13,7 +13,7 @@
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param save_dir a character string representing the directory to save the output file
 #'
-#' @return A CSV file with daily 'GreenFeed' data in the specified directory
+#' @return A CSV file with preliminary 'GreenFeed' data in the specified directory
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.

@@ -1,10 +1,10 @@
 #' @name process_gfdata
-#' @title Process Daily and Finalized 'GreenFeed' Data
+#' @title Process Preliminary and Finalized 'GreenFeed' Data
 #'
 #' @description Processes and calculates daily and weekly averages of 'GreenFeed' data.
 #'     Handles data filtering, aggregation, and summarization to facilitate further analysis.
 #'
-#' @param data a data frame with daily or finalized 'GreenFeed' data
+#' @param data a data frame with preliminary or finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #' @param param1 an integer representing the number of records per day to be consider for analysis
@@ -58,7 +58,7 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Function to read and process each file
   process_data <- function(data) {
-    if (ncol(data) >= 25) { # Daily data always have 25 columns or more
+    if (ncol(data) >= 25) { # Preliminary data always have 25 columns or more
       names(data)[1:14] <- c(
         "RFID",
         "AnimalName",

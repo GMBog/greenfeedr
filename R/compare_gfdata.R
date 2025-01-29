@@ -1,22 +1,22 @@
 #' @name compare_gfdata
-#' @title Compare Daily and Final 'GreenFeed' Data
+#' @title Compare Preliminary and Finalized 'GreenFeed' Data
 #'
-#' @description Compare daily and finalized 'GreenFeed' data.
+#' @description Compare preliminary and finalized 'GreenFeed' data.
 #'
-#' @param dailyrep a data frame with daily 'GreenFeed' data
+#' @param prelimrep a data frame with preliminary 'GreenFeed' data
 #' @param finalrep a data frame with finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #'
-#' @return Data frame including records removed from daily and final reports.
+#' @return Data frame including records removed from preliminary and final reports.
 #'
 #' @examples
-#' #Datasets with daily and finalized GreenFeed data
-#' dailyrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+#' #Datasets with preliminary and finalized GreenFeed data
+#' prelimrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 #' finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 #'
 #' data <- compare_gfdata(
-#'             dailyrep,
+#'             prelimrep,
 #'             finalrep,
 #'             start_date = "2024-05-13",
 #'             end_date = "2024-05-20")
@@ -33,13 +33,13 @@ utils::globalVariables(c(
   "group", "CH4GramsPerDay.x", "CH4GramsPerDay.y", "y"
 ))
 
-compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
+compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
   # Check date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
-  # Open daily data
-  daily_data <- readr::read_csv(dailyrep, show_col_types = FALSE)
+  # Open preliminary data
+  prelim_data <- readr::read_csv(prelimrep, show_col_types = FALSE)
 
   # Open final data
   final_data <- readxl::read_excel(finalrep)
@@ -61,7 +61,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   )
 
   # List of datasets
-  list_of_data <- list(daily_data, final_data)
+  list_of_data <- list(prelim_data, final_data)
 
   # Process data
   for (i in seq_along(list_of_data)) {
@@ -69,27 +69,26 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     data <- data %>%
       ## Remove leading zeros from RFID column to match with IDs
       dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-      ## Change date format for StartTime and EndTime
-      dplyr::mutate(
-        RFID = gsub("^0+", "", RFID),
-        StartTime = dplyr::case_when(
-          is.character(StartTime) ~ lubridate::parse_date_time(
-            StartTime,
-            orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
-            tz = "UTC"
-          ),
-          TRUE ~ lubridate::NA_POSIXct_
-        ),
-        EndTime = dplyr::case_when(
-          is.character(EndTime) ~ lubridate::parse_date_time(
-            EndTime,
-            orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
-            tz = "UTC"
-          ),
-          TRUE ~ lubridate::NA_POSIXct_
-        )
-      ) %>%
-      ## Filter out records before and after study dates, NULL records, and low airflow (threshold value recommended by C-Lock Inc.)
+      ## Change date format for StartTime and EndTime only if they are character
+      # dplyr::mutate(
+      #   StartTime = dplyr::case_when(
+      #     is.character(StartTime) ~ lubridate::parse_date_time(
+      #       StartTime,
+      #       orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
+      #       tz = "UTC"
+      #     ),
+      #     TRUE ~ StartTime # Keep as is if already POSIXct
+      #   ),
+      #   EndTime = dplyr::case_when(
+      #     is.character(EndTime) ~ lubridate::parse_date_time(
+      #       EndTime,
+      #       orders = c("mdy HM", "mdy HMS", "mdy HMz", "mdy HMSz"),
+      #       tz = "UTC"
+      #     ),
+      #     TRUE ~ EndTime # Keep as is if already POSIXct
+      #   )
+      # ) %>%
+      ## Filter out records before and after study dates, NULL records, and low airflow
       dplyr::filter(
         as.Date(StartTime) >= as.Date(start_date),
         as.Date(StartTime) <= as.Date(end_date),
@@ -104,14 +103,14 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
 
     # Move the processed data back to the original data frames
     if (i == 1) {
-      daily_data <- data
+      prelim_data <- data
     } else if (i == 2) {
       final_data <- data
     }
   }
 
   # Difference in number of records from initial data
-  records_out_finalrep <- dplyr::anti_join(daily_data, final_data,
+  records_out_finalrep <- dplyr::anti_join(prelim_data, final_data,
     by = c(
       "RFID",
       "FeederID",
@@ -122,7 +121,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
 
   message("During the data processing ", nrow(records_out_finalrep), " records were removed from the finalized data")
 
-  records_out_dailyrep <- dplyr::anti_join(final_data, daily_data,
+  records_out_prelimrep <- dplyr::anti_join(final_data, prelim_data,
     by = c(
       "RFID",
       "FeederID",
@@ -131,13 +130,13 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
     )
   )
 
-  message("During the data processing ", nrow(records_out_dailyrep), " records were added to the finalized data")
+  message("During the data processing ", nrow(records_out_prelimrep), " records were added to the finalized data")
 
-  # Join daily and final data
-  daily_data$group <- "D"
+  # Join preliminary and final data
+  prelim_data$group <- "D"
   final_data$group <- "F"
   all_data <- rbind(
-    daily_data[, c(3, 2, 1, 4:8, 22)],
+    prelim_data[, c(3, 2, 1, 4:8, 22)],
     final_data[, c(1:6, 8:9, 26)]
   )
 
@@ -148,7 +147,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
                  aes(label = round(after_stat(y), 0)),
                  position = position_dodge(width = 0.75),
                  vjust = -0.6, size = 4, color = "black") +
-    scale_x_discrete(labels = c("D" = "Daily data", "F" = "Final report")) +
+    scale_x_discrete(labels = c("D" = "Prelim data", "F" = "Final report")) +
     scale_fill_manual(values = c("#9FA8DA", "#A5D6A7")) +
     theme_classic() +
     theme(
@@ -166,7 +165,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
                  aes(label = round(after_stat(y), 0)),
                  position = position_dodge(width = 0.75),
                  vjust = -0.9, size = 4, color = "black") +
-    scale_x_discrete(labels = c("D" = "Daily data",
+    scale_x_discrete(labels = c("D" = "Prelim data",
                                 "F" = "Final report")) +
     scale_fill_manual(values = c("#9FA8DA", "#A5D6A7")) +
     theme_classic() +
@@ -183,7 +182,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   print(plot2)
 
   # Comparison of CH4 values for each dataset
-  joined_data <- dplyr::inner_join(daily_data, final_data,
+  joined_data <- dplyr::inner_join(prelim_data, final_data,
     by = c(
       "RFID",
       "FeederID",
@@ -195,7 +194,7 @@ compare_gfdata <- function(dailyrep, finalrep, start_date, end_date) {
   # Return a list of data frames
   return(list(
     out_final = records_out_finalrep,
-    out_daily = records_out_dailyrep
+    out_prelim = records_out_prelimrep
   ))
 
 }

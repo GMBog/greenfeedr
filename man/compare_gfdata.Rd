@@ -2,9 +2,9 @@
 % Please edit documentation in R/compare_gfdata.R
 \name{compare_gfdata}
 \alias{compare_gfdata}
-\title{Compare Daily and Final 'GreenFeed' Data}
+\title{Compare Preliminary and Finalized 'GreenFeed' Data}
 \arguments{
-\item{dailyrep}{a data frame with daily 'GreenFeed' data}
+\item{prelimrep}{a data frame with preliminary 'GreenFeed' data}
 
 \item{finalrep}{a data frame with finalized 'GreenFeed' data}
 
@@ -13,18 +13,18 @@
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 }
 \value{
-Data frame including records removed from daily and final reports.
+Data frame including records removed from preliminary and final reports.
 }
 \description{
-Compare daily and finalized 'GreenFeed' data.
+Compare preliminary and finalized 'GreenFeed' data.
 }
 \examples{
-#Datasets with daily and finalized GreenFeed data
-dailyrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
+#Datasets with preliminary and finalized GreenFeed data
+prelimrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
 data <- compare_gfdata(
-            dailyrep,
+            prelimrep,
             finalrep,
             start_date = "2024-05-13",
             end_date = "2024-05-20")

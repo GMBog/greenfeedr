@@ -2,9 +2,9 @@
 % Please edit documentation in R/process_gfdata.R
 \name{process_gfdata}
 \alias{process_gfdata}
-\title{Process Daily and Finalized 'GreenFeed' Data}
+\title{Process Preliminary and Finalized 'GreenFeed' Data}
 \arguments{
-\item{data}{a data frame with daily or finalized 'GreenFeed' data}
+\item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
 
 \item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
 

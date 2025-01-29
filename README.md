@@ -15,15 +15,16 @@ Status](https://www.r-pkg.org/badges/version/greenfeedr)](https://CRAN.R-project
 GreenFeed data:
 
 - `get_gfdata()` downloads GreenFeed data via API.
-- `report_gfdata()` downloads and generates markdown reports of daily
-  and finalized GreenFeed data.
-- `compare_gfdata()` compare daily and finalized GreenFeed data.
-- `process_gfdata()` processes and averages daily or final GreenFeed
-  data.
+- `report_gfdata()` downloads and generates markdown reports of
+  preliminary and finalized GreenFeed data.
+- `compare_gfdata()` compare preliminary and finalized GreenFeed data.
+- `process_gfdata()` processes and averages preliminary or finalized
+  GreenFeed data.
 - `pellin()` processes pellet intakes from GreenFeed units.
 - `viseat()` processes GreenFeed visits.
 
-Most of these use the same daily and final data from GreenFeed system.
+Most of these use the same preliminary and finalized data from GreenFeed
+system.
 
 ## Citation
 
@@ -52,9 +53,9 @@ Here we present an example of how to use `process_gfdata()`:
 library(greenfeedr)
 ```
 
-Note that we received the finalized data (or Summarized Data) for our
-study using GreenFeed from C-Lock Inc. So, now we need to process all
-the daily records obtained.
+Note that we received the finalized data for our study using GreenFeed
+from C-Lock Inc. So, now we need to process all the daily records
+obtained.
 
 The data looks like (first 5 cols):
 

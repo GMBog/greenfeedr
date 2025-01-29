@@ -1,12 +1,12 @@
 #' @name report_gfdata
 #' @title Download and Report 'GreenFeed' Data
 #'
-#' @description Generates a PDF report of daily and finalized 'GreenFeed' data.
+#' @description Generates a PDF report of preliminary and finalized 'GreenFeed' data.
 #'     The report includes: number of animals using 'GreenFeed' and plots with distribution of records and gas production.
-#'     If the daily option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
+#'     If the preliminary option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
 #'     otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 #'
-#' @param input_type a character string representing type of data (options: "daily" and "final")
+#' @param input_type a character string representing type of data (options: "prelim" and "final")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
@@ -16,9 +16,9 @@
 #' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
 #' @param user a character string representing the user name to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
 #' @param pass a character string representing password to logging into 'GreenFeed' system. If input_type is "final", this parameter is ignored
-#' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "daily", this parameter is ignored
+#' @param file_path A list of file paths containing the final report(s) from the 'GreenFeed' system. If input_type is "prelim", this parameter is ignored
 #'
-#' @return A CSV file with daily 'GreenFeed' data and a PDF report with a description of the daily or finalized data
+#' @return A CSV file with preliminary 'GreenFeed' data and a PDF report with a description of the preliminary or finalized data
 #'
 #' @examplesIf has_credentials()
 #' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
@@ -28,7 +28,7 @@
 #' report_gfdata(
 #'   user = "your_username",
 #'   pass = "your_password",
-#'   input_type = "daily",
+#'   input_type = "prelim",
 #'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2023-01-01",
@@ -65,13 +65,13 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   input_type <- tolower(input_type)
 
   # Ensure input_type is valid
-  valid_inputs <- c("final", "daily")
+  valid_inputs <- c("final", "daily", "prelim")
   if (!(input_type %in% valid_inputs)) {
     stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
   }
 
 
-  if (input_type == "daily") {
+  if (input_type == "daily" | input_type == "prelim") {
     # First Authenticate to receive token:
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
     httr::stop_for_status(req)
@@ -140,7 +140,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
       }
     }
 
-    # Dataframe (df) contains daily 'GreenFeed' data
+    # Dataframe (df) contains preliminary 'GreenFeed' data
     df <- df %>%
       ## Remove "unknown IDs" and leading zeros from RFID col
       dplyr::filter(RFID != "unknown") %>%
