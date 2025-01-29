@@ -29,8 +29,7 @@ system.
 ## Citation
 
 More information about how to use greenfeedr can be found in
-[Martinez-Boggio et
-al. (2024)](https://www.sciencedirect.com/science/article/pii/S266691022400187X).
+[Martinez-Boggio et al. (2024)](https://doi.org/10.3168/jdsc.2024-0662).
 
 ## Cheat Sheet
 

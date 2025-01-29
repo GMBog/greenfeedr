@@ -13,7 +13,7 @@
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 }
 \value{
-Data frame including records removed from preliminary and final reports.
+Data frame including records removed from preliminary and final reports
 }
 \description{
 Compare preliminary and finalized 'GreenFeed' data.

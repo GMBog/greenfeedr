@@ -6,7 +6,7 @@
 #'     If the preliminary option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
 #'     otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 #'
-#' @param input_type a character string representing type of data (options: "prelim" and "final")
+#' @param input_type a character string representing type of data (options: "prelim" or "daily, and "final")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
@@ -65,13 +65,13 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   input_type <- tolower(input_type)
 
   # Ensure input_type is valid
-  valid_inputs <- c("final", "daily", "prelim")
+  valid_inputs <- c("final", "prelim", "daily")
   if (!(input_type %in% valid_inputs)) {
     stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
   }
 
 
-  if (input_type == "daily" | input_type == "prelim") {
+  if (input_type == "prelim" | input_type == "daily") {
     # First Authenticate to receive token:
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
     httr::stop_for_status(req)

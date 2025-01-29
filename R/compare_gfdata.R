@@ -8,7 +8,7 @@
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
 #'
-#' @return Data frame including records removed from preliminary and final reports.
+#' @return Data frame including records removed from preliminary and final reports
 #'
 #' @examples
 #' #Datasets with preliminary and finalized GreenFeed data
