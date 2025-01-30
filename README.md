@@ -7,6 +7,8 @@
 
 [![CRAN
 Status](https://www.r-pkg.org/badges/version/greenfeedr)](https://CRAN.R-project.org/package=greenfeedr)
+[![CRAN
+Downloads](https://cranlogs.r-pkg.org/badges/last-month/greenfeedr)](https://CRAN.R-project.org/package=greenfeedr)
 <!-- badges: end -->
 
 ## Overview
