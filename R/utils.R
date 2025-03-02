@@ -2,7 +2,7 @@
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage(
     "Thank you for using the greenfeedr package!\n",
-    "Cite: Martinez-Boggio et al. (2024). Greenfeedr: an R-package for processing and reporting GreenFeed data.\n",
+    "Cite: Martinez-Boggio et al. (2025). Greenfeedr: an R-package for processing and reporting GreenFeed data.\n",
     "Type 'help(greenfeedr)' for summary information"
   )
 }

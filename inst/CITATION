@@ -11,9 +11,9 @@ bibentry(
     person("Francisco", "Peñagaricano")
   ),
   journal = "JDS Communications",
-  year = 2024,
-  volume = "",
-  pages = "",
+  year = 2025,
+  volume = "6",
+  pages = "227-230",
   doi = "10.3168/jdsc.2024-0662",
   url = "https://doi.org/10.3168/jdsc.2024-0662"
 )
