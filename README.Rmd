@@ -46,8 +46,15 @@ More information about how to use greenfeedr can be found in [Martinez-Boggio et
 
 You can install the released version of `greenfeedr` from [CRAN](https://CRAN.R-project.org/package=greenfeedr) with:
 
-```{r, eval = FALSE}
+```{r CRAN, eval = FALSE}
 install.packages("greenfeedr")
+```
+
+If you want to install the development version of `greenfeedr` use this:
+
+```{r GitHub, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("GMBog/greenfeedr")
 ```
 
 ## Usage

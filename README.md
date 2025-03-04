@@ -48,6 +48,13 @@ You can install the released version of `greenfeedr` from
 install.packages("greenfeedr")
 ```
 
+If you want to install the development version of `greenfeedr` use this:
+
+``` r
+install.packages("remotes")
+remotes::install_github("GMBog/greenfeedr")
+```
+
 ## Usage
 
 Here we present an example of how to use `process_gfdata()`:
