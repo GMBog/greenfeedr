@@ -99,12 +99,16 @@
 <p>You can install the released version of <code>greenfeedr</code> from <a href="https://CRAN.R-project.org/package=greenfeedr" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"greenfeedr"</span><span class="op">)</span></span></code></pre></div>
+<p>If you want to install the development version of <code>greenfeedr</code> use this:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"GMBog/greenfeedr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p>Here we present an example of how to use <code><a href="reference/process_gfdata.html">process_gfdata()</a></code>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gmbog.github.io/greenfeedr/">greenfeedr</a></span><span class="op">)</span></span></code></pre></div>
 <p>Note that we received the finalized data for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.</p>
 <p>The data looks like (first 5 cols):</p>
@@ -338,7 +342,7 @@ O2 Massflow (g/d)
 </li>
 </ul>
 <p>We can make an iterative process evaluating all possible combinations of parameters. Then, we define the parameters as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the parameter space for param1 (i), param2 (j), and min_time (k):</span></span>
 <span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span><span class="op">)</span></span>
@@ -348,7 +352,7 @@ O2 Massflow (g/d)
 <span><span class="va">param_combinations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>param1 <span class="op">=</span> <span class="va">i</span>, param2 <span class="op">=</span> <span class="va">j</span>, min_time <span class="op">=</span> <span class="va">k</span><span class="op">)</span></span></code></pre></div>
 <p>Interestingly, we have 60 combinations of our 3 parameters (param1, param2, and min_time).</p>
 <p>The next step, is to evaluate the function <code><a href="reference/process_gfdata.html">process_gfdata()</a></code> with the defined set of parameters. Note that the function can handle as argument a file path to the data files or the data as data frame.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Helper function to call process_gfdata and extract relevant information</span></span>
 <span><span class="va">process_and_summarize</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">param1</span>, <span class="va">param2</span>, <span class="va">min_time</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/process_gfdata.html">process_gfdata</a></span><span class="op">(</span></span>
