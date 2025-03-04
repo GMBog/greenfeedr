@@ -124,6 +124,28 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> H2: NaN +- NA</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> H2 CV = NA%</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gf_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $filtered_data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 254 × 23</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    FeederID AnimalName   RFID  StartTime EndTime GoodDataDuration CO2GramsPerDay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             2.52         <span style="text-decoration: underline;">10</span>531.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             6.15         <span style="text-decoration: underline;">14</span>032.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…            10.4           <span style="text-decoration: underline;">9</span>242.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             4            <span style="text-decoration: underline;">14</span>735.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             4.92         <span style="text-decoration: underline;">20</span>080.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             3.7          <span style="text-decoration: underline;">13</span>905.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             2.2          <span style="text-decoration: underline;">18</span>625.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             2.38         <span style="text-decoration: underline;">15</span>462.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             5.08         <span style="text-decoration: underline;">15</span>689.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>        1 <span style="color: #949494;">"</span>\"00000000… 8400… 5/13/24 … 5/13/2…             2.27         <span style="text-decoration: underline;">18</span>011.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 244 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more variables: CH4GramsPerDay &lt;dbl&gt;, O2GramsPerDay &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   H2GramsPerDay &lt;lgl&gt;, H2SGramsPerDay &lt;dbl&gt;, AirflowLitersPerSec &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   AirflowCf &lt;dbl&gt;, WindSpeedMetersPerSec &lt;dbl&gt;, WindDirDeg &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   WindCf &lt;dbl&gt;, WasInterrupted &lt;lgl&gt;, InterruptingTags &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   TempPipeDegreesCelsius &lt;dbl&gt;, IsPreliminary &lt;dbl&gt;, RunTime &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   day &lt;dttm&gt;, HourOfDay &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $daily_data</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 61 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    RFID     week day                     n minutes CH4GramsPerDay CO2GramsPerDay</span>
