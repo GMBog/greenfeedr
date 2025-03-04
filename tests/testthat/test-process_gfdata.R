@@ -13,9 +13,9 @@ test_that("process_gfdata works correctly", {
   # Suppress warnings and run the function
   result <- process_gfdata(data, start_date, end_date, param1, param2, min_time)
 
-  # Check that the result is a list with two elements
+  # Check that the result is a list with three elements
   expect_type(result, "list")
-  expect_length(result, 2)
+  expect_length(result, 3)
 
   # Check that the list contains data frames
   expect_s3_class(result$daily_data, "data.frame")

@@ -19,7 +19,8 @@
 \item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
 }
 \value{
-A list of two data frames:
+A list of three data frames:
+  \item{filtered_data }{data frame with filtered 'GreenFeed' data}
   \item{daily_data }{data frame with daily processed 'GreenFeed' data}
   \item{weekly_data }{data frame with weekly processed 'GreenFeed' data}
 }
