@@ -12,7 +12,8 @@
 #' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)
 #' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
 #'
-#' @return A list of two data frames:
+#' @return A list of three data frames:
+#'   \item{filtered_data }{data frame with filtered 'GreenFeed' data}
 #'   \item{daily_data }{data frame with daily processed 'GreenFeed' data}
 #'   \item{weekly_data }{data frame with weekly processed 'GreenFeed' data}
 #'
@@ -172,8 +173,8 @@ process_gfdata <- function(data, start_date, end_date,
   # Combine files into one data frame
   df <- process_data(data)
 
-  # Calculation of average daily gas production
-  daily_df <- df %>%
+  #Filtering data
+  df <- df %>%
     ## Filter by conditions where CH4 and CO2 must be within range, but allow O2 and H2 to be NA
     dplyr::filter(
       dplyr::if_all(
@@ -189,7 +190,11 @@ process_gfdata <- function(data, start_date, end_date,
 
       ## Filter by start and end of study
       day >= start_date & day <= end_date
-    ) %>%
+    )
+
+
+  # Calculation of average daily gas production
+  daily_df <- df %>%
     ## Group by animal and date
     dplyr::group_by(RFID, day) %>%
     ## Compute weighted mean of all gases
@@ -248,6 +253,7 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Return a list of data frames
   return(list(
+    filtered_data = df,
     daily_data = daily_df,
     weekly_data = weekly_df
   ))
