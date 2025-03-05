@@ -4,7 +4,9 @@
 \alias{pellin}
 \title{Process 'GreenFeed' Pellet Intakes}
 \arguments{
-\item{file_path}{a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'}
+\item{user}{a character string representing the user name to logging into 'GreenFeed' system}
+
+\item{pass}{a character string representing password to logging into 'GreenFeed' system}
 
 \item{unit}{numeric or character vector or list representing one or more 'GreenFeed' unit numbers. The order should match with "feedtimes" files}
 
@@ -17,6 +19,8 @@
 \item{save_dir}{a character string representing the directory to save the output file}
 
 \item{rfid_file}{a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)}
+
+\item{file_path}{a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'}
 }
 \value{
 An Excel file with pellet intakes for all animals and days within the specified period is saved to save_dir.

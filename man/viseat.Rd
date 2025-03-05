@@ -4,7 +4,9 @@
 \alias{viseat}
 \title{Process 'GreenFeed' Visits}
 \arguments{
-\item{file_path}{a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'.}
+\item{user}{a character string representing the user name to logging into 'GreenFeed' system}
+
+\item{pass}{a character string representing password to logging into 'GreenFeed' system}
 
 \item{unit}{numeric or character vector or list representing one or more GreenFeed unit numbers.}
 
@@ -13,6 +15,8 @@
 \item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
 
 \item{rfid_file}{a character string representing the file with individual RFIDs. The order should be Visual ID (col1) and RFID (col2)}
+
+\item{file_path}{a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'}
 }
 \value{
 A list of two data frames:

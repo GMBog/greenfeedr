@@ -81,8 +81,10 @@ process_gfdata <- function(data, start_date, end_date,
         ## Remove leading zeros from RFID column to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
         ## Remove records with unknown ID and airflow below 25 l/s (threshold value recommended by C-Lock Inc.)
-        dplyr::filter(RFID != "unknown",
-                      AirflowLitersPerSec >= 25) %>%
+        dplyr::filter(
+          RFID != "unknown",
+          AirflowLitersPerSec >= 25
+        ) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
         dplyr::mutate(
           CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
@@ -138,8 +140,10 @@ process_gfdata <- function(data, start_date, end_date,
         ## Remove leading zeros from RFID column to match with IDs
         dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
         ## Remove records with unknown ID and airflow below 25 l/s (threshold value recommended by C-Lock Inc.)
-        dplyr::filter(RFID != "unknown",
-                      AirflowLitersPerSec >= 25) %>%
+        dplyr::filter(
+          RFID != "unknown",
+          AirflowLitersPerSec >= 25
+        ) %>%
         ## Mark records with invalid gas values as NA, instead of removing them
         dplyr::mutate(
           CH4GramsPerDay = ifelse(CH4GramsPerDay <= 0, NA, CH4GramsPerDay),
@@ -173,7 +177,7 @@ process_gfdata <- function(data, start_date, end_date,
   # Combine files into one data frame
   df <- process_data(data)
 
-  #Filtering data
+  # Filtering data
   df <- df %>%
     ## Filter by conditions where CH4 and CO2 must be within range, but allow O2 and H2 to be NA
     dplyr::filter(

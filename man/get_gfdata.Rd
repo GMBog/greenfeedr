@@ -7,6 +7,7 @@
 get_gfdata(
   user,
   pass,
+  d = "visits",
   exp = NA,
   unit,
   start_date,
@@ -19,6 +20,8 @@ get_gfdata(
 
 \item{pass}{a character string representing password to logging into 'GreenFeed' system}
 
+\item{d}{a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")}
+
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
 \item{unit}{numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers}
@@ -30,7 +33,7 @@ get_gfdata(
 \item{save_dir}{a character string representing the directory to save the output file}
 }
 \value{
-A CSV file with preliminary 'GreenFeed' data in the specified directory
+A CSV file with the specified data (visits or raw) saved in the provided directory.
 }
 \description{
 Downloads preliminary 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
@@ -40,16 +43,18 @@ Downloads preliminary 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API
 \examples{
 \dontshow{if (has_credentials()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
-# Example with units as a vector
+# By default, the function downloads the preliminary 'GreenFeed' data,
+# if raw data is needed use options: "feed", "rfid", or "cmds"
 
 get_gfdata(
-   user = "your_username",
-   pass = "your_password",
-   exp = "StudyName",
-   unit = c(304, 305),
-   start_date = "2024-01-01",
-   end_date = Sys.Date(),
-   save_dir = tempdir()
-   )
+  user = "your_username",
+  pass = "your_password",
+  d = "visits",
+  exp = "StudyName",
+  unit = c(304, 305),
+  start_date = "2024-01-01",
+  end_date = Sys.Date(),
+  save_dir = tempdir()
+)
 \dontshow{\}) # examplesIf}
 }

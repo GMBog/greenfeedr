@@ -19,14 +19,15 @@ Data frame including records removed from preliminary and final reports
 Compare preliminary and finalized 'GreenFeed' data.
 }
 \examples{
-#Datasets with preliminary and finalized GreenFeed data
+# Datasets with preliminary and finalized GreenFeed data
 prelimrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 
 data <- compare_gfdata(
-            prelimrep,
-            finalrep,
-            start_date = "2024-05-13",
-            end_date = "2024-05-20")
+  prelimrep,
+  finalrep,
+  start_date = "2024-05-13",
+  end_date = "2024-05-20"
+)
 
 }

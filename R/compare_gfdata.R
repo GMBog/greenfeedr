@@ -11,15 +11,16 @@
 #' @return Data frame including records removed from preliminary and final reports
 #'
 #' @examples
-#' #Datasets with preliminary and finalized GreenFeed data
+#' # Datasets with preliminary and finalized GreenFeed data
 #' prelimrep <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 #' finalrep <- system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr")
 #'
 #' data <- compare_gfdata(
-#'             prelimrep,
-#'             finalrep,
-#'             start_date = "2024-05-13",
-#'             end_date = "2024-05-20")
+#'   prelimrep,
+#'   finalrep,
+#'   start_date = "2024-05-13",
+#'   end_date = "2024-05-20"
+#' )
 #'
 #' @export compare_gfdata
 #'
@@ -129,10 +130,12 @@ compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
   # Distribution of the CH4 and CO2 for both datasets
   plot1 <- ggplot(data = all_data, aes(x = group, y = CH4GramsPerDay, fill = group)) +
     geom_boxplot() +
-    stat_summary(fun = mean, geom = "text",
-                 aes(label = round(after_stat(y), 0)),
-                 position = position_dodge(width = 0.75),
-                 vjust = -0.6, size = 4, color = "black") +
+    stat_summary(
+      fun = mean, geom = "text",
+      aes(label = round(after_stat(y), 0)),
+      position = position_dodge(width = 0.75),
+      vjust = -0.6, size = 4, color = "black"
+    ) +
     scale_x_discrete(labels = c("D" = "Prelim data", "F" = "Final report")) +
     scale_fill_manual(values = c("#9FA8DA", "#A5D6A7")) +
     theme_classic() +
@@ -147,12 +150,16 @@ compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
 
   plot2 <- ggplot(data = all_data, aes(x = group, y = CO2GramsPerDay, fill = group)) +
     geom_boxplot() +
-    stat_summary(fun = mean, geom = "text",
-                 aes(label = round(after_stat(y), 0)),
-                 position = position_dodge(width = 0.75),
-                 vjust = -0.9, size = 4, color = "black") +
-    scale_x_discrete(labels = c("D" = "Prelim data",
-                                "F" = "Final report")) +
+    stat_summary(
+      fun = mean, geom = "text",
+      aes(label = round(after_stat(y), 0)),
+      position = position_dodge(width = 0.75),
+      vjust = -0.9, size = 4, color = "black"
+    ) +
+    scale_x_discrete(labels = c(
+      "D" = "Prelim data",
+      "F" = "Final report"
+    )) +
     scale_fill_manual(values = c("#9FA8DA", "#A5D6A7")) +
     theme_classic() +
     theme(
@@ -182,5 +189,4 @@ compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
     out_final = records_out_finalrep,
     out_prelim = records_out_prelimrep
   ))
-
 }
