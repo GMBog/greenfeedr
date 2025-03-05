@@ -61,8 +61,12 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-file-path">file_path<a class="anchor" aria-label="anchor" href="#arg-file-path"></a></dt>
-<dd><p>a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'</p></dd>
+<dl><dt id="arg-user">user<a class="anchor" aria-label="anchor" href="#arg-user"></a></dt>
+<dd><p>a character string representing the user name to logging into 'GreenFeed' system</p></dd>
+
+
+<dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
+<dd><p>a character string representing password to logging into 'GreenFeed' system</p></dd>
 
 
 <dt id="arg-unit">unit<a class="anchor" aria-label="anchor" href="#arg-unit"></a></dt>
@@ -87,6 +91,10 @@
 
 <dt id="arg-rfid-file">rfid_file<a class="anchor" aria-label="anchor" href="#arg-rfid-file"></a></dt>
 <dd><p>a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)</p></dd>
+
+
+<dt id="arg-file-path">file_path<a class="anchor" aria-label="anchor" href="#arg-file-path"></a></dt>
+<dd><p>a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -119,7 +127,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Please set the 'gcup' parameter based on the 10-drops test.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>            If units have different gram values, define 'gcup' as a vector with an element for each unit.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Animal ID not visting GreenFeed: Animal11, Animal12, Animal13, Animal14, Animal16, Animal17, Animal18, Animal19, Animal20, Animal21, Animal22, Animal23, Animal24, Animal25, Animal26, Animal27, Animal28, Animal29, Animal30, Animal32</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pellet intakes file created and saved to /tmp/RtmpFPpTf2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pellet intakes file created and saved to /tmp/Rtmp7ST7IC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 416 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Date       FarmName RFID            PIntake_kg</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>

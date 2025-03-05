@@ -55,6 +55,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_gfdata</span><span class="op">(</span></span>
 <span>  <span class="va">user</span>,</span>
 <span>  <span class="va">pass</span>,</span>
+<span>  d <span class="op">=</span> <span class="st">"visits"</span>,</span>
 <span>  exp <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  <span class="va">unit</span>,</span>
 <span>  <span class="va">start_date</span>,</span>
@@ -73,6 +74,10 @@
 
 <dt id="arg-pass">pass<a class="anchor" aria-label="anchor" href="#arg-pass"></a></dt>
 <dd><p>a character string representing password to logging into 'GreenFeed' system</p></dd>
+
+
+<dt id="arg-d">d<a class="anchor" aria-label="anchor" href="#arg-d"></a></dt>
+<dd><p>a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")</p></dd>
 
 
 <dt id="arg-exp">exp<a class="anchor" aria-label="anchor" href="#arg-exp"></a></dt>
@@ -97,24 +102,26 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A CSV file with preliminary 'GreenFeed' data in the specified directory</p>
+    <p>A CSV file with the specified data (visits or raw) saved in the provided directory.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># has_credentials()</span></span></span>
 <span class="r-in"><span><span class="co"># Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.</span></span></span>
-<span class="r-in"><span><span class="co"># Example with units as a vector</span></span></span>
+<span class="r-in"><span><span class="co"># By default, the function downloads the preliminary 'GreenFeed' data,</span></span></span>
+<span class="r-in"><span><span class="co"># if raw data is needed use options: "feed", "rfid", or "cmds"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_gfdata</span><span class="op">(</span></span></span>
-<span class="r-in"><span>   user <span class="op">=</span> <span class="st">"your_username"</span>,</span></span>
-<span class="r-in"><span>   pass <span class="op">=</span> <span class="st">"your_password"</span>,</span></span>
-<span class="r-in"><span>   exp <span class="op">=</span> <span class="st">"StudyName"</span>,</span></span>
-<span class="r-in"><span>   unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">304</span>, <span class="fl">305</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   start_date <span class="op">=</span> <span class="st">"2024-01-01"</span>,</span></span>
-<span class="r-in"><span>   end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>   <span class="op">)</span></span></span>
+<span class="r-in"><span>  user <span class="op">=</span> <span class="st">"your_username"</span>,</span></span>
+<span class="r-in"><span>  pass <span class="op">=</span> <span class="st">"your_password"</span>,</span></span>
+<span class="r-in"><span>  d <span class="op">=</span> <span class="st">"visits"</span>,</span></span>
+<span class="r-in"><span>  exp <span class="op">=</span> <span class="st">"StudyName"</span>,</span></span>
+<span class="r-in"><span>  unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">304</span>, <span class="fl">305</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  start_date <span class="op">=</span> <span class="st">"2024-01-01"</span>,</span></span>
+<span class="r-in"><span>  end_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  save_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
