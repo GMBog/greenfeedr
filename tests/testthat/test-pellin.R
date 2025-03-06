@@ -17,13 +17,13 @@ test_that("pellin processes data correctly", {
 
   # Run pellin function
   pellin(
-    file_path = feedtimes_file,
     unit = 1,
     gcup = 34,
     start_date = "2024-05-13",
     end_date = "2024-05-25",
     save_dir = save_dir,
-    rfid_file = rfid_file
+    rfid_file = rfid_file,
+    file_path = feedtimes_file
   )
 
   # Check if the file was created

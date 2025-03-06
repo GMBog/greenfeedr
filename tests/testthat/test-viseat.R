@@ -11,11 +11,11 @@ test_that("viseat handles unsupported file formats", {
   expect_error(
     {
       result <- viseat(
-        file_path = feedtimes_file,
         unit = 1,
         start_date = "2024-05-13",
         end_date = "2024-05-25",
-        rfid_file = unsupported_file
+        rfid_file = unsupported_file,
+        file_path = feedtimes_file
       )
     },
     "Unsupported file format."
@@ -42,11 +42,11 @@ test_that("viseat returns a list with the correct structure", {
 
 test_that("viseat returns correct content in data frames", {
   result <- viseat(
-    file_path = feedtimes_file,
     unit = 1,
     start_date = "2024-05-13",
     end_date = "2024-05-25",
-    rfid_file = rfid_file
+    rfid_file = rfid_file,
+    file_path = feedtimes_file
   )
 
   # Check content of visits_per_unit

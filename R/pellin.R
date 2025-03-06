@@ -23,7 +23,7 @@
 #' @examples
 #' # You should provide the 'feedtimes' file provided by C-Lock.
 #' # it could be a list of files if you have data from multiple units to combine
-#' path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+#' path <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
 #'
 #' # You must include the grams of pellets per cup based on the result obtained from the 10-drops test
 #'
@@ -32,13 +32,13 @@
 #' RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 #'
 #' pellin(
-#'   file_path = path,
 #'   unit = 1,
 #'   gcup = 34,
 #'   start_date = "2024-05-13",
 #'   end_date = "2024-05-25",
 #'   save_dir = tempdir(),
-#'   rfid_file = RFIDs
+#'   rfid_file = RFIDs,
+#'   file_path = path
 #' )
 #'
 #' @export pellin
@@ -125,13 +125,26 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
         stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
     }
 
-    # Remove leading zeros from tag IDs and formatting Date
+    # Detect date format
+    if (all(grepl("^\\d{4}-\\d{2}-\\d{2}", df$FeedTime))) {
+      detected_format <- "%Y-%m-%d %H:%M:%S"
+    } else if (all(grepl("^\\d{1,2}/\\d{1,2}/\\d{2}", df$FeedTime))) {
+      detected_format <- "mdy_hm"
+    } else {
+      stop("Unknown FeedTime format in dataset!")
+    }
+
+    # Convert FeedTime using the detected format
     df <- df %>%
-      dplyr::mutate(
+      mutate(
         FID = as.character(FID),
         CowTag = gsub("^0+", "", CowTag),
-        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S")
-        )
+        FeedTime = if (detected_format == "%Y-%m-%d %H:%M:%S") {
+          as.POSIXct(FeedTime, format = detected_format)
+        } else {
+          mdy_hm(FeedTime)
+        }
+      )
 
     # Read and bind feedtimes data
     # df <- purrr::map2_dfr(file_path, unit, ~ {

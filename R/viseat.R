@@ -21,7 +21,7 @@
 #' @examples
 #' # You should provide the feedtimes files.
 #' # it could be a list of files if you have data from multiple units to combine
-#' path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+#' path <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
 #'
 #' # If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and
 #' # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).
@@ -114,12 +114,25 @@ viseat <- function(user = NA, pass = NA, unit,
       stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
     }
 
-    # Remove leading zeros from tag IDs and formatting Date
+    # Detect date format
+    if (all(grepl("^\\d{4}-\\d{2}-\\d{2}", df$FeedTime))) {
+      detected_format <- "%Y-%m-%d %H:%M:%S"
+    } else if (all(grepl("^\\d{1,2}/\\d{1,2}/\\d{2}", df$FeedTime))) {
+      detected_format <- "mdy_hm"
+    } else {
+      stop("Unknown FeedTime format in dataset!")
+    }
+
+    # Convert FeedTime using the detected format
     df <- df %>%
-      dplyr::mutate(
+      mutate(
         FID = as.character(FID),
         CowTag = gsub("^0+", "", CowTag),
-        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+        FeedTime = if (detected_format == "%Y-%m-%d %H:%M:%S") {
+          as.POSIXct(FeedTime, format = detected_format)
+        } else {
+          mdy_hm(FeedTime)
+        }
       )
 
   }

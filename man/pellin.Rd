@@ -36,7 +36,7 @@ Processes the "feedtimes" file from 'GreenFeed' system,
 \examples{
 # You should provide the 'feedtimes' file provided by C-Lock.
 # it could be a list of files if you have data from multiple units to combine
-path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+path <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
 
 # You must include the grams of pellets per cup based on the result obtained from the 10-drops test
 
@@ -45,13 +45,13 @@ path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
 RFIDs <- system.file("extdata", "RFID_file.csv", package = "greenfeedr")
 
 pellin(
-  file_path = path,
   unit = 1,
   gcup = 34,
   start_date = "2024-05-13",
   end_date = "2024-05-25",
   save_dir = tempdir(),
-  rfid_file = RFIDs
+  rfid_file = RFIDs,
+  file_path = path
 )
 
 }

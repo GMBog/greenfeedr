@@ -31,7 +31,7 @@ Processes 'GreenFeed' visits and food drops for a requested period.
 \examples{
 # You should provide the feedtimes files.
 # it could be a list of files if you have data from multiple units to combine
-path <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+path <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
 
 # If the user include an rfid file, the structure should be in col1 AnimalName or VisualID, and
 # col2 the RFID or TAG_ID. The file could be save in different formats (.xlsx, .csv, or .txt).

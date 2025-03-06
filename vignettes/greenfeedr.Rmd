@@ -287,15 +287,15 @@ This is the file you will use as input for pellin and viseat. If you have more t
 Note that you should include the result obtained from the 10-drops test. If units have different gram values, define 'gcup' as a vector with an element for each unit. 
 
 ```{r pellin and viseat}
-file <- list(system.file("extdata", "feedtimes.csv", package = "greenfeedr"))
+file <- system.file("extdata", "feedtimes.csv", package = "greenfeedr")
 
 result <- pellin(
-  file_path = file,
   unit = 1,
   gcup = 34,
   start_date = "2024-05-13",
   end_date = "2024-05-25",
-  save_dir = tempdir()
+  save_dir = tempdir(),
+  file_path = file
 )
 
 head(result)
