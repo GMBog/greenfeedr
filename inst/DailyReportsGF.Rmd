@@ -2,12 +2,13 @@
 title: "GreenFeed Daily Data Report"
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output: pdf_document
+header-includes:
+  - \let\theHfootnote\relax
 ---
 
 ```{r libraries, include=FALSE}
 library(dplyr)
 library(ggplot2)
-library(kableExtra)
 library(lubridate)
 library(RColorBrewer)
 library(tidyr)

@@ -2,6 +2,8 @@
 title: "GreenFeed Final Data Report"
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output: pdf_document
+header-includes:
+  - \let\theHfootnote\relax
 ---
 
 ```{r libraries, include=FALSE}

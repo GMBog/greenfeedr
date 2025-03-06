@@ -47,6 +47,12 @@ get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
+  # Ensure d argument is valid
+  valid_inputs <- c("visits", "feed", "rfid", "cmds")
+  if (!(d %in% valid_inputs)) {
+    stop(paste("Invalid argument. Choose one of:", paste(valid_inputs, collapse = ", ")))
+  }
+
   # Authenticate to receive token
   req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
   httr::stop_for_status(req)

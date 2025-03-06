@@ -70,7 +70,6 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
   }
 
-
   if (input_type == "prelim" | input_type == "daily") {
     # First Authenticate to receive token:
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
