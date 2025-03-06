@@ -215,40 +215,55 @@ process_rfid_data <- function(rfid_file) {
 #'     regardless of whether it is provided as a numeric, character, or list/vector.
 #'
 #' @param unit Number of the 'GreenFeed' unit(s). Can be a numeric, character, list, or vector.
+#' @param t Type of function (opts: 1 and 2).
 #'
 #' @return A character string of the unit(s) in the correct comma-separated format.
 #'
 #' @examples
 #' # Example 1: Providing unit as a character vector
 #' unit <- c("592", "593")
-#' convert_unit(unit)
+#' convert_unit(unit, 1)
 #'
 #' # Example 2: Providing unit as a single numeric
 #' unit <- 592
-#' convert_unit(unit)
+#' convert_unit(unit, 1)
 #'
 #' # Example 3: Providing unit as a comma-separated character string
 #' unit <- "592, 593"
-#' convert_unit(unit)
+#' convert_unit(unit, 1)
 #'
 #' # Example 4: Providing unit as a list
 #' unit <- list(592, 593)
-#' convert_unit(unit)
+#' convert_unit(unit, 1)
 #'
 #' @export
 #' @keywords internal
-convert_unit <- function(unit) {
-  if (is.numeric(unit)) {
-    unit <- as.character(unit)
-  } else if (is.character(unit)) {
-    unit <- gsub(" ", "", unit) # Remove spaces from the character string
-  } else if (is.list(unit) || is.vector(unit)) {
-    unit <- as.character(unlist(unit)) # Flatten and convert list/vector to character
-  }
+convert_unit <- function(unit, t) {
+  if (t == 1) {
+    # Handle case for numeric or character vectors, lists, and single values
+    if (is.numeric(unit)) {
+      unit <- as.character(unit)  # Convert numeric to character
+    } else if (is.character(unit)) {
+      unit <- gsub(" ", "", unit) # Remove spaces from character string
+    } else if (is.list(unit) || is.vector(unit)) {
+      unit <- as.character(unlist(unit))  # Flatten list/vector and convert to character
+    }
 
-  if (length(unit) > 1) {
-    unit <- paste(unit, collapse = ",") # Collapse into comma-separated string if needed
+    # Collapse into a comma-separated string if the length is greater than 1
+    unit <- paste(unit, collapse = ",")
+
+  } else if (t == 2) {
+    # Handle comma-separated strings and lists
+    if (is.character(unit)) {
+      unit <- strsplit(unit, ",")[[1]]  # Split by comma if it's a string
+    } else if (is.list(unit) || is.vector(unit)) {
+      unit <- as.character(unlist(unit))  # Convert lists or vectors to character
+    }
+
+    # Convert to character
+    unit <- as.character(unit)
   }
 
   return(unit)
 }
+

@@ -41,7 +41,7 @@
 get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
                        start_date, end_date = Sys.Date(), save_dir = tempdir()) {
   # Ensure unit is a comma-separated string
-  unit <- convert_unit(unit)
+  unit <- convert_unit(unit,1)
 
   # Check date format
   start_date <- ensure_date_format(start_date)

@@ -58,7 +58,7 @@ viseat <- function(user = NA, pass = NA, unit,
 
   if (is.null(file_path)) {
     # Ensure unit is a comma-separated string
-    unit <- convert_unit(unit)
+    unit <- convert_unit(unit,1)
 
     # Authenticate to receive token
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
@@ -99,27 +99,29 @@ viseat <- function(user = NA, pass = NA, unit,
     df <- df %>%
       dplyr::mutate(
         CowTag = gsub("^0+", "", CowTag),
-        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S")
+        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
       )
   } else {
-    # Read and bind feedtimes data
-    df <- purrr::map2_dfr(file_path, unit, ~ {
-      ext <- tools::file_ext(.x)
 
-      if (ext == "csv") {
-        # Read CSV file
-        readr::read_csv(.x, show_col_types = FALSE) %>%
-          dplyr::mutate(FID = .y)
-      } else if (ext %in% c("xls", "xlsx")) {
-        # Read Excel file (both xls and xlsx)
-        readxl::read_excel(.x) %>%
-          dplyr::mutate(FID = .y)
-      } else {
-        stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
-      }
-    }) %>%
-      dplyr::relocate(FID, .before = FeedTime) %>%
-      dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+    ext <- tools::file_ext(file_path)
+    if (ext == "csv") {
+      # Read CSV file
+      df <- readr::read_csv(file_path, show_col_types = FALSE)
+    } else if (ext %in% c("xls", "xlsx")) {
+      # Read Excel file (both xls and xlsx)
+      df <- readxl::read_excel(file_path)
+    } else {
+      stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
+    }
+
+    # Remove leading zeros from tag IDs and formatting Date
+    df <- df %>%
+      dplyr::mutate(
+        FID = as.character(FID),
+        CowTag = gsub("^0+", "", CowTag),
+        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+      )
+
   }
 
 

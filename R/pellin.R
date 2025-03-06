@@ -69,8 +69,6 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   end_date <- ensure_date_format(end_date)
 
   if (is.null(file_path)) {
-    # Ensure unit is a comma-separated string
-    unit <- convert_unit(unit)
 
     # Authenticate to receive token
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
@@ -79,7 +77,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
 
     # Get data using the login token
     URL <- paste0(
-      "https://portal.c-lockinc.com/api/getraw?d=feed&fids=", unit,
+      "https://portal.c-lockinc.com/api/getraw?d=feed&fids=", convert_unit(unit,1),
       "&st=", start_date, "&et=", end_date, "%2012:00:00"
     )
     message(URL)
@@ -111,27 +109,49 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     df <- df %>%
       dplyr::mutate(
         CowTag = gsub("^0+", "", CowTag),
-        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S")
+        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
       )
-  } else {
-    # Read and bind feedtimes data
-    df <- purrr::map2_dfr(file_path, unit, ~ {
-      ext <- tools::file_ext(.x)
 
-      if (ext == "csv") {
+  } else {
+
+    ext <- tools::file_ext(file_path)
+    if (ext == "csv") {
         # Read CSV file
-        readr::read_csv(.x, show_col_types = FALSE) %>%
-          dplyr::mutate(FID = .y)
-      } else if (ext %in% c("xls", "xlsx")) {
+        df <- readr::read_csv(file_path, show_col_types = FALSE)
+    } else if (ext %in% c("xls", "xlsx")) {
         # Read Excel file (both xls and xlsx)
-        readxl::read_excel(.x) %>%
-          dplyr::mutate(FID = .y)
-      } else {
+        df <- readxl::read_excel(file_path)
+    } else {
         stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
-      }
-    }) %>%
-      dplyr::relocate(FID, .before = FeedTime) %>%
-      dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+    }
+
+    # Remove leading zeros from tag IDs and formatting Date
+    df <- df %>%
+      dplyr::mutate(
+        FID = as.character(FID),
+        CowTag = gsub("^0+", "", CowTag),
+        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S")
+        )
+
+    # Read and bind feedtimes data
+    # df <- purrr::map2_dfr(file_path, unit, ~ {
+    #   ext <- tools::file_ext(.x)
+    #
+    #   if (ext == "csv") {
+    #     # Read CSV file
+    #     readr::read_csv(.x, show_col_types = FALSE) %>%
+    #       dplyr::mutate(FID = .y)
+    #   } else if (ext %in% c("xls", "xlsx")) {
+    #     # Read Excel file (both xls and xlsx)
+    #     readxl::read_excel(.x) %>%
+    #       dplyr::mutate(FID = .y)
+    #   } else {
+    #     stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
+    #   }
+    # }) %>%
+    #   dplyr::relocate(FID, .before = FeedTime) %>%
+    #   dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
+
   }
 
   # Process the rfid data
@@ -148,7 +168,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   number_drops <- df %>%
     dplyr::mutate(
       ## Convert FeedTime to POSIXct with the correct format
-      FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M", tz = "UTC"),
+      FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M:%S"),
       Date = as.character(as.Date(FeedTime)),
       Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
     ) %>%
@@ -163,8 +183,8 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
 
   # As units can fit different amount of grams in their cups. We define gcup per unit
   grams_df <- data.frame(
-    FID = unlist(unit),
-    gcup = gcup
+    FID = convert_unit(unit,2), #Ensure character format
+    gcup = as.numeric(gcup)           #Ensure numeric format
   )
 
   # Calculate MassFoodDrop by number of cup drops times grams per cup

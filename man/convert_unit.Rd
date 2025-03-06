@@ -4,10 +4,12 @@
 \alias{convert_unit}
 \title{Convert 'GreenFeed' Unit Number}
 \usage{
-convert_unit(unit)
+convert_unit(unit, t)
 }
 \arguments{
 \item{unit}{Number of the 'GreenFeed' unit(s). Can be a numeric, character, list, or vector.}
+
+\item{t}{Type of function (opts: 1 and 2).}
 }
 \value{
 A character string of the unit(s) in the correct comma-separated format.
@@ -19,19 +21,19 @@ Processes the parameter unit to format it correctly as a comma-separated string,
 \examples{
 # Example 1: Providing unit as a character vector
 unit <- c("592", "593")
-convert_unit(unit)
+convert_unit(unit, 1)
 
 # Example 2: Providing unit as a single numeric
 unit <- 592
-convert_unit(unit)
+convert_unit(unit, 1)
 
 # Example 3: Providing unit as a comma-separated character string
 unit <- "592, 593"
-convert_unit(unit)
+convert_unit(unit, 1)
 
 # Example 4: Providing unit as a list
 unit <- list(592, 593)
-convert_unit(unit)
+convert_unit(unit, 1)
 
 }
 \keyword{internal}

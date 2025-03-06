@@ -55,7 +55,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
                           save_dir = tempdir(), plot_opt = "CH4", rfid_file = NULL,
                           user = NA, pass = NA, file_path) {
   # Ensure unit is a comma-separated string
-  unit <- convert_unit(unit)
+  unit <- convert_unit(unit,1)
 
   # Check Date format
   start_date <- ensure_date_format(start_date)
