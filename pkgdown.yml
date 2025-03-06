@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   greenfeedr: greenfeedr.html
-last_built: 2025-03-05T19:33Z
+last_built: 2025-03-06T13:27Z
 urls:
   reference: https://gmbog.github.io/greenfeedr/reference
   article: https://gmbog.github.io/greenfeedr/articles
