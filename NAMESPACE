@@ -3,7 +3,7 @@
 export(compare_gfdata)
 export(convert_unit)
 export(ensure_date_format)
-export(eval_param)
+export(eval_gfparam)
 export(filter_within_range)
 export(get_gfdata)
 export(has_credentials)

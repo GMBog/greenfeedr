@@ -268,7 +268,7 @@ convert_unit <- function(unit, t) {
 }
 
 
-#' @name eval_param
+#' @name eval_gfparam
 #' @title Evaluate the best combination of parameters
 #'
 #' @description Evaluate parameters that best fit for 'GreenFeed' data
@@ -282,14 +282,14 @@ convert_unit <- function(unit, t) {
 #'
 #' @examples
 #' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
-#' eval <- eval_param(data = file,
-#'                    start_date = "2024-05-13",
-#'                    end_date = "2024-05-20"
-#'                   )
+#' eval <- eval_gfparam(data = file,
+#'                      start_date = "2024-05-13",
+#'                      end_date = "2024-05-20"
+#'                     )
 #'
 #' @export
 #' @keywords internal
-eval_param <- function(data, start_date, end_date, cutoff) {
+eval_gfparam <- function(data, start_date, end_date, cutoff) {
   # Define the parameter space for param1 (i), param2 (j), and min_time (k):
   i <- seq(1, 6)
   j <- seq(1, 7)
