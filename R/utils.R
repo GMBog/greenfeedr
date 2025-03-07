@@ -267,3 +267,108 @@ convert_unit <- function(unit, t) {
   return(unit)
 }
 
+
+#' @name eval_param
+#' @title Evaluate the best combination of parameters
+#'
+#' @description Evaluate parameters that best fit for 'GreenFeed' data
+#'
+#' @param data a data frame with preliminary or finalized 'GreenFeed' data
+#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
+#'
+#' @return A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
+#'
+#' @examples
+#' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
+#' eval <- eval_param(data = file,
+#'                    start_date = "2024-05-13",
+#'                    end_date = "2024-05-20"
+#'                   )
+#'
+#' @export
+#' @keywords internal
+eval_param <- function(data, start_date, end_date, cutoff) {
+  # Define the parameter space for param1 (i), param2 (j), and min_time (k):
+  i <- seq(1, 6)
+  j <- seq(1, 7)
+  k <- seq(2, 6)
+
+  # Generate all combinations of i, j, and k
+  param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
+
+  # Check date format
+  start_date <- ensure_date_format(start_date)
+  end_date <- ensure_date_format(end_date)
+
+  message("All parameter combinations are being evaluated...\n")
+
+  # Define the function
+  process_and_summarize <- function(param1, param2, min_time) {
+    processed_data <- suppressMessages({
+      result <- process_gfdata(
+        data = data,
+        start_date = start_date,
+        end_date = end_date,
+        param1 = param1,
+        param2 = param2,
+        min_time = min_time
+      )
+    })
+    result
+  }
+
+  # Call the function for each parameter combination
+  processed_data_list <- lapply(1:nrow(param_combinations), function(idx) {
+    params <- param_combinations[idx, ]
+    process_and_summarize(params$param1, params$param2, params$min_time)
+  })
+
+  message("Done!")
+
+  # Extract daily_data and weekly_data from each result
+  daily_data_list <- lapply(processed_data_list, function(x) x$daily_data)
+  weekly_data_list <- lapply(processed_data_list, function(x) x$weekly_data)
+
+  # Helper function to compute mean, SD, and CV safely
+  compute_metrics <- function(x) {
+    mean_x <- mean(x, na.rm = TRUE)
+    sd_x <- sd(x, na.rm = TRUE)
+    CV_x <- ifelse(mean_x == 0, NA, sd_x / mean_x)
+    return(c(mean = round(mean_x, 1), sd = round(sd_x, 1), CV = round(CV_x, 2)))
+  }
+
+  # Compute metrics for CH4 and CO2
+  results <- param_combinations %>%
+    purrr::pmap_dfr(function(param1, param2, min_time) {
+      daily_data <- daily_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
+      weekly_data <- weekly_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
+
+      CH4_d <- compute_metrics(daily_data$CH4GramsPerDay)
+      CO2_d <- compute_metrics(daily_data$CO2GramsPerDay)
+      CH4_w <- compute_metrics(weekly_data$CH4GramsPerDay)
+      CO2_w <- compute_metrics(weekly_data$CO2GramsPerDay)
+
+      data.frame(
+        param1 = param1,
+        param2 = param2,
+        min_time = min_time,
+        records_d = nrow(daily_data),
+        cows_d = length(unique(daily_data$RFID)),
+        mean_dCH4 = CH4_d["mean"], sd_dCH4 = CH4_d["sd"], CV_dCH4 = CH4_d["CV"],
+        mean_dCO2 = CO2_d["mean"], sd_dCO2 = CO2_d["sd"], CV_dCO2 = CO2_d["CV"],
+        records_w = nrow(weekly_data),
+        cows_w = length(unique(weekly_data$RFID)),
+        mean_wCH4 = CH4_w["mean"], sd_wCH4 = CH4_w["sd"], CV_wCH4 = CH4_w["CV"],
+        mean_wCO2 = CO2_w["mean"], sd_wCO2 = CO2_w["sd"], CV_wCO2 = CO2_w["CV"],
+        row.names = NULL
+      )
+    })
+
+  return(results)
+}
+
+
+
+

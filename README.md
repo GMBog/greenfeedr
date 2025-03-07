@@ -297,19 +297,19 @@ analysis. Note that the function includes :
     to be considered valid.
 
 We can make an iterative process evaluating all possible combinations of
-parameters. Then, we define the parameters as follows:
+parameters.
 
 ``` r
 # Define the parameter space for param1 (i), param2 (j), and min_time (k):
-i <- seq(1, 3)
-j <- seq(3, 7)
-k <- seq(2, 5)
+i <- seq(1, 6)
+j <- seq(1, 7)
+k <- seq(2, 6)
 
 # Generate all combinations of i, j, and k
 param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 ```
 
-Interestingly, we have 60 combinations of our 3 parameters (param1,
+Interestingly, we have 210 combinations of our 3 parameters (param1,
 param2, and min_time).
 
 The next step, is to evaluate the function `process_gfdata()` with the
@@ -317,69 +317,9 @@ defined set of parameters. Note that the function can handle as argument
 a file path to the data files or the data as data frame.
 
 ``` r
-# Helper function to call process_gfdata and extract relevant information
-process_and_summarize <- function(param1, param2, min_time) {
-  data <- process_gfdata(
-    data = finaldata,
-    start_date = "2024-05-13",
-    end_date = "2024-05-25",
-    param1 = param1,
-    param2 = param2,
-    min_time = min_time
-  )
-
-  # Extract daily_data and weekly_data
-  daily_data <- data$daily_data
-  weekly_data <- data$weekly_data
-
-  # Calculate the required metrics
-  records_d <- nrow(daily_data)
-  cows_d <- length(unique(daily_data$RFID))
-
-  mean_dCH4 <- mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
-  sd_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE)
-  CV_dCH4 <- sd(daily_data$CH4GramsPerDay, na.rm = TRUE) / mean(daily_data$CH4GramsPerDay, na.rm = TRUE)
-  mean_dCO2 <- mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
-  sd_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE)
-  CV_dCO2 <- sd(daily_data$CO2GramsPerDay, na.rm = TRUE) / mean(daily_data$CO2GramsPerDay, na.rm = TRUE)
-
-  records_w <- nrow(weekly_data)
-  cows_w <- length(unique(weekly_data$RFID))
-
-  mean_wCH4 <- mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
-  sd_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE)
-  CV_wCH4 <- sd(weekly_data$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_data$CH4GramsPerDay, na.rm = TRUE)
-  mean_wCO2 <- mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
-  sd_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE)
-  CV_wCO2 <- sd(weekly_data$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_data$CO2GramsPerDay, na.rm = TRUE)
-
-  # Return a summary row
-  return(data.frame(
-    param1 = param1,
-    param2 = param2,
-    min_time = min_time,
-    records_d = records_d,
-    cows_d = cows_d,
-    mean_dCH4 = round(mean_dCH4, 1),
-    sd_dCH4 = round(sd_dCH4, 1),
-    CV_dCH4 = round(CV_dCH4, 2),
-    mean_dCO2 = round(mean_dCO2, 1),
-    sd_dCO2 = round(sd_dCO2, 1),
-    CV_dCO2 = round(CV_dCO2, 2),
-    records_w = records_w,
-    cows_w = cows_w,
-    mean_wCH4 = round(mean_wCH4, 1),
-    sd_wCH4 = round(sd_wCH4, 1),
-    CV_wCH4 = round(CV_wCH4, 2),
-    mean_wCO2 = round(mean_wCO2, 1),
-    sd_wCO2 = round(sd_wCO2, 1),
-    CV_wCO2 = round(CV_wCO2, 2)
-  ))
-}
-
-# Apply helper function to all combinations and combine results into a data frame
-data <- param_combinations %>%
-  purrr::pmap_dfr(process_and_summarize)
+data <- eval_param(data = finaldata,
+                   start_date = "2024-05-13",
+                   end_date = "2024-05-25")
 ```
 
 Finally, the results from our function will be placed in a data frame
@@ -453,7 +393,7 @@ CV_wCO2
 1
 </td>
 <td style="text-align:right;">
-3
+1
 </td>
 <td style="text-align:right;">
 2
@@ -483,215 +423,38 @@ CV_wCO2
 0.22
 </td>
 <td style="text-align:right;">
-33
+45
 </td>
 <td style="text-align:right;">
-19
+25
 </td>
 <td style="text-align:right;">
-384.3
+385.0
 </td>
 <td style="text-align:right;">
-58.1
+65.2
 </td>
 <td style="text-align:right;">
-0.15
+0.17
 </td>
 <td style="text-align:right;">
-11526.1
+11491.8
 </td>
 <td style="text-align:right;">
-1475.2
-</td>
-<td style="text-align:right;">
-0.13
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-116
-</td>
-<td style="text-align:right;">
-20
-</td>
-<td style="text-align:right;">
-384.9
-</td>
-<td style="text-align:right;">
-88.5
-</td>
-<td style="text-align:right;">
-0.23
-</td>
-<td style="text-align:right;">
-11546.1
-</td>
-<td style="text-align:right;">
-2098.8
-</td>
-<td style="text-align:right;">
-0.18
-</td>
-<td style="text-align:right;">
-22
-</td>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-395.7
-</td>
-<td style="text-align:right;">
-63.0
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-<td style="text-align:right;">
-11696.2
-</td>
-<td style="text-align:right;">
-1487.1
-</td>
-<td style="text-align:right;">
-0.13
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-75
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-376.4
-</td>
-<td style="text-align:right;">
-93.8
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-11457.5
-</td>
-<td style="text-align:right;">
-2291.4
-</td>
-<td style="text-align:right;">
-0.20
-</td>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-382.4
-</td>
-<td style="text-align:right;">
-73.9
-</td>
-<td style="text-align:right;">
-0.19
-</td>
-<td style="text-align:right;">
-11574.9
-</td>
-<td style="text-align:right;">
-1626.9
+1596.0
 </td>
 <td style="text-align:right;">
 0.14
 </td>
 </tr>
 <tr>
+<td style="text-align:right;">
+2
+</td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-185
-</td>
-<td style="text-align:right;">
-25
-</td>
-<td style="text-align:right;">
-381.6
-</td>
-<td style="text-align:right;">
-113.1
-</td>
-<td style="text-align:right;">
-0.30
-</td>
-<td style="text-align:right;">
-11452.4
-</td>
-<td style="text-align:right;">
-2574.3
-</td>
-<td style="text-align:right;">
-0.22
-</td>
-<td style="text-align:right;">
-25
-</td>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-392.3
-</td>
-<td style="text-align:right;">
-54.7
-</td>
-<td style="text-align:right;">
-0.14
-</td>
-<td style="text-align:right;">
-11735.1
-</td>
-<td style="text-align:right;">
-1328.6
-</td>
-<td style="text-align:right;">
-0.11
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
@@ -719,215 +482,38 @@ CV_wCO2
 0.18
 </td>
 <td style="text-align:right;">
-17
+36
 </td>
 <td style="text-align:right;">
-14
+20
 </td>
 <td style="text-align:right;">
-384.5
+380.7
 </td>
 <td style="text-align:right;">
-58.7
+64.6
 </td>
 <td style="text-align:right;">
-0.15
+0.17
 </td>
 <td style="text-align:right;">
-11452.5
+11407.0
 </td>
 <td style="text-align:right;">
-1376.1
+1597.9
 </td>
 <td style="text-align:right;">
-0.12
+0.14
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
 3
 </td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-75
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-376.4
-</td>
-<td style="text-align:right;">
-93.8
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-11457.5
-</td>
-<td style="text-align:right;">
-2291.4
-</td>
-<td style="text-align:right;">
-0.20
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-386.6
-</td>
-<td style="text-align:right;">
-81.5
-</td>
-<td style="text-align:right;">
-0.21
-</td>
-<td style="text-align:right;">
-11779.6
-</td>
-<td style="text-align:right;">
-1914.3
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-</tr>
-<tr>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-185
-</td>
-<td style="text-align:right;">
-25
-</td>
-<td style="text-align:right;">
-381.6
-</td>
-<td style="text-align:right;">
-113.1
-</td>
-<td style="text-align:right;">
-0.30
-</td>
-<td style="text-align:right;">
-11452.4
-</td>
-<td style="text-align:right;">
-2574.3
-</td>
-<td style="text-align:right;">
-0.22
-</td>
-<td style="text-align:right;">
-21
-</td>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-383.1
-</td>
-<td style="text-align:right;">
-54.0
-</td>
-<td style="text-align:right;">
-0.14
-</td>
-<td style="text-align:right;">
-11503.9
-</td>
-<td style="text-align:right;">
-1273.4
-</td>
-<td style="text-align:right;">
-0.11
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-116
-</td>
-<td style="text-align:right;">
-20
-</td>
-<td style="text-align:right;">
-384.9
-</td>
-<td style="text-align:right;">
-88.5
-</td>
-<td style="text-align:right;">
-0.23
-</td>
-<td style="text-align:right;">
-11546.1
-</td>
-<td style="text-align:right;">
-2098.8
-</td>
-<td style="text-align:right;">
-0.18
-</td>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-377.9
-</td>
-<td style="text-align:right;">
-61.3
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-<td style="text-align:right;">
-11527.1
-</td>
-<td style="text-align:right;">
-1440.0
-</td>
-<td style="text-align:right;">
-0.12
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
@@ -955,25 +541,25 @@ CV_wCO2
 0.20
 </td>
 <td style="text-align:right;">
-4
+30
 </td>
 <td style="text-align:right;">
-3
+18
 </td>
 <td style="text-align:right;">
-360.3
+381.8
 </td>
 <td style="text-align:right;">
-50.0
+75.3
 </td>
 <td style="text-align:right;">
-0.14
+0.20
 </td>
 <td style="text-align:right;">
-11555.9
+11547.9
 </td>
 <td style="text-align:right;">
-2000.6
+1954.9
 </td>
 <td style="text-align:right;">
 0.17
@@ -981,37 +567,96 @@ CV_wCO2
 </tr>
 <tr>
 <td style="text-align:right;">
-1
+4
 </td>
 <td style="text-align:right;">
-6
+1
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
-185
+38
 </td>
 <td style="text-align:right;">
-25
+14
 </td>
 <td style="text-align:right;">
-381.6
+368.3
 </td>
 <td style="text-align:right;">
-113.1
+89.7
 </td>
 <td style="text-align:right;">
-0.30
+0.24
 </td>
 <td style="text-align:right;">
-11452.4
+11196.9
 </td>
 <td style="text-align:right;">
-2574.3
+2330.0
 </td>
 <td style="text-align:right;">
-0.22
+0.21
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+384.1
+</td>
+<td style="text-align:right;">
+87.6
+</td>
+<td style="text-align:right;">
+0.23
+</td>
+<td style="text-align:right;">
+11401.3
+</td>
+<td style="text-align:right;">
+2135.6
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+353.2
+</td>
+<td style="text-align:right;">
+82.4
+</td>
+<td style="text-align:right;">
+0.23
+</td>
+<td style="text-align:right;">
+10945.1
+</td>
+<td style="text-align:right;">
+2193.3
+</td>
+<td style="text-align:right;">
+0.20
 </td>
 <td style="text-align:right;">
 14
@@ -1020,22 +665,317 @@ CV_wCO2
 11
 </td>
 <td style="text-align:right;">
-382.4
+352.2
 </td>
 <td style="text-align:right;">
-59.1
+87.7
 </td>
 <td style="text-align:right;">
-0.15
+0.25
 </td>
 <td style="text-align:right;">
-11297.5
+10866.3
 </td>
 <td style="text-align:right;">
-1455.6
+2180.4
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+368.1
+</td>
+<td style="text-align:right;">
+82.6
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+11476.1
+</td>
+<td style="text-align:right;">
+2143.1
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+370.6
+</td>
+<td style="text-align:right;">
+83.6
+</td>
+<td style="text-align:right;">
+0.23
+</td>
+<td style="text-align:right;">
+11465.1
+</td>
+<td style="text-align:right;">
+2051.3
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+185
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+381.6
+</td>
+<td style="text-align:right;">
+113.1
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+11452.4
+</td>
+<td style="text-align:right;">
+2574.3
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+43
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+381.9
+</td>
+<td style="text-align:right;">
+63.5
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+11469.1
+</td>
+<td style="text-align:right;">
+1628.7
+</td>
+<td style="text-align:right;">
+0.14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+384.9
+</td>
+<td style="text-align:right;">
+88.5
+</td>
+<td style="text-align:right;">
+0.23
+</td>
+<td style="text-align:right;">
+11546.1
+</td>
+<td style="text-align:right;">
+2098.8
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+389.8
+</td>
+<td style="text-align:right;">
+63.0
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+<td style="text-align:right;">
+11648.9
+</td>
+<td style="text-align:right;">
+1514.2
 </td>
 <td style="text-align:right;">
 0.13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+376.4
+</td>
+<td style="text-align:right;">
+93.8
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+11457.5
+</td>
+<td style="text-align:right;">
+2291.4
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+376.7
+</td>
+<td style="text-align:right;">
+68.3
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+11365.9
+</td>
+<td style="text-align:right;">
+1613.0
+</td>
+<td style="text-align:right;">
+0.14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+368.3
+</td>
+<td style="text-align:right;">
+89.7
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+<td style="text-align:right;">
+11196.9
+</td>
+<td style="text-align:right;">
+2330.0
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+354.8
+</td>
+<td style="text-align:right;">
+61.3
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+10972.7
+</td>
+<td style="text-align:right;">
+1776.5
+</td>
+<td style="text-align:right;">
+0.16
 </td>
 </tr>
 </tbody>

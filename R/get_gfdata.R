@@ -1,7 +1,7 @@
 #' @name get_gfdata
-#' @title Download Preliminary 'GreenFeed' Data via 'API'
+#' @title Download Preliminary and Raw 'GreenFeed' Data via 'API'
 #'
-#' @description Downloads preliminary 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
+#' @description Downloads preliminary and raw 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
 #'     Retrieves data based on specified parameters (login, date range, and units), and
 #'     provides a CSV file with the 'GreenFeed' preliminary data.
 #'

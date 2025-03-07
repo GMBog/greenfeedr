@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_gfdata.R
 \name{get_gfdata}
 \alias{get_gfdata}
-\title{Download Preliminary 'GreenFeed' Data via 'API'}
+\title{Download Preliminary and Raw 'GreenFeed' Data via 'API'}
 \usage{
 get_gfdata(
   user,
@@ -36,7 +36,7 @@ get_gfdata(
 A CSV file with the specified data (visits or raw) saved in the provided directory.
 }
 \description{
-Downloads preliminary 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
+Downloads preliminary and raw 'GreenFeed' data from the 'C-Lock Inc.' server via an 'API'.
     Retrieves data based on specified parameters (login, date range, and units), and
     provides a CSV file with the 'GreenFeed' preliminary data.
 }
