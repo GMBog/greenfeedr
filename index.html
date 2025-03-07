@@ -353,7 +353,7 @@ O2 Massflow (g/d)
 <p>Interestingly, we have 210 combinations of our 3 parameters (param1, param2, and min_time).</p>
 <p>The next step, is to evaluate the function <code><a href="reference/process_gfdata.html">process_gfdata()</a></code> with the defined set of parameters. Note that the function can handle as argument a file path to the data files or the data as data frame.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">eval_param</span><span class="op">(</span>data <span class="op">=</span> <span class="va">finaldata</span>,</span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/eval_gfparam.html">eval_gfparam</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">finaldata</span>,</span>
 <span>                   start_date <span class="op">=</span> <span class="st">"2024-05-13"</span>,</span>
 <span>                   end_date <span class="op">=</span> <span class="st">"2024-05-25"</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, the results from our function will be placed in a data frame with the following structure:</p>
