@@ -317,7 +317,7 @@ defined set of parameters. Note that the function can handle as argument
 a file path to the data files or the data as data frame.
 
 ``` r
-data <- eval_param(data = finaldata,
+data <- eval_gfparam(data = finaldata,
                    start_date = "2024-05-13",
                    end_date = "2024-05-25")
 ```
