@@ -9,6 +9,7 @@ header-includes:
 ```{r libraries, include=FALSE}
 library(dplyr)
 library(ggplot2)
+library(kableExtra)
 library(lubridate)
 library(RColorBrewer)
 library(tidyr)
@@ -26,7 +27,7 @@ library(stringr)
 
 ```{r Summary, message=FALSE, echo=FALSE}
 if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
-  kbl(rfid_file, "simple")
+  kableExtra::kbl(rfid_file, "simple")
 } else {
   message("The 'rfid_file' is not provided.")
 }
