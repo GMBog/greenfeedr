@@ -213,11 +213,10 @@ the dataset:
 - Days with records per week
 - Weeks with records
 
-This helps in understanding data distribution and completeness before
-processing. 🚀
+#### Using process_gfdata()
 
-To do this we will use the `process_gfdata()`!!! Note that the function
-includes :
+To analyze the data effectively, we will use `process_gfdata()`, which
+requires three arguments:
 
 - **`param1`** is the number of records per day.
   - This parameter controls the minimum number of records that must be
@@ -229,8 +228,8 @@ includes :
   - This parameter specifies the minimum time threshold for each record
     to be considered valid.
 
-To evaluate the parameters that “best” fit for our data we will use an
-extra function `eval_param()`.
+To determine the best-fitting parameters for our dataset, we will use
+the `eval_param()` function.
 
 ``` r
 # Define the parameter space for param1 (i), param2 (j), and min_time (k):
@@ -242,12 +241,11 @@ k <- seq(2, 6)
 param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
 ```
 
-Interestingly, we have 210 combinations of our 3 parameters (param1,
-param2, and min_time).
+In total, we have 210 different parameter combinations to evaluate.
 
-The next step, is to evaluate the function `process_gfdata()` with the
-defined set of parameters. Note that the function can handle as argument
-a file path to the data files or the data as data frame.
+The next step is to evaluate the `process_gfdata()` function with the
+set of parameters we defined. The function can accept either a file path
+to the data files or the data as a data frame.
 
 ``` r
 data <- eval_gfparam(data = finaldata,
@@ -255,8 +253,8 @@ data <- eval_gfparam(data = finaldata,
                    end_date = "2024-05-25")
 ```
 
-Finally, the results from our function will be placed in a data frame
-with the following structure:
+After evaluating the function, the results will be placed into a data
+frame with the following structure:
 
 <table style="font-size: 12px;">
 <thead>
@@ -914,10 +912,9 @@ CV_wCO2
 </tbody>
 </table>
 
-That gives the user an idea of what are the pros and cons of being more
-or less conservative when processing GreenFeed data for analysis. In
-general, the more conservative the parameters are, the fewer records are
-retained in the data.
+This will give users a sense of how the data is filtered based on the
+chosen parameters. A more conservative approach (i.e., stricter
+parameters) will typically result in fewer retained records and animals.
 
 ## Getting help
 
