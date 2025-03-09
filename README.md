@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# greenfeedr: An R Package for Processing & Reporting GreenFeed Data <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
+## greenfeedr: An R Package for Processing & Reporting GreenFeed Data <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
 
 <!-- badges: start -->
 
