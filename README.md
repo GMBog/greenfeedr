@@ -249,8 +249,9 @@ to the data files or the data as a data frame.
 
 ``` r
 data <- eval_gfparam(data = finaldata,
-                   start_date = "2024-05-13",
-                   end_date = "2024-05-25")
+                     start_date = "2024-05-13",
+                     end_date = "2024-05-25"
+                     )
 ```
 
 After evaluating the function, the results will be placed into a data
