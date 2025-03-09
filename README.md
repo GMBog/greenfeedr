@@ -55,8 +55,6 @@ remotes::install_github("GMBog/greenfeedr")
 
 ## Usage
 
-### Example: Using `process_gfdata()`:
-
 ``` r
 library(greenfeedr)
 ```
