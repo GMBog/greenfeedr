@@ -38,14 +38,15 @@ More information about how to use greenfeedr can be found in
 
 ## Installation
 
-You can install the released version of `greenfeedr` from
-[CRAN](https://CRAN.R-project.org/package=greenfeedr) with:
+To install the latest stable release of `greenfeedr` from
+[CRAN](https://CRAN.R-project.org/package=greenfeedr), use:
 
 ``` r
 install.packages("greenfeedr")
 ```
 
-If you want to install the development version of `greenfeedr` use this:
+For the development version with the latest updates, install it from
+GitHub:
 
 ``` r
 install.packages("remotes")
@@ -54,35 +55,166 @@ remotes::install_github("GMBog/greenfeedr")
 
 ## Usage
 
-Here we present an example of how to use `process_gfdata()`:
+### Example: Using `process_gfdata()`:
 
 ``` r
 library(greenfeedr)
 ```
 
-Note that we can use the preliminary data downloaded by API using
-`get_gfdata()` or the finalized data downloaded from the
-[webinterface](https://ext.c-lockinc.com/greenfeed/data.php).
+You can process either preliminary data obtained via the API using
+`get_gfdata()` or finalized data downloaded from the [GreenFeed web
+interface](https://ext.c-lockinc.com/greenfeed/data.php).
 
-The data looks like (first 5 cols):
+Before diving into the analysis, let’s examine the dataset structure.
+Below are the first five column names:
 
-\[1\] “RFID” “Farm Name”  
-\[3\] “FID” “Start Time”  
-\[5\] “End Time” “Good Data Duration”  
-\[7\] “Hour Of Day” “CO2 Massflow (g/d)”  
-\[9\] “CH4 Massflow (g/d)” “O2 Massflow (g/d)”  
-\[11\] “H2 Massflow (g/d)” “H2S Massflow (g/d)”  
-\[13\] “Average Airflow (L/s)” “Airflow CF”  
-\[15\] “Average Wind Speed (m/s)” “Average Wind Direction (deg)”  
-\[17\] “Wind CF” “Was Interrupted”  
-\[19\] “Interrupting Tags” “Midpoint Since Last”  
-\[21\] “Midpoint Until Next” “Standard Deviation of CH4 Baseline” \[23\]
-“Pipe Temperature (deg C)” “Gas Temperature (deg C)”  
-\[25\] “RID”
+<table style="font-size: 12px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Column.Name
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+RFID
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Farm Name
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FID
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Start Time
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+End Time
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Good Data Duration
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hour Of Day
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CO2 Massflow (g/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CH4 Massflow (g/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+O2 Massflow (g/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+H2 Massflow (g/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+H2S Massflow (g/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Airflow (L/s)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Airflow CF
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Wind Speed (m/s)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Wind Direction (deg)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wind CF
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Was Interrupted
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Interrupting Tags
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midpoint Since Last
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Midpoint Until Next
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard Deviation of CH4 Baseline
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pipe Temperature (deg C)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gas Temperature (deg C)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RID
+</td>
+</tr>
+</tbody>
+</table>
 
-The first step is to explore our GreenFeed data to know how many: \*
-Total number of records \* Records per day \* Days with records per week
-\* Weeks with records
+Before proceeding with analysis, it’s useful to summarize key aspects of
+the dataset:
+
+- Total number of records
+- Records per day
+- Days with records per week
+- Weeks with records
+
+This helps in understanding data distribution and completeness before
+processing. 🚀
 
 To do this we will use the `process_gfdata()`!!! Note that the function
 includes :

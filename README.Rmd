@@ -42,13 +42,13 @@ More information about how to use greenfeedr can be found in [Martinez-Boggio et
 
 ## Installation
 
-You can install the released version of `greenfeedr` from [CRAN](https://CRAN.R-project.org/package=greenfeedr) with:
+To install the latest stable release of `greenfeedr` from [CRAN](https://CRAN.R-project.org/package=greenfeedr), use:
 
 ```{r CRAN, eval = FALSE}
 install.packages("greenfeedr")
 ```
 
-If you want to install the development version of `greenfeedr` use this:
+For the development version with the latest updates, install it from GitHub:
 
 ```{r GitHub, eval = FALSE}
 install.packages("remotes")
@@ -63,31 +63,36 @@ library(purrr)
 library(readxl)
 ```
 
-Here we present an example of how to use `process_gfdata()`:
+### Example: Using `process_gfdata()`: 
 
 ```{r setup, message = FALSE}
 library(greenfeedr)
 ```
 
-Note that we can use the preliminary data downloaded by API using `get_gfdata()` or the finalized data downloaded from the [webinterface](https://ext.c-lockinc.com/greenfeed/data.php).  
+You can process either preliminary data obtained via the API using `get_gfdata()` or finalized data downloaded from the [GreenFeed web interface](https://ext.c-lockinc.com/greenfeed/data.php).
 
-The data looks like (first 5 cols):
+Before diving into the analysis, let's examine the dataset structure. Below are the first five column names:
 
 ```{r data, echo = FALSE, message = FALSE, results = 'asis'}
-# Read in the data
+# Load the data
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 
-# Display the table with reduced font size using inline CSS
+# Convert RFID to character format
 finaldata$RFID <- as.character(finaldata$RFID)
-#cat(knitr::kable(finaldata[1:6, c(1, 3:10)], format = "html", table.attr = "style='font-size: 12px;'"))
-colnames(finaldata)
+
+# Display column names in a table format
+knitr::kable(data.frame("Column Name" = colnames(finaldata)), 
+             format = "html", table.attr = "style='font-size: 12px;'")
 ```
 
-The first step is to explore our GreenFeed data to know how many: 
- * Total number of records
- * Records per day
- * Days with records per week
- * Weeks with records 
+Before proceeding with analysis, it's useful to summarize key aspects of the dataset:
+
+  * Total number of records
+  * Records per day
+  * Days with records per week
+  * Weeks with records
+
+This helps in understanding data distribution and completeness before processing. 🚀
 
 To do this we will use the `process_gfdata()`!!! Note that the function includes \underline{3 parameters}:
 
