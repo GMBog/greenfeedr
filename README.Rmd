@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## greenfeedr: An R Package for Processing & Reporting GreenFeed Data  <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
+# greenfeedr  <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
 
 <!-- badges: start -->
 [![CRAN Status](https://www.r-pkg.org/badges/version/greenfeedr)](https://CRAN.R-project.org/package=greenfeedr)
@@ -31,8 +31,6 @@ knitr::opts_chunk$set(
 * `process_gfdata()` processes and averages preliminary or finalized GreenFeed data.
 * `pellin()` processes pellet intakes from GreenFeed units.
 * `viseat()` processes GreenFeed visits.
-
-Most of these use the same preliminary and finalized data from GreenFeed system.
 
 ## Citation
 
@@ -71,7 +69,7 @@ Here we present an example of how to use `process_gfdata()`:
 library(greenfeedr)
 ```
 
-Note that we received the finalized data for our study using GreenFeed from C-Lock Inc. So, now we need to process all the daily records obtained.
+Note that we can use the preliminary data downloaded by API using `get_gfdata()` or the finalized data downloaded from the [webinterface](https://ext.c-lockinc.com/greenfeed/data.php).  
 
 The data looks like (first 5 cols):
 
@@ -81,12 +79,17 @@ finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xl
 
 # Display the table with reduced font size using inline CSS
 finaldata$RFID <- as.character(finaldata$RFID)
-cat(knitr::kable(finaldata[1:6, c(1, 3:10)], format = "html", table.attr = "style='font-size: 12px;'"))
+#cat(knitr::kable(finaldata[1:6, c(1, 3:10)], format = "html", table.attr = "style='font-size: 12px;'"))
+colnames(finaldata)
 ```
 
-The first step is to investigate the total number of records, records per day, and days with records per week we have in our GreenFeed data. 
+The first step is to explore our GreenFeed data to know how many: 
+ * Total number of records
+ * Records per day
+ * Days with records per week
+ * Weeks with records 
 
-To do this we will use the `process_gfdata()` function and test threshold values that will define the records we will retain for further analysis. Note that the function includes \underline{3 parameters}:
+To do this we will use the `process_gfdata()`!!! Note that the function includes \underline{3 parameters}:
 
 * **`param1`** is the number of records per day. 
   * This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.
@@ -97,8 +100,7 @@ To do this we will use the `process_gfdata()` function and test threshold values
 * **`min_time`** is the minimum duration of a record. 
   * This parameter specifies the minimum time threshold for each record to be considered valid.
 
-
-We can make an iterative process evaluating all possible combinations of parameters.
+To evaluate the parameters that "best" fit for our data we will use an extra function `eval_param()`.
 
 ```{r parameters}
 # Define the parameter space for param1 (i), param2 (j), and min_time (k):
@@ -132,7 +134,7 @@ That gives the user an idea of what are the pros and cons of being more or less 
 
 If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/GMBog/greenfeedr).
 
-## ⭐ Premium Version  
+## Premium Version  
 
 A **premium version** is available, specifically designed for **commercial setup**. It includes advanced features optimized for **large-scale data processing, enhanced analytics, and dedicated support**.  
 

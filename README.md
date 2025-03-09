@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## greenfeedr: An R Package for Processing & Reporting GreenFeed Data <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
+# greenfeedr <img src="man/figures/GFSticker.png" align="right" width="15.2%"/>
 
 <!-- badges: start -->
 
@@ -26,9 +26,6 @@ GreenFeed data:
   GreenFeed data.
 - `pellin()` processes pellet intakes from GreenFeed units.
 - `viseat()` processes GreenFeed visits.
-
-Most of these use the same preliminary and finalized data from GreenFeed
-system.
 
 ## Citation
 
@@ -63,228 +60,32 @@ Here we present an example of how to use `process_gfdata()`:
 library(greenfeedr)
 ```
 
-Note that we received the finalized data for our study using GreenFeed
-from C-Lock Inc. So, now we need to process all the daily records
-obtained.
+Note that we can use the preliminary data downloaded by API using
+`get_gfdata()` or the finalized data downloaded from the
+[webinterface](https://ext.c-lockinc.com/greenfeed/data.php).
 
 The data looks like (first 5 cols):
 
-<table style="font-size: 12px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-RFID
-</th>
-<th style="text-align:right;">
-FID
-</th>
-<th style="text-align:left;">
-Start Time
-</th>
-<th style="text-align:left;">
-End Time
-</th>
-<th style="text-align:left;">
-Good Data Duration
-</th>
-<th style="text-align:right;">
-Hour Of Day
-</th>
-<th style="text-align:right;">
-CO2 Massflow (g/d)
-</th>
-<th style="text-align:right;">
-CH4 Massflow (g/d)
-</th>
-<th style="text-align:right;">
-O2 Massflow (g/d)
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-840003250681664
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 09:33:24
-</td>
-<td style="text-align:left;">
-2024-05-13 09:36:31
-</td>
-<td style="text-align:left;">
-1899-12-31 00:02:31
-</td>
-<td style="text-align:right;">
-9.556666
-</td>
-<td style="text-align:right;">
-10541.00
-</td>
-<td style="text-align:right;">
-466.9185
-</td>
-<td style="text-align:right;">
-6821.710
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-840003250681664
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 10:25:44
-</td>
-<td style="text-align:left;">
-2024-05-13 10:32:40
-</td>
-<td style="text-align:left;">
-1899-12-31 00:06:09
-</td>
-<td style="text-align:right;">
-10.428889
-</td>
-<td style="text-align:right;">
-14079.59
-</td>
-<td style="text-align:right;">
-579.3398
-</td>
-<td style="text-align:right;">
-8829.182
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-840003250681799
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 12:29:02
-</td>
-<td style="text-align:left;">
-2024-05-13 12:45:19
-</td>
-<td style="text-align:left;">
-1899-12-31 00:10:21
-</td>
-<td style="text-align:right;">
-12.483889
-</td>
-<td style="text-align:right;">
-9273.30
-</td>
-<td style="text-align:right;">
-302.3902
-</td>
-<td style="text-align:right;">
-6193.614
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-840003250681664
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 13:06:20
-</td>
-<td style="text-align:left;">
-2024-05-13 13:12:14
-</td>
-<td style="text-align:left;">
-1899-12-31 00:04:00
-</td>
-<td style="text-align:right;">
-13.105555
-</td>
-<td style="text-align:right;">
-14831.44
-</td>
-<td style="text-align:right;">
-501.0839
-</td>
-<td style="text-align:right;">
-10705.166
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-840003250681664
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 14:34:58
-</td>
-<td style="text-align:left;">
-2024-05-13 14:41:52
-</td>
-<td style="text-align:left;">
-1899-12-31 00:04:55
-</td>
-<td style="text-align:right;">
-14.582778
-</td>
-<td style="text-align:right;">
-20187.44
-</td>
-<td style="text-align:right;">
-759.9457
-</td>
-<td style="text-align:right;">
-11080.463
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-840003234513955
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2024-05-13 14:59:14
-</td>
-<td style="text-align:left;">
-2024-05-13 15:11:50
-</td>
-<td style="text-align:left;">
-1899-12-31 00:03:42
-</td>
-<td style="text-align:right;">
-14.987223
-</td>
-<td style="text-align:right;">
-13994.72
-</td>
-<td style="text-align:right;">
-472.2763
-</td>
-<td style="text-align:right;">
-8997.816
-</td>
-</tr>
-</tbody>
-</table>
+\[1\] “RFID” “Farm Name”  
+\[3\] “FID” “Start Time”  
+\[5\] “End Time” “Good Data Duration”  
+\[7\] “Hour Of Day” “CO2 Massflow (g/d)”  
+\[9\] “CH4 Massflow (g/d)” “O2 Massflow (g/d)”  
+\[11\] “H2 Massflow (g/d)” “H2S Massflow (g/d)”  
+\[13\] “Average Airflow (L/s)” “Airflow CF”  
+\[15\] “Average Wind Speed (m/s)” “Average Wind Direction (deg)”  
+\[17\] “Wind CF” “Was Interrupted”  
+\[19\] “Interrupting Tags” “Midpoint Since Last”  
+\[21\] “Midpoint Until Next” “Standard Deviation of CH4 Baseline” \[23\]
+“Pipe Temperature (deg C)” “Gas Temperature (deg C)”  
+\[25\] “RID”
 
-The first step is to investigate the total number of records, records
-per day, and days with records per week we have in our GreenFeed data.
+The first step is to explore our GreenFeed data to know how many: \*
+Total number of records \* Records per day \* Days with records per week
+\* Weeks with records
 
-To do this we will use the `process_gfdata()` function and test
-threshold values that will define the records we will retain for further
-analysis. Note that the function includes :
+To do this we will use the `process_gfdata()`!!! Note that the function
+includes :
 
 - **`param1`** is the number of records per day.
   - This parameter controls the minimum number of records that must be
@@ -296,8 +97,8 @@ analysis. Note that the function includes :
   - This parameter specifies the minimum time threshold for each record
     to be considered valid.
 
-We can make an iterative process evaluating all possible combinations of
-parameters.
+To evaluate the parameters that “best” fit for our data we will use an
+extra function `eval_param()`.
 
 ``` r
 # Define the parameter space for param1 (i), param2 (j), and min_time (k):
@@ -991,7 +792,7 @@ retained in the data.
 If you encounter a clear bug, please file an issue with a minimal
 reproducible example on [GitHub](https://github.com/GMBog/greenfeedr).
 
-## ⭐ Premium Version
+## Premium Version
 
 A **premium version** is available, specifically designed for
 **commercial setup**. It includes advanced features optimized for
