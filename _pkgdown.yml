@@ -11,10 +11,7 @@ template:
 
 navbar:
   structure:
-    left:
-    - home
-    - examples
-    - reference
+    left: ["home", "examples", "reference"]
   right:
     - text: "GitHub"
       href: https://github.com/GMBog/greenfeedr
