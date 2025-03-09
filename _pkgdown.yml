@@ -19,6 +19,6 @@ navbar:
     href: https://github.com/GMBog/greenfeedr
 home:
   title: Home
-  contents: index.html
+  strip_header: false
 last_built: 2025-03-09T14:12Z
 
