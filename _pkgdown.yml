@@ -9,3 +9,27 @@ template:
     heading_font: {google: "Roboto Slab"}
     code_font: {google: "JetBrains Mono"}
 
+navbar:
+  structure:
+    left:
+    - home
+    - examples
+    - reference
+  right:
+    - text: "GitHub"
+      href: https://github.com/GMBog/greenfeedr
+
+articles:
+  - title: "Introduction to greenfeedr"
+    contents: "greenfeedr"
+
+last_built: 2025-03-09T14:12Z
+
+urls:
+  reference: https://gmbog.github.io/greenfeedr/reference
+  article: https://gmbog.github.io/greenfeedr/articles
+
+# Define custom homepage
+home:
+  title: "Home"
+  contents: "docs/index.html"
