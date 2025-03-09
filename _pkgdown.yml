@@ -9,6 +9,10 @@ template:
     heading_font: {google: "Roboto Slab"}
     code_font: {google: "JetBrains Mono"}
 
+home:
+  title: "Home"
+  contents: "docs/index.html"
+
 navbar:
   structure:
     left: ["Home"]
@@ -17,8 +21,3 @@ navbar:
       href: https://github.com/GMBog/greenfeedr
 
 last_built: 2025-03-09T14:12Z
-
-# Define custom homepage
-home:
-  title: "Home"
-  contents: "index.html"
