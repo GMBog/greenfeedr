@@ -9,15 +9,15 @@ template:
     heading_font: {google: "Roboto Slab"}
     code_font: {google: "JetBrains Mono"}
 
-home:
-  title: "Home"
-  contents: "docs/index.html"
-
 navbar:
   structure:
     left: ["Home"]
   right:
     - text: "GitHub"
       href: https://github.com/GMBog/greenfeedr
+
+home:
+  title: "Home"
+  contents: "/Users/GuillermoMartinez/Documents/myRpackages/greenfeedr/docs/index.html"
 
 last_built: 2025-03-09T14:12Z
