@@ -18,6 +18,6 @@ navbar:
 
 home:
   title: "Home"
-  contents: "/Users/GuillermoMartinez/Documents/myRpackages/greenfeedr/docs/index.html"
+  contents: "index.html"
 
 last_built: 2025-03-09T14:12Z
