@@ -345,7 +345,7 @@ eval_gfparam <- function(data, start_date, end_date, cutoff) {
       daily_data <- daily_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
       weekly_data <- weekly_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
 
-      CH4_day <- compute_metrics(daily_data$CH4GramsPerDay)
+      #CH4_day <- compute_metrics(daily_data$CH4GramsPerDay)
       #CO2_d <- compute_metrics(daily_data$CO2GramsPerDay)
       CH4_week <- compute_metrics(weekly_data$CH4GramsPerDay)
       #CO2_w <- compute_metrics(weekly_data$CO2GramsPerDay)
@@ -354,17 +354,17 @@ eval_gfparam <- function(data, start_date, end_date, cutoff) {
         param1 = param1,
         param2 = param2,
         min_time = min_time,
-        drecords = nrow(daily_data),
-        dcows = length(unique(daily_data$RFID)),
-        dCH4 = CH4_day["mean"],
-        sd_dCH4 = CH4_day["sd"],
-        CV_dCH4 = CH4_day["CV"],
+        #drecords = nrow(daily_data),
+        #dcows = length(unique(daily_data$RFID)),
+        #dCH4 = CH4_day["mean"],
+        #sd_dCH4 = CH4_day["sd"],
+        #CV_dCH4 = CH4_day["CV"],
         #mean_dCO2 = CO2_d["mean"], sd_dCO2 = CO2_d["sd"], CV_dCO2 = CO2_d["CV"],
-        wrecords = nrow(weekly_data),
-        wcows = length(unique(weekly_data$RFID)),
-        wCH4 = CH4_week["mean"],
-        sd_wCH4 = CH4_week["sd"],
-        CV_wCH4 = CH4_week["CV"],
+        records = nrow(weekly_data),
+        N = length(unique(weekly_data$RFID)),
+        mean = CH4_week["mean"],
+        SD = CH4_week["sd"],
+        CV = CH4_week["CV"],
         #mean_wCO2 = CO2_w["mean"], sd_wCO2 = CO2_w["sd"], CV_wCO2 = CO2_w["CV"],
         row.names = NULL
       )
