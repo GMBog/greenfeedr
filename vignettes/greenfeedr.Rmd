@@ -266,15 +266,58 @@ plot2
 
 ## Process data with `process_gfdata()`
 
-It is finally time to process your GreenFeed data for analysis. The most frequently asked questions are:
+#### Using process_gfdata()
 
-* What is the minimum acceptable time that my records should last?
-* How many records should I have per day?
-* How many days with records should I keep per week?
+Before proceeding with analysis, it's useful to summarize key aspects of the dataset:
 
-However, since there is no single answer, these values will depend on many factors such as the duration of the study, number of animals, feeding, time of year, etc.
+  * Total number of records
+  * Records per day
+  * Days with records per week
+  * Weeks with records
 
-The `process_gfdata()` function allows you to explore your data and use different sets of parameters (param1, param2, and min_time) and check how many records and animals you keep for analysis. To do that you can follow the example in the [README file](https://github.com/GMBog/greenfeedr/blob/main/README.md)
+To analyze the data effectively, we will use `process_gfdata()`, which requires three arguments:
+
+* **`param1`** is the number of records per day. 
+  * This parameter controls the minimum number of records that must be present for each day in the dataset to be considered valid.
+
+* **`param2`** is the number of days with records per week. 
+  * This parameter ensures that a minimum number of days within a week have valid records to be included in the analysis.
+
+* **`min_time`** is the minimum duration of a record. 
+  * This parameter specifies the minimum time threshold for each record to be considered valid.
+
+To determine the best-fitting parameters for our dataset, we will use the `eval_param()` function.
+
+```{r parameters}
+# Define the parameter space for param1 (i), param2 (j), and min_time (k):
+i <- seq(1, 6)
+j <- seq(1, 7)
+k <- seq(2, 6)
+
+# Generate all combinations of i, j, and k
+param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
+```
+
+In total, we have `r nrow(param_combinations)` different parameter combinations to evaluate.
+
+The next step is to evaluate the `process_gfdata()` function with the set of parameters we defined. The function can accept either a file path to the data files or the data as a data frame.
+
+```{r Example, message = FALSE, results = 'hide'}
+finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
+
+data <- eval_gfparam(data = finaldata,
+                     start_date = "2024-05-13",
+                     end_date = "2024-05-25"
+                     )
+```
+
+After evaluating the function, the results will be placed into a data frame with the following structure:
+
+```{r Results table, echo = FALSE, message = FALSE, results = 'asis'}
+cat(knitr::kable(data[1:10, ], format = "html", table.attr = "style='font-size: 12px;'"))
+```
+
+This will give users a sense of how the data is filtered based on the chosen parameters. A more conservative approach (i.e., stricter parameters) will typically result in fewer retained records and animals.
 
 
 ## Process pellet intakes and visits with `pellin()` and `viseat()`

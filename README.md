@@ -68,8 +68,6 @@ interface](https://ext.c-lockinc.com/greenfeed/data.php).
 If you encounter a clear bug, please file an issue with a minimal
 reproducible example on [GitHub](https://github.com/GMBog/greenfeedr).
 
-## Premium Version
-
 A **premium version** is available, specifically designed for
 **commercial setup**. It includes advanced features optimized for
 **large-scale data processing, enhanced analytics, and dedicated
