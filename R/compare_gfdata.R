@@ -5,8 +5,8 @@
 #'
 #' @param prelimrep a data frame with preliminary 'GreenFeed' data
 #' @param finalrep a data frame with finalized 'GreenFeed' data
-#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
-#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param start_date a character string representing the start date of the study (format: "dmy")
+#' @param end_date a character string representing the end date of the study (format: "dmy")
 #'
 #' @return Data frame including records removed from preliminary and final reports
 #'

@@ -8,8 +8,8 @@
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
 #' @param unit numeric or character vector or list representing one or more GreenFeed unit numbers.
-#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
-#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param start_date a character string representing the start date of the study (format: "dmy")
+#' @param end_date a character string representing the end date of the study (format: "dmy")
 #' @param rfid_file a character string representing the file with individual RFIDs. The order should be Visual ID (col1) and RFID (col2)
 #' @param file_path a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'
 #'

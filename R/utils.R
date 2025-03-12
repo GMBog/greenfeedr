@@ -63,16 +63,23 @@ has_credentials <- function() {
 #' @export
 #' @keywords internal
 ensure_date_format <- function(date_input) {
+  # Check if the input is already in YYYY-MM-DD format (does nothing in this case)
+  if (grepl("^\\d{4}-\\d{2}-\\d{2}$", date_input)) {
+    # Return the date as is
+    return(date_input)
+  }
+
   # Attempt to parse the input into a Date object
   date_obj <- tryCatch(
     {
-      # Use lubridate's parsing functions
-      parsed_date <- ymd(date_input, quiet = TRUE)
-      if (is.na(parsed_date)) parsed_date <- mdy(date_input, quiet = TRUE)
-      if (is.na(parsed_date)) parsed_date <- dmy(date_input, quiet = TRUE)
+      # Try to parse as day-month-year (DD/MM/YY) format first
+      parsed_date <- lubridate::dmy(date_input, quiet = TRUE)
 
-      # Check if the date is still NA
-      if (is.na(parsed_date)) stop("Invalid date format. Please provide a recognizable date format.")
+      # If that fails, try parsing as day-month-year (DD/MM/YYYY) format
+      if (is.na(parsed_date)) parsed_date <- lubridate::dmy(date_input, quiet = TRUE, truncated = 3)
+
+      # If still NA, raise an error
+      if (is.na(parsed_date)) stop("Invalid date format. Please provide a valid date in DD/MM/YY or DD/MM/YYYY format.")
 
       return(parsed_date)
     },
@@ -84,6 +91,8 @@ ensure_date_format <- function(date_input) {
   # Return the date in 'YYYY-MM-DD' format
   return(format(date_obj, "%Y-%m-%d"))
 }
+
+
 
 
 #' @name filter_within_range
@@ -269,9 +278,9 @@ convert_unit <- function(unit, t) {
 
 
 #' @name eval_gfparam
-#' @title Evaluate the best combination of parameters
+#' @title Evaluate all combination of parameters
 #'
-#' @description Evaluate parameters that best fit for 'GreenFeed' data
+#' @description Evaluate parameters that best fit for your 'GreenFeed' data
 #'
 #' @param data a data frame with preliminary or finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")

@@ -9,8 +9,8 @@
 #' @param input_type a character string representing type of data (options: "prelim" or "daily, and "final")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
-#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
-#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param start_date a character string representing the start date of the study (format: "dmy")
+#' @param end_date a character string representing the end date of the study (format: "dmy")
 #' @param save_dir a character string representing the directory to save the output file
 #' @param plot_opt a character string representing the gas(es) to plot (options: "All", "CH4", "CO2", "O2", "H2")
 #' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
