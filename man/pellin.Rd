@@ -12,9 +12,9 @@
 
 \item{gcup}{a numeric value representing the grams of pellets per cup.}
 
-\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
+\item{start_date}{a character string representing the start date of the study (format: "dmy")}
 
-\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
+\item{end_date}{a character string representing the end date of the study (format: "dmy")}
 
 \item{save_dir}{a character string representing the directory to save the output file}
 

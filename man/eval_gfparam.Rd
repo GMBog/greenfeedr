@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{eval_gfparam}
 \alias{eval_gfparam}
-\title{Evaluate the best combination of parameters}
+\title{Evaluate all combination of parameters}
 \usage{
 eval_gfparam(data, start_date, end_date, cutoff)
 }
@@ -19,7 +19,7 @@ eval_gfparam(data, start_date, end_date, cutoff)
 A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
 }
 \description{
-Evaluate parameters that best fit for 'GreenFeed' data
+Evaluate parameters that best fit for your 'GreenFeed' data
 }
 \examples{
 file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))

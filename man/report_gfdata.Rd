@@ -10,9 +10,9 @@
 
 \item{unit}{numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers}
 
-\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
+\item{start_date}{a character string representing the start date of the study (format: "dmy")}
 
-\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
+\item{end_date}{a character string representing the end date of the study (format: "dmy")}
 
 \item{save_dir}{a character string representing the directory to save the output file}
 
