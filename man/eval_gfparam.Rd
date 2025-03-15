@@ -9,9 +9,9 @@ eval_gfparam(data, start_date, end_date, cutoff)
 \arguments{
 \item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
 
-\item{start_date}{a character string representing the start date of the study (format: "mm/dd/yyyy")}
+\item{start_date}{a character string representing the start date of the study (format: "dd/mm/yyyy")}
 
-\item{end_date}{a character string representing the end date of the study (format: "mm/dd/yyyy")}
+\item{end_date}{a character string representing the end date of the study (format: "dd/mm/yyyy")}
 
 \item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
 }
@@ -19,7 +19,7 @@ eval_gfparam(data, start_date, end_date, cutoff)
 A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
 }
 \description{
-Evaluate parameters that best fit for your 'GreenFeed' data
+Evaluate parameters that best fit your 'GreenFeed' data
 }
 \examples{
 file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))

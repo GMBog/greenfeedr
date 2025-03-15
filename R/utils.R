@@ -279,11 +279,11 @@ convert_unit <- function(unit, t) {
 #' @name eval_gfparam
 #' @title Evaluate all combination of parameters
 #'
-#' @description Evaluate parameters that best fit for your 'GreenFeed' data
+#' @description Evaluate parameters that best fit your 'GreenFeed' data
 #'
 #' @param data a data frame with preliminary or finalized 'GreenFeed' data
-#' @param start_date a character string representing the start date of the study (format: "mm/dd/yyyy")
-#' @param end_date a character string representing the end date of the study (format: "mm/dd/yyyy")
+#' @param start_date a character string representing the start date of the study (format: "dd/mm/yyyy")
+#' @param end_date a character string representing the end date of the study (format: "dd/mm/yyyy")
 #' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
 #'
 #' @return A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
@@ -299,9 +299,9 @@ convert_unit <- function(unit, t) {
 #' @keywords internal
 eval_gfparam <- function(data, start_date, end_date, cutoff) {
   # Define the parameter space for param1 (i), param2 (j), and min_time (k):
-  i <- seq(1, 6)
+  i <- seq(1, 5)
   j <- seq(1, 7)
-  k <- seq(2, 6)
+  k <- seq(2, 4)
 
   # Generate all combinations of i, j, and k
   param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)

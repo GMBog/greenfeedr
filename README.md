@@ -74,4 +74,4 @@ A **premium version** is available, specifically designed for
 support**.
 
 For more details, please contact [Guillermo
-Martinez-Boggio](guillermo.martinezboggio@wisc.edu).
+Martinez-Boggio](mailto:guillermo.martinezboggio@wisc.edu).
