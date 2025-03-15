@@ -1,7 +1,7 @@
 Package: greenfeedr
 Type: Package
 Title: Process and Report 'GreenFeed' Data
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
   c(
     person("Guillermo", "Martinez-Boggio", 
@@ -40,5 +40,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 BugReports: https://github.com/GMBog/greenfeedr/issues
-URL: https://gmbog.github.io/greenfeedr/, https://github.com/GMBog/greenfeedr
+URL: https://github.com/GMBog/greenfeedr
 VignetteBuilder: knitr
