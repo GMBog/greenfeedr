@@ -126,7 +126,6 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     # Save 'GreenFeed' data as a csv file in the specified directory
     readr::write_excel_csv(df, file = paste0(save_dir, "/", exp, "_GFdata.csv"))
 
-
     # Process the rfid data
     rfid_file <- process_rfid_data(rfid_file)
 
@@ -202,10 +201,27 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
         "AirflowCf"
       )
 
+      # Process the rfid data
+      rfid_file <- process_rfid_data(rfid_file)
+
+      # Create a function to conditionally perform inner join
+      conditional_inner_join <- function(df, rfid_file) {
+        if (!is.null(rfid_file) && nrow(rfid_file) > 0) {
+          inner_join(df, rfid_file, by = "RFID")
+        } else {
+          df
+        }
+      }
+
       # df contains finalized 'GreenFeed' data
       df <- df %>%
         ## Remove "unknown IDs" and leading zeros from RFID col
         dplyr::filter(RFID != "unknown") %>%
+        dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
+        ## Conditionally perform the inner_join if rfid_file exists
+        conditional_inner_join(rfid_file) %>%
+        dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
+        ## Change columns format
         dplyr::mutate(
           RFID = gsub("^0+", "", RFID),
           ## Extract hours, minutes, and seconds from GoodDataDuration
@@ -231,12 +247,14 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     # Combine all final report files into one data frame
     df <- do.call(rbind, lapply(file_path, process_file))
 
-    # Process the rfid data
+    # If rfid file is provided, process it for the PDF report
     rfid_file <- process_rfid_data(rfid_file)
-
-    # If rfid file is provided then perform inner join
-    if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
-      df <- dplyr::inner_join(df, rfid_file, by = "RFID")
+    if (!is.null(rfid_file) && nrow(rfid_file) > 0) {
+      rfid_file <- rfid_file %>%
+        dplyr::mutate(
+          ## 'Data' col is a binary (YES = animal has records, NO = animal has no records)
+          Gas_Data = ifelse(RFID %in% df$RFID, "Yes", "No")
+        )
     }
 
     # Create PDF report using Rmarkdown
