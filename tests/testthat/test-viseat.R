@@ -33,10 +33,10 @@ test_that("viseat returns a list with the correct structure", {
 
   expect_type(result, "list")
   expect_length(result, 2)
-  expect_true("visits_per_unit" %in% names(result))
+  expect_true("visits_per_day" %in% names(result))
   expect_true("visits_per_animal" %in% names(result))
 
-  expect_s3_class(result$visits_per_unit, "data.frame")
+  expect_s3_class(result$visits_per_day, "data.frame")
   expect_s3_class(result$visits_per_animal, "data.frame")
 })
 
@@ -50,8 +50,8 @@ test_that("viseat returns correct content in data frames", {
   )
 
   # Check content of visits_per_unit
-  expect_equal(nrow(result$visits_per_unit), 156) # Adjust based on actual data
-  expect_equal(names(result$visits_per_unit), c("FarmName", "Date", "ndrops", "visits"))
+  expect_equal(nrow(result$visits_per_day), 156) # Adjust based on actual data
+  expect_equal(names(result$visits_per_day), c("FarmName", "Date", "ndrops", "visits"))
 
   # Check content of visits_per_animal
   expect_equal(nrow(result$visits_per_animal), 12) # Adjust based on actual data

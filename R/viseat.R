@@ -14,7 +14,7 @@
 #' @param file_path a character string or list representing files(s) with feedtimes from 'C-Lock Inc.'
 #'
 #' @return A list of two data frames:
-#'   \item{visits_per_unit }{Data frame with daily processed 'GreenFeed' data, including columns for VisualID, Date, Time, number of drops, and visits.}
+#'   \item{visits_per_day }{Data frame with daily processed 'GreenFeed' data, including columns for VisualID, Date, Time, number of drops, and visits.}
 #'   \item{visits_per_animal }{Data frame with weekly processed 'GreenFeed' data, including columns for VisualID, total drops, total visits, mean drops, and mean visits.}
 #'
 #'
@@ -204,7 +204,7 @@ viseat <- function(user = NA, pass = NA, unit,
 
   # Return a list of data frames
   return(list(
-    visits_per_unit = daily_visits,
+    visits_per_day = daily_visits,
     visits_per_animal = animal_visits
   ))
 
