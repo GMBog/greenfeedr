@@ -1,7 +1,7 @@
 Package: greenfeedr
 Type: Package
 Title: Process and Report 'GreenFeed' Data
-Version: 1.2.0
+Version: 1.2.0.999
 Authors@R: 
   c(
     person("Guillermo", "Martinez-Boggio", 
