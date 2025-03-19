@@ -125,7 +125,9 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
         stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
     }
 
+
     # Detect date format
+    df <- df[!is.na(df$FeedTime),] # Remove NA to match format date
     if (all(grepl("^\\d{4}-\\d{2}-\\d{2}", df$FeedTime))) {
       detected_format <- "%Y-%m-%d %H:%M:%S"
     } else if (all(grepl("^\\d{1,2}/\\d{1,2}/\\d{2}", df$FeedTime))) {
