@@ -253,6 +253,14 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     df <- rbind(df, grid_missing)
   }
 
+  # Ensure save_dir is an absolute path
+  save_dir <- normalizePath(save_dir, mustWork = FALSE)
+
+  # Check if the directory exists, and create it if necessary
+  if (!dir.exists(save_dir)) {
+    dir.create(save_dir, recursive = TRUE)
+  }
+
   # Save pellet intakes as a csv file with kg of pellets for the period requested
   readr::write_excel_csv(df,
     file = paste0(save_dir, "/Pellet_Intakes_", start_date, "_", end_date, ".csv")

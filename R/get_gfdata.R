@@ -136,7 +136,10 @@ get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
     )
   }
 
-  # Check if the directory exists, if not, create it
+  # Ensure save_dir is an absolute path
+  save_dir <- normalizePath(save_dir, mustWork = FALSE)
+
+  # Check if the directory exists, and create it if necessary
   if (!dir.exists(save_dir)) {
     dir.create(save_dir, recursive = TRUE)
   }

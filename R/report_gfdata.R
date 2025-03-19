@@ -118,7 +118,10 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
       "RunTime"
     )
 
-    # Check if the directory exists, if not, create it
+    # Ensure save_dir is an absolute path
+    save_dir <- normalizePath(save_dir, mustWork = FALSE)
+
+    # Check if the directory exists, and create it if necessary
     if (!dir.exists(save_dir)) {
       dir.create(save_dir, recursive = TRUE)
     }
@@ -255,6 +258,14 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
           ## 'Data' col is a binary (YES = animal has records, NO = animal has no records)
           Gas_Data = ifelse(RFID %in% df$RFID, "Yes", "No")
         )
+    }
+
+    # Ensure save_dir is an absolute path
+    save_dir <- normalizePath(save_dir, mustWork = FALSE)
+
+    # Check if the directory exists, and create it if necessary
+    if (!dir.exists(save_dir)) {
+      dir.create(save_dir, recursive = TRUE)
     }
 
     # Create PDF report using Rmarkdown
