@@ -1,8 +1,8 @@
 .onAttach <- function(libname, pkgname) {
   packageStartupMessage(
     "Thank you for using the greenfeedr package!\n",
-    "Cite: Martinez-Boggio et al. (2025). Greenfeedr: An R-package for processing and reporting GreenFeed data.\n",
-    "Type 'help(greenfeedr)' for summary information"
+    "Cite: Martinez-Boggio et al. (2025). greenfeedr: An R-package for processing and reporting GreenFeed data.\n",
+    "Type '??greenfeedr' for summary information"
   )
 }
 
@@ -248,7 +248,6 @@ process_rfid_data <- function(rfid_file) {
 #' @keywords internal
 convert_unit <- function(unit, t) {
   if (t == 1) {
-    # Handle case for numeric or character vectors, lists, and single values
     if (is.numeric(unit)) {
       unit <- as.character(unit)  # Convert numeric to character
     } else if (is.character(unit)) {
@@ -256,20 +255,14 @@ convert_unit <- function(unit, t) {
     } else if (is.list(unit) || is.vector(unit)) {
       unit <- as.character(unlist(unit))  # Flatten list/vector and convert to character
     }
-
-    # Collapse into a comma-separated string if the length is greater than 1
-    unit <- paste(unit, collapse = ",")
+    unit <- paste(unit, collapse = ",")  # Collapse into a comma-separated string
 
   } else if (t == 2) {
-    # Handle comma-separated strings and lists
-    if (is.character(unit)) {
-      unit <- strsplit(unit, ",")[[1]]  # Split by comma if it's a string
+    if (is.character(unit) && length(unit) == 1) {
+      unit <- strsplit(unit, ",")[[1]]  # Only split if it's a single string
     } else if (is.list(unit) || is.vector(unit)) {
       unit <- as.character(unlist(unit))  # Convert lists or vectors to character
     }
-
-    # Convert to character
-    unit <- as.character(unit)
   }
 
   return(unit)

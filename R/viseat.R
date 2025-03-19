@@ -46,7 +46,7 @@
 #' @import utils
 
 utils::globalVariables(c(
-  "FID", "FeedTime", "CowTag", "Date", "visits",
+  "FID", "FeedTime", "CowTag", "Date", "visits", "Foodtype",
   "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"
 ))
 
@@ -179,12 +179,13 @@ viseat <- function(user = NA, pass = NA, unit,
       # Convert FeedTime to POSIXct with the correct format
       FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M", tz = "UTC"),
       Date = as.character(as.Date(FeedTime)),
-      Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
+      Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600),
+      FoodType = as.character(FoodType)
     ) %>%
     dplyr::relocate(Date, Time, FarmName, .after = FID) %>%
     dplyr::select(-FeedTime) %>%
     # Number of drops per cow per day
-    dplyr::group_by(FarmName, Date) %>%
+    dplyr::group_by(FarmName, Date, FoodType) %>%
     dplyr::summarise(
       ndrops = dplyr::n(),
       visits = max(CurrentPeriod)
@@ -192,7 +193,7 @@ viseat <- function(user = NA, pass = NA, unit,
 
   # Calculate the number of drops and visits per animal
   animal_visits <- daily_visits %>%
-    dplyr::group_by(FarmName) %>%
+    dplyr::group_by(FarmName, FoodType) %>%
     dplyr::mutate(visits = as.numeric(visits)) %>%
     dplyr::summarise(
       total_drops = sum(ndrops),

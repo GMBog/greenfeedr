@@ -55,7 +55,7 @@
 
 utils::globalVariables(c(
   "FID", "FeedTime", "CowTag", "Time", "CurrentPeriod", "ndrops",
-  "MassFoodDrop", "Date", "RFID", "pellintakes", "FarmName"
+  "MassFoodDrop", "Date", "RFID", "pellintakes", "FarmName", "FoodType"
 ))
 
 pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
@@ -145,25 +145,6 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
         }
       )
 
-    # Read and bind feedtimes data
-    # df <- purrr::map2_dfr(file_path, unit, ~ {
-    #   ext <- tools::file_ext(.x)
-    #
-    #   if (ext == "csv") {
-    #     # Read CSV file
-    #     readr::read_csv(.x, show_col_types = FALSE) %>%
-    #       dplyr::mutate(FID = .y)
-    #   } else if (ext %in% c("xls", "xlsx")) {
-    #     # Read Excel file (both xls and xlsx)
-    #     readxl::read_excel(.x) %>%
-    #       dplyr::mutate(FID = .y)
-    #   } else {
-    #     stop("Unsupported file type. Please provide a CSV, XLS, or XLSX file.")
-    #   }
-    # }) %>%
-    #   dplyr::relocate(FID, .before = FeedTime) %>%
-    #   dplyr::mutate(CowTag = gsub("^0+", "", CowTag))
-
   }
 
   # Process the rfid data
@@ -182,29 +163,32 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
       ## Convert FeedTime to POSIXct with the correct format
       FeedTime = as.POSIXct(FeedTime, format = "%m/%d/%y %H:%M:%S"),
       Date = as.character(as.Date(FeedTime)),
-      Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600)
+      Time = as.numeric(lubridate::period_to_seconds(lubridate::hms(format(FeedTime, "%H:%M:%S"))) / 3600),
+      FoodType = as.character(FoodType)
     ) %>%
     dplyr::relocate(Date, Time, .before = FID) %>%
     dplyr::select(-FeedTime) %>%
     ## Calculate drops per animal/FID/day
-    dplyr::group_by(CowTag, FID, Date) %>%
+    dplyr::group_by(CowTag, FID, FoodType, Date) %>%
     dplyr::summarise(
       ndrops = dplyr::n(),
       TotalPeriod = max(CurrentPeriod)
     )
 
   # As units can fit different amount of grams in their cups. We define gcup per unit
+  # Define data frame with multiple food types per unit
   grams_df <- data.frame(
-    FID = convert_unit(unit,2), #Ensure character format
-    gcup = as.numeric(gcup)           #Ensure numeric format
+    FID = rep(convert_unit(unit, t = 2), each = length(gcup) / length(unit)), # Ensure character format
+    FoodType = as.character(rep(seq_len(length(gcup) / length(unit)), times = length(unit))), # Assign food type sequentially
+    gcup = as.numeric(gcup) # Ensure numeric format
   )
 
   # Calculate MassFoodDrop by number of cup drops times grams per cup
   pellintakes <- number_drops %>%
-    dplyr::left_join(grams_df, by = "FID") %>%
+    dplyr::left_join(grams_df, by = c("FID", "FoodType")) %>%
     dplyr::mutate(MassFoodDrop = ndrops * gcup) %>%
     ## Create a table with alfalfa pellets (AP) intakes in kg
-    dplyr::group_by(CowTag, Date) %>%
+    dplyr::group_by(CowTag, FoodType, Date) %>%
     ## MassFoodDrop divided by 1000 to transform g in kg
     dplyr::summarise(MassFoodDrop = sum(MassFoodDrop) / 1000)
 
@@ -216,17 +200,22 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     CowTag = unique(pellintakes$CowTag)
   )
 
-  ## Merge pellet intakes with our 'grid' and set MassFoodDrop to 0 for days without visits
-  pellintakes <- merge(pellintakes, grid_visits, all = TRUE)
-  pellintakes$MassFoodDrop[is.na(pellintakes$MassFoodDrop)] <- 0
+  ## Merge pellet intakes with our 'grid' and set to 0 the NA values
+  pellintakes <- merge(pellintakes, grid_visits, all = TRUE) %>%
+    dplyr::mutate(
+      MassFoodDrop = ifelse(is.na(MassFoodDrop), 0, MassFoodDrop),
+      FoodType = ifelse(is.na(FoodType), 0, FoodType)
+    ) %>%
+    dplyr::relocate(FoodType, .after = MassFoodDrop)
+
 
   ## Adding the farm name (if rfid_file is provided) to the pellet intakes file
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     pellintakes <- rfid_file[, 1:2] %>%
       dplyr::inner_join(pellintakes, by = c("RFID" = "CowTag"))
-    names(pellintakes) <- c("FarmName", "RFID", "Date", "PIntake_kg")
+    names(pellintakes) <- c("FarmName", "RFID", "Date", "PIntake_kg", "FoodType")
   } else {
-    names(pellintakes) <- c("RFID", "Date", "PIntake_kg")
+    names(pellintakes) <- c("RFID", "Date", "PIntake_kg", "FoodType")
   }
 
 
@@ -253,7 +242,8 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     grid_missing <- expand.grid(
       Date = unique(df$Date),
       RFID = rfid_file$RFID[rfid_file$FarmName %in% noGFvisits],
-      PIntake_kg = 0
+      PIntake_kg = 0,
+      FoodType = 0
     )
 
     ## Add the corresponding FarmName for each RFID
