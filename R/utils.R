@@ -153,12 +153,6 @@ filter_within_range <- function(v, cutoff) {
 #' # Expected output: message "RFID is NA. It is recommended to include it." and NULL
 #' message(invalid_data)
 #'
-#' # Example with unsupported file format
-#' # Assuming 'rfid_data.docx' is an unsupported file format
-#' invalid_file <- process_rfid_data("path/to/rfid_data.docx")
-#' # Expected output: error message "Unsupported file format."
-#' message(invalid_file)
-#'
 #' @export
 #' @keywords internal
 process_rfid_data <- function(rfid_file) {
@@ -185,9 +179,17 @@ process_rfid_data <- function(rfid_file) {
     return(rfid_file)
   }
 
-  # Check if rfid_file is a file path
-  if (is.character(rfid_file) && file.exists(rfid_file)) {
+  # Normalize file path
+  if (is.character(rfid_file)) {
+    rfid_file <- normalizePath(rfid_file, mustWork = FALSE)
+
+    # Check if the file exists
+    if (!file.exists(rfid_file)) {
+      stop("The specified RFID file does not exist: ", rfid_file)
+    }
+
     file_extension <- tolower(tools::file_ext(rfid_file))
+
     tryCatch(
       {
         if (file_extension == "csv") {
@@ -198,13 +200,19 @@ process_rfid_data <- function(rfid_file) {
         } else if (file_extension == "txt") {
           rfid_file <- readr::read_table(rfid_file, col_types = readr::cols(.default = readr::col_character()))
         } else {
-          stop("Unsupported file format.")
+          stop("Unsupported file format: ", file_extension)
         }
+
+        # Check if file is empty
+        if (nrow(rfid_file) == 0) {
+          stop("The RFID file is empty: ", rfid_file)
+        }
+
         rfid_file <- standardize_columns(rfid_file)
         return(rfid_file)
       },
       error = function(e) {
-        stop("An error occurred while reading the file: ", e$message)
+        stop("Error reading the RFID file: ", e$message)
       }
     )
   }

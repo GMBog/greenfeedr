@@ -103,6 +103,7 @@ viseat <- function(user = NA, pass = NA, unit,
       )
   } else {
 
+    file_path <- normalizePath(file_path, mustWork = FALSE) # Convert to absolute path
     ext <- tools::file_ext(file_path)
     if (ext == "csv") {
       # Read CSV file

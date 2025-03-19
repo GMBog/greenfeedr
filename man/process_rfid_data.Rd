@@ -29,11 +29,5 @@ invalid_data <- process_rfid_data(NULL)
 # Expected output: message "RFID is NA. It is recommended to include it." and NULL
 message(invalid_data)
 
-# Example with unsupported file format
-# Assuming 'rfid_data.docx' is an unsupported file format
-invalid_file <- process_rfid_data("path/to/rfid_data.docx")
-# Expected output: error message "Unsupported file format."
-message(invalid_file)
-
 }
 \keyword{internal}
