@@ -178,6 +178,14 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
       TotalPeriod = max(CurrentPeriod)
     )
 
+
+  # Ensure gcup is a vector if it's a single value
+  if (length(gcup) == 1 && length(unit) == 2) {
+    gcup <- rep(gcup, length(unit))  # Repeat gcup value for both units
+  } else if (length(gcup) != length(unit) * 2) {  # Ensure gcup length is twice the length of unit
+    stop("The length of gcup must match twice the length of unit.")
+  }
+
   # As units can fit different amount of grams in their cups. We define gcup per unit
   # Define data frame with multiple food types per unit
   grams_df <- data.frame(
