@@ -179,17 +179,34 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     )
 
 
+  unit <- convert_unit(unit, t=2)
+
   # Ensure gcup is a vector if it's a single value
-  if (length(gcup) == 1 && length(unit) == 2) {
-    gcup <- rep(gcup, length(unit))  # Repeat gcup value for both units
-  } else if (length(gcup) != length(unit) * 2) {  # Ensure gcup length is twice the length of unit
-    stop("The length of gcup must match twice the length of unit.")
+  if (length(gcup) == 1 && length(unit) == 1) {
+    # Single unit, single gcup
+    gcup <- rep(gcup, 1)  # No repetition needed
+    message("Single Unit, Single FoodType")
+  } else if (length(gcup) == 1 && length(unit) == 2) {
+    # Two units, single gcup
+    gcup <- rep(gcup, length(unit))  # Repeat gcup for both units
+    message("Two Units, Single FoodType")
+  } else if (length(gcup) == 1 && length(unit) > 2) {
+    # More than two units, single gcup
+    gcup <- rep(gcup, length(unit))  # Repeat gcup for each unit
+    message("Multiple Units, Single FoodType")
+  } else if (length(gcup) == length(unit)) {
+    # Each unit gets one gcup (one food type per unit)
+    message("Each Unit Drops One FoodType")
+  } else if (length(gcup) == length(unit) * 2) {
+    # Each unit gets two gcup values (two food types per unit)
+    message("Each Unit Drops Two FoodType")
+  } else {
+    stop("The length of gcup must be consistent with the number of units.")
   }
 
-  # As units can fit different amount of grams in their cups. We define gcup per unit
-  # Define data frame with multiple food types per unit
+  # Now create the data frame with multiple food types per unit
   grams_df <- data.frame(
-    FID = rep(convert_unit(unit, t = 2), each = length(gcup) / length(unit)), # Ensure character format
+    FID = rep(unit, each = length(gcup) / length(unit)), # Ensure character format
     FoodType = as.character(rep(seq_len(length(gcup) / length(unit)), times = length(unit))), # Assign food type sequentially
     gcup = as.numeric(gcup) # Ensure numeric format
   )
