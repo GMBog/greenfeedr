@@ -6,9 +6,9 @@
 \arguments{
 \item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
 
-\item{start_date}{a character string representing the start date of the study (format: "dmy")}
+\item{start_date}{a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 
-\item{end_date}{a character string representing the end date of the study (format: "dmy")}
+\item{end_date}{a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 
 \item{param1}{an integer representing the number of records per day to be consider for analysis}
 

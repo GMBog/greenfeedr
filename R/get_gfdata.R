@@ -10,8 +10,8 @@
 #' @param d a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
-#' @param start_date a character string representing the start date of the study (format: "dmy")
-#' @param end_date a character string representing the end date of the study (format: "dmy")
+#' @param start_date a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
+#' @param end_date a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
 #' @param save_dir a character string representing the directory to save the output file
 #'
 #' @return A CSV file with the specified data (visits or raw) saved in the provided directory.

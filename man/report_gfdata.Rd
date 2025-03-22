@@ -4,15 +4,15 @@
 \alias{report_gfdata}
 \title{Download and Report 'GreenFeed' Data}
 \arguments{
-\item{input_type}{a character string representing type of data (options: "prelim" or "daily, and "final")}
+\item{input_type}{a character string representing type of data (options: "prelim" and "final")}
 
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
 \item{unit}{numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers}
 
-\item{start_date}{a character string representing the start date of the study (format: "dmy")}
+\item{start_date}{a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 
-\item{end_date}{a character string representing the end date of the study (format: "dmy")}
+\item{end_date}{a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 
 \item{save_dir}{a character string representing the directory to save the output file}
 

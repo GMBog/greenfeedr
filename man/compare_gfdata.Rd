@@ -8,9 +8,9 @@
 
 \item{finalrep}{a data frame with finalized 'GreenFeed' data}
 
-\item{start_date}{a character string representing the start date of the study (format: "dmy")}
+\item{start_date}{a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 
-\item{end_date}{a character string representing the end date of the study (format: "dmy")}
+\item{end_date}{a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
 }
 \value{
 Data frame including records removed from preliminary and final reports

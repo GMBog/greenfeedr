@@ -9,9 +9,9 @@
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
 #' @param unit numeric or character vector or list representing one or more 'GreenFeed' unit numbers. The order should match with "feedtimes" files
-#' @param gcup a numeric value representing the grams of pellets per cup.
-#' @param start_date a character string representing the start date of the study (format: "dmy")
-#' @param end_date a character string representing the end date of the study (format: "dmy")
+#' @param gcup a numeric value representing the grams of pellets per cup. If dual-hopper you can define multiple grams per unit
+#' @param start_date a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
+#' @param end_date a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
 #' @param save_dir a character string representing the directory to save the output file
 #' @param rfid_file a character string representing the file with individual IDs. The order should be Visual ID (col1) and RFID (col2)
 #' @param file_path a character string or list representing files(s) with "feedtimes" from 'C-Lock Inc.'
@@ -61,7 +61,7 @@ utils::globalVariables(c(
 pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
                    save_dir = tempdir(), rfid_file = NULL, file_path = NULL) {
   message("Please set the 'gcup' parameter based on the 10-drops test.
-           If units have different gram values, define 'gcup' as a vector with an element for each unit.")
+           If units have single or dual-hopper with different 'gcup', define a vector with a value for each unit/hopper.")
 
   # Check Date format
   start_date <- ensure_date_format(start_date)
