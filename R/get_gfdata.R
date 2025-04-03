@@ -8,6 +8,7 @@
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
 #' @param d a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")
+#' @param type a numeric representing the type of data to retrieve (1= finalized and 2=preliminary)
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
@@ -25,6 +26,7 @@
 #'   user = "your_username",
 #'   pass = "your_password",
 #'   d = "visits",
+#'   type = 2,
 #'   exp = "StudyName",
 #'   unit = c(304, 305),
 #'   start_date = "2024-01-01",
@@ -38,7 +40,7 @@
 #' @import readr
 #' @import stringr
 
-get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
+get_gfdata <- function(user, pass, d = "visits", type = 2, exp = NA, unit,
                        start_date, end_date = Sys.Date(), save_dir = tempdir()) {
   # Ensure unit is a comma-separated string
   unit <- convert_unit(unit,1)
@@ -62,7 +64,7 @@ get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
   if (d == "visits") {
     URL <- paste0(
       "https://portal.c-lockinc.com/api/getemissions?d=", d, "&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00"
+      "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
     )
   } else {
     URL <- paste0(
@@ -82,6 +84,10 @@ get_gfdata <- function(user, pass, d = "visits", exp = NA, unit,
   # Split the commas into a data frame, while getting rid of the "Parameters" line and the headers line
   df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
   df <- as.data.frame(df)
+
+  if (nrow(df) <= 1) {
+    stop("Error: Retrieved data is empty or incomplete. Try to retrieve preliminary data (type = 2).")
+  }
 
   if (d == "visits") {
     colnames(df) <- c(
