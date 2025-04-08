@@ -157,6 +157,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df[df$CowTag %in% rfid_file$RFID, ]
     noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]
+
     message("Animal ID not visting GreenFeed: ", paste(noGFvisits, collapse = ", "))
   }
 
@@ -259,13 +260,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   # Add missing dates for each RFID (and FarmName if available)
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(FarmName, RFID))
-  } else {
-    df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(RFID))
-  }
 
-
-  # Include in the pellet intakes file animals without visits
-  if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     ## Create all possible combinations of date and RFID for animals without visits
     grid_missing <- expand.grid(
       Date = unique(df$Date),
@@ -279,7 +274,11 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
 
     ## Combine data with cows visiting and not visiting
     df <- rbind(df, grid_missing)
+
+  } else {
+    df <- df %>% tidyr::complete(Date = all_dates, tidyr::nesting(RFID))
   }
+
 
   # Ensure save_dir is an absolute path
   save_dir <- normalizePath(save_dir, mustWork = FALSE)
