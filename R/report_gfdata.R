@@ -53,7 +53,7 @@ utils::globalVariables(c("GoodDataDuration", "StartTime", "AirflowLitersPerSec",
 
 report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys.Date(),
                           save_dir = tempdir(), plot_opt = "CH4", rfid_file = NULL,
-                          user = NA, pass = NA, file_path) {
+                          user = NA, pass = NA, file_path = NULL) {
   # Ensure unit is a comma-separated string
   unit <- convert_unit(unit,1)
 
@@ -65,21 +65,24 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   input_type <- tolower(input_type)
 
   # Ensure input_type is valid
-  valid_inputs <- c("final", "prelim", "daily")
+  valid_inputs <- c("final", "prelim")
   if (!(input_type %in% valid_inputs)) {
-    stop(paste("Invalid input_type. Choose one of:", paste(valid_inputs, collapse = ", ")))
+    stop(paste("Invalid input type. Choose one of:", paste(valid_inputs, collapse = ", ")))
   }
 
-  if (input_type == "prelim" | input_type == "daily") {
+  if (is.null(file_path)) {
     # First Authenticate to receive token:
     req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
     httr::stop_for_status(req)
     TOK <- trimws(httr::content(req, as = "text"))
 
+    # Assign type based on input_type
+    type <- ifelse(input_type == "final", 1, 2)
+
     # Get data using the login token
     URL <- paste0(
       "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00"
+      "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
     )
     message(URL)
 
@@ -179,10 +182,17 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     }
 
     # Create PDF report using Rmarkdown
-    rmarkdown::render(
-      input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
-      output_file = file.path(save_dir, paste0("/DailyReport_", exp, ".pdf"))
-    )
+    if (input_type == "prelim") {
+      rmarkdown::render(
+        input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
+        output_file = file.path(save_dir, paste0("DailyReport_", exp, ".pdf"))
+      )
+    } else if (input_type == "final") {
+      rmarkdown::render(
+        input = system.file("FinalReportsGF.Rmd", package = "greenfeedr"),
+        output_file = file.path(save_dir, paste0("FinalReport_", exp, ".pdf"))
+      )
+    }
   } else {
     # Function to read and process each file
     process_file <- function(file_path) {

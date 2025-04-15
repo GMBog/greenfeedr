@@ -8,7 +8,7 @@
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
 #' @param d a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")
-#' @param type a numeric representing the type of data to retrieve (1= finalized and 2=preliminary)
+#' @param type a numeric representing the type of data to retrieve (1=finalized and 2=preliminary)
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
@@ -60,34 +60,48 @@ get_gfdata <- function(user, pass, d = "visits", type = 2, exp = NA, unit,
   httr::stop_for_status(req)
   TOK <- trimws(httr::content(req, as = "text"))
 
-  # Get data using the login token
-  if (d == "visits") {
-    URL <- paste0(
-      "https://portal.c-lockinc.com/api/getemissions?d=", d, "&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
-    )
-  } else {
-    URL <- paste0(
-      "https://portal.c-lockinc.com/api/getraw?d=", d, "&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00"
-    )
+  # Internal function to download and parse
+  download_and_parse <- function(type) {
+    if (d == "visits") {
+      URL <- paste0(
+        "https://portal.c-lockinc.com/api/getemissions?d=", d, "&fids=", unit,
+        "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
+      )
+    } else {
+      URL <- paste0(
+        "https://portal.c-lockinc.com/api/getraw?d=", d, "&fids=", unit,
+        "&st=", start_date, "&et=", end_date, "%2012:00:00"
+      )
+    }
+    message(URL)
+
+    req <- httr::POST(URL, body = list(token = TOK))
+    httr::stop_for_status(req)
+    a <- httr::content(req, as = "text")
+    perline <- stringr::str_split(a, "\\n")[[1]]
+    df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
+    df <- as.data.frame(df)
+    return(df)
   }
-  message(URL)
 
-  req <- httr::POST(URL, body = list(token = TOK))
-  httr::stop_for_status(req)
-  a <- httr::content(req, as = "text")
+  # Try first with selected type
+  df <- tryCatch({
+    df <- download_and_parse(type)
+    if (nrow(df) <= 1 && d == "visits" && type == 1) {
+      message("No finalized data. Trying preliminary data (type = 2)...")
+      df <- download_and_parse(2)
+    }
+    df
+  }, error = function(e) {
+    message("Download failed: ", e$message)
+    return(NULL)
+  })
 
-  # Split the lines
-  perline <- stringr::str_split(a, "\\n")[[1]]
-
-  # Split the commas into a data frame, while getting rid of the "Parameters" line and the headers line
-  df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
-  df <- as.data.frame(df)
-
-  if (nrow(df) <= 1) {
-    stop("Error: Retrieved data is empty or incomplete. Try to retrieve preliminary data (type = 2).")
+  if (is.null(df) || nrow(df) <= 1) {
+    message("No valid data retrieved.")
+    return(invisible(NULL))
   }
+
 
   if (d == "visits") {
     colnames(df) <- c(
