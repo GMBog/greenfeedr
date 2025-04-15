@@ -23,7 +23,7 @@ get_gfdata(
 
 \item{d}{a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")}
 
-\item{type}{a numeric representing the type of data to retrieve (1= finalized and 2=preliminary)}
+\item{type}{a numeric representing the type of data to retrieve (1=finalized and 2=preliminary)}
 
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 

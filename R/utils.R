@@ -301,7 +301,7 @@ eval_gfparam <- function(data, start_date, end_date, cutoff) {
   # Define the parameter space for param1 (i), param2 (j), and min_time (k):
   i <- seq(1, 5)
   j <- seq(1, 7)
-  k <- seq(2, 4)
+  k <- seq(2, 3)
 
   # Generate all combinations of i, j, and k
   param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
