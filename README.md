@@ -63,6 +63,23 @@ You can process either preliminary data obtained via the API using
 `get_gfdata()` or finalized data downloaded from the [GreenFeed web
 interface](https://ext.c-lockinc.com/greenfeed/data.php).
 
+## Examples
+
+- [1. Downloading
+  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/DownloadData.md)
+
+- [2. Reporting
+  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/ReportData.md)
+
+- [3. Processing
+  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/ProcessData.md)
+
+- [4. Calculating Pellet
+  Intakes](https://github.com/GMBog/greenfeedr/tree/main/inst/md/PelletIntakes.md)
+
+- [5. Checking
+  Visitation](https://github.com/GMBog/greenfeedr/tree/main/inst/md/Visitation.md)
+
 ## Getting help
 
 If you encounter a clear bug, please file an issue with a minimal
