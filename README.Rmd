@@ -23,22 +23,20 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-**greenfeedr** provides a set of functions that help you work with GreenFeed data:
+**greenfeedr** is an R package to easily download, report, and process GreenFeed data.
+
+The package provides tools for:
 
 * `get_gfdata()` downloads GreenFeed data via API.
-* `report_gfdata()` downloads and generates markdown reports of preliminary and finalized GreenFeed data.
-* `compare_gfdata()` compare preliminary and finalized GreenFeed data.
-* `process_gfdata()` processes and averages preliminary or finalized GreenFeed data.
+* `report_gfdata()` generates reports of GreenFeed data.
+* `compare_gfdata()` compares preliminary and finalized GreenFeed data.
+* `process_gfdata()` processes and averages GreenFeed data.
 * `pellin()` processes pellet intakes from GreenFeed units.
 * `viseat()` processes GreenFeed visits.
 
 ## Citation
 
 More information about how to use greenfeedr can be found in [Martinez-Boggio et al. (2024)](https://doi.org/10.3168/jdsc.2024-0662).
-
-## Cheat Sheet
-
-<a href="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.pdf"><img src="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.png" width="480" height="360"/></a>
 
 ## Installation
 
@@ -57,19 +55,13 @@ remotes::install_github("GMBog/greenfeedr")
 
 ## Usage
 
-```{r libraries, include = FALSE, message = FALSE}
-library(dplyr)
-library(purrr)
-library(readxl)
-```
-
 ```{r setup, message = FALSE}
 library(greenfeedr)
 ```
 
-You can process either preliminary data obtained via the API using `get_gfdata()` or finalized data downloaded from the [GreenFeed web interface](https://ext.c-lockinc.com/greenfeed/data.php).
+## Tutorials
 
-## Examples
+Learn how to use greenfeedr in different workflows:
 
   - [1. Downloading Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/DownloadData.md)
   
@@ -82,12 +74,14 @@ You can process either preliminary data obtained via the API using `get_gfdata()
   - [5. Checking Visitation](https://github.com/GMBog/greenfeedr/tree/main/inst/md/Visitation.md)
 
 
+## Cheat Sheet
+
+<a href="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.pdf"><img src="https://github.com/GMBog/greenfeedr/raw/main/man/figures/Cheatsheet.png" width="480" height="360"/></a>
+
+
 ## Getting help
 
 If you encounter a clear bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/GMBog/greenfeedr).
-
-
-A **premium version** is available, specifically designed for **commercial setup**. It includes advanced features optimized for **large-scale data processing, enhanced analytics, and dedicated support**.  
 
 For more details, please contact [Guillermo Martinez-Boggio](mailto:guillermo.martinezboggio@wisc.edu).
 
