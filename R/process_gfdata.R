@@ -10,6 +10,7 @@
 #' @param param1 an integer representing the number of records per day to be consider for analysis
 #' @param param2 an integer representing the number of days with records per week to be consider for analysis
 #' @param min_time an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)
+#' @param transform A logical representing whether to transform gas production to L/d. If TRUE, gas will be converted from grams/day to liters/day.
 #' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
 #'
 #' @return A list of three data frames:
@@ -45,7 +46,8 @@ utils::globalVariables(c(
 ))
 
 process_gfdata <- function(data, start_date, end_date,
-                           param1, param2, min_time = 2, cutoff = 3) {
+                           param1, param2, min_time = 2,
+                           transform = FALSE, cutoff = 3) {
   # Check date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
@@ -196,6 +198,10 @@ process_gfdata <- function(data, start_date, end_date,
       day >= start_date & day <= end_date
     )
 
+  # Transform gas production to L/d
+  if (isTRUE(transform)) {
+    df <- transform_gases(data = df)
+  }
 
   # Calculation of average daily gas production
   daily_df <- df %>%
@@ -217,7 +223,7 @@ process_gfdata <- function(data, start_date, end_date,
     ## Compute week based on the minimum date
     dplyr::mutate(week = floor(as.numeric(difftime(day, as.Date(start_date), units = "weeks"))) + 1) %>%
     ## Select columns
-    dplyr::select(RFID, week, day, n, minutes, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
+    dplyr::select(RFID, week, day, n, minutes, CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
   # Calculation of average weekly gas production
   weekly_df <- daily_df %>%
@@ -238,15 +244,15 @@ process_gfdata <- function(data, start_date, end_date,
     ## Filter by number of days with records (=param2)
     dplyr::filter(nDays >= param2) %>%
     ## Select columns
-    dplyr::select(RFID, week, nDays, nRecords, TotalMin, CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay)
+    dplyr::select(RFID, week, nDays, nRecords, TotalMin, CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay)
 
 
   # Description of mean, sd, and CV for weekly gases
-  message(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
-  message(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
-
   message(paste0("CO2: ", round(mean(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2)))
   message(paste0("CO2 CV = ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_df$CO2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+
+  message(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
+  message(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
   message(paste0("O2: ", round(mean(weekly_df$O2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE), 2)))
   message(paste0("O2 CV = ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE) / mean(weekly_df$O2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
@@ -254,6 +260,13 @@ process_gfdata <- function(data, start_date, end_date,
   message(paste0("H2: ", round(mean(weekly_df$H2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE), 2)))
   message(paste0("H2 CV = ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE) / mean(weekly_df$H2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
 
+
+  # Transform gas production to L/d
+  if (isTRUE(transform)) {
+    names(df)[7:10] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
+    names(daily_df)[6:9] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
+    names(weekly_df)[6:9] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
+  }
 
   # Return a list of data frames
   return(list(
