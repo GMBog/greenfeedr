@@ -341,78 +341,67 @@ transform_gases <- function(data){
 #' @export
 #' @keywords internal
 eval_gfparam <- function(data, start_date, end_date) {
-  # Define the parameter space for param1 (i), param2 (j), and min_time (k):
-  i <- seq(1, 5)
-  j <- seq(1, 7)
-  k <- seq(2, 3)
-
-  # Generate all combinations of i, j, and k
-  param_combinations <- expand.grid(param1 = i, param2 = j, min_time = k)
+  # Parameter space
+  param_combinations <- expand.grid(
+    param1 = seq(1, 5),
+    param2 = seq(1, 7),
+    min_time = seq(2, 5),
+    stringsAsFactors = FALSE
+  )
 
   # Check date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
-  message("All parameter combinations are being evaluated...\n")
+  message("Evaluating parameter combinations...\n")
 
-  # Define the function
-  process_and_summarize <- function(param1, param2, min_time) {
-    processed_data <- suppressMessages({
-      result <- process_gfdata(
-        data = data,
-        start_date = start_date,
-        end_date = end_date,
-        param1 = param1,
-        param2 = param2,
-        min_time = min_time
-      )
-    })
-    result
-  }
-
-  # Call the function for each parameter combination
-  processed_data_list <- lapply(1:nrow(param_combinations), function(idx) {
-    params <- param_combinations[idx, ]
-    process_and_summarize(params$param1, params$param2, params$min_time)
-  })
-
-  message("Done!")
-
-  # Extract daily_data and weekly_data from each result
-  daily_data_list <- lapply(processed_data_list, function(x) x$daily_data)
-  weekly_data_list <- lapply(processed_data_list, function(x) x$weekly_data)
-
-  # Helper function to compute mean, SD, and CV safely
+  # Metric function
   compute_metrics <- function(x) {
     mean_x <- mean(x, na.rm = TRUE)
     sd_x <- sd(x, na.rm = TRUE)
-    CV_x <- ifelse(mean_x == 0, NA, (sd_x / mean_x)*100)
-    return(c(mean = round(mean_x, 1), sd = round(sd_x, 1), CV = round(CV_x, 2)))
+    CV_x <- ifelse(mean_x == 0, NA, (sd_x / mean_x) * 100)
+    c(mean = round(mean_x, 1), sd = round(sd_x, 1), CV = round(CV_x, 2))
   }
 
-  # Compute metrics for CH4 and CO2
-  results <- param_combinations %>%
-    purrr::pmap_dfr(function(param1, param2, min_time) {
-      daily_data <- daily_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
-      weekly_data <- weekly_data_list[[which(param_combinations$param1 == param1 & param_combinations$param2 == param2 & param_combinations$min_time == min_time)]]
+  # Main loop over parameter combinations
+  results <- purrr::pmap_dfr(
+    .l = param_combinations,
+    .f = function(param1, param2, min_time) {
+      result <- tryCatch({
+        res <- suppressMessages(
+          process_gfdata(
+            data = data,
+            start_date = start_date,
+            end_date = end_date,
+            param1 = param1,
+            param2 = param2,
+            min_time = min_time
+          )
+        )
+        weekly <- res$weekly_data
+        metrics <- compute_metrics(weekly$CH4GramsPerDay)
+        data.frame(
+          param1 = param1,
+          param2 = param2,
+          min_time = min_time,
+          records = nrow(weekly),
+          N = length(unique(weekly$RFID)),
+          mean = metrics["mean"],
+          SD = metrics["sd"],
+          CV = metrics["CV"]
+        )
+      }, error = function(e) {
+        data.frame(
+          param1 = param1,
+          param2 = param2,
+          min_time = min_time,
+          records = NA, N = NA, mean = NA, SD = NA, CV = NA
+        )
+      })
+      return(result)
+    }
+  )
 
-      #CH4_day <- compute_metrics(daily_data$CH4GramsPerDay)
-      #CO2_d <- compute_metrics(daily_data$CO2GramsPerDay)
-      CH4_week <- compute_metrics(weekly_data$CH4GramsPerDay)
-      #CO2_w <- compute_metrics(weekly_data$CO2GramsPerDay)
-
-      data.frame(
-        param1 = param1,
-        param2 = param2,
-        min_time = min_time,
-        records = nrow(weekly_data),
-        N = length(unique(weekly_data$RFID)),
-        mean = CH4_week["mean"],
-        SD = CH4_week["sd"],
-        CV = CH4_week["CV"],
-        row.names = NULL
-      )
-    })
-
+  message("Done!")
   return(results)
 }
