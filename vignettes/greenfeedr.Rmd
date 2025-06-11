@@ -305,16 +305,16 @@ The next step is to evaluate the `process_gfdata()` function with the set of par
 ```{r Example, message = FALSE, results = 'hide'}
 finaldata <- readxl::read_excel(system.file("extdata", "StudyName_FinalReport.xlsx", package = "greenfeedr"))
 
-data <- eval_gfparam(data = finaldata,
-                     start_date = "2024-05-13",
-                     end_date = "2024-05-25"
-                     )
+evaluation <- eval_gfparam(data = finaldata,
+                           start_date = "2024-05-13",
+                           end_date = "2024-05-25"
+                          )
 ```
 
 After evaluating the function, the results will be placed into a data frame with the following structure:
 
 ```{r Results table, echo = FALSE, message = FALSE, results = 'asis'}
-cat(knitr::kable(data[1:10, ], format = "html", table.attr = "style='font-size: 12px;'"))
+cat(knitr::kable(evaluation[1:10, ], format = "html", table.attr = "style='font-size: 12px;'"))
 ```
 
 This will give users a sense of how the data is filtered based on the chosen parameters. A more conservative approach (i.e., stricter parameters) will typically result in fewer retained records and animals.

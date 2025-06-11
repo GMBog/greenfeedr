@@ -4,7 +4,7 @@
 \alias{eval_gfparam}
 \title{Evaluate all combination of parameters}
 \usage{
-eval_gfparam(data, start_date, end_date, cutoff)
+eval_gfparam(data, start_date, end_date)
 }
 \arguments{
 \item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
@@ -12,8 +12,6 @@ eval_gfparam(data, start_date, end_date, cutoff)
 \item{start_date}{a character string representing the start date of the study (format: "dd/mm/yyyy")}
 
 \item{end_date}{a character string representing the end date of the study (format: "dd/mm/yyyy")}
-
-\item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
 }
 \value{
 A data frame with the mean, SD, and CV for gas production using all possible combination of parameters

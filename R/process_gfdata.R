@@ -214,7 +214,7 @@ process_gfdata <- function(data, start_date, end_date,
     dplyr::summarise(
       n = n(),
       across(
-        c(CH4GramsPerDay, CO2GramsPerDay, O2GramsPerDay, H2GramsPerDay),
+        c(CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay),
         ~ weighted.mean(.x, GoodDataDuration, na.rm = TRUE),
         .names = "{.col}"
       ),
@@ -266,10 +266,24 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Transform gas production to L/d
   if (isTRUE(transform)) {
-    names(df)[7:10] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
-    names(daily_df)[6:9] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
-    names(weekly_df)[6:9] <- c("CO2LitersPerDay", "CH4LitersPerDay", "O2LitersPerDay", "H2LitersPerDay")
+    rename_map <- c(
+      "CO2GramsPerDay" = "CO2LitersPerDay",
+      "CH4GramsPerDay" = "CH4LitersPerDay",
+      "O2GramsPerDay"  = "O2LitersPerDay",
+      "H2GramsPerDay"  = "H2LitersPerDay"
+    )
+
+    rename_gases <- function(data) {
+      common <- intersect(names(rename_map), names(data))
+      names(data)[match(common, names(data))] <- rename_map[common]
+      data
+    }
+
+    df <- rename_gases(df)
+    daily_df <- rename_gases(daily_df)
+    weekly_df <- rename_gases(weekly_df)
   }
+
 
   # Return a list of data frames
   return(list(

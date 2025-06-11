@@ -276,6 +276,50 @@ convert_unit <- function(unit, t) {
 }
 
 
+
+#' @name transform_gases
+#' @title Transform gas production
+#'
+#' @description Transform gas production from g/d to L/d
+#'
+#' @param data a data frame with preliminary or finalized 'GreenFeed' data
+#'
+#' @return A data frame with the gases transform in L/d
+#'
+#' @examples
+#' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
+#' data <- transform_gases(data = file)
+#'
+#' @export
+#' @keywords internal
+transform_gases <- function(data){
+  # CH4 L/d: 1 mol of CH4 weighs 16g (12+1*4) and has a volume of 22.4L
+  if ("CH4GramsPerDay" %in% names(data)) {
+    data$CH4GramsPerDay <- data$CH4GramsPerDay / 16 * 22.4
+  }
+
+  # CO2 L/d: 1 mol of CO2 weighs 44g (12+16*2) and has a volume of 22.4L
+  if ("CO2GramsPerDay" %in% names(data)) {
+    data$CO2GramsPerDay <- data$CO2GramsPerDay / 44 * 22.4
+  }
+
+  # O2 L/d: 1 mol of O2 weighs 32g and has a volume of 22.4L
+  if ("O2GramsPerDay" %in% names(data)) {
+    data$O2GramsPerDay <- data$O2GramsPerDay / 32 * 22.4
+  }
+
+  # H2 L/d: 1 mol of H2 weighs 2.016g (1.008*2) and has a volume of 22.4L
+  if ("H2GramsPerDay" %in% names(data)) {
+    data$H2GramsPerDay <- data$H2GramsPerDay / 2.016 * 22.4
+  }
+
+  return(data)
+}
+
+
+
+
+
 #' @name eval_gfparam
 #' @title Evaluate all combination of parameters
 #'
@@ -284,7 +328,6 @@ convert_unit <- function(unit, t) {
 #' @param data a data frame with preliminary or finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "dd/mm/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "dd/mm/yyyy")
-#' @param cutoff an integer specifying the range for identifying outliers (default: 3 SD)
 #'
 #' @return A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
 #'
@@ -297,7 +340,7 @@ convert_unit <- function(unit, t) {
 #'
 #' @export
 #' @keywords internal
-eval_gfparam <- function(data, start_date, end_date, cutoff) {
+eval_gfparam <- function(data, start_date, end_date) {
   # Define the parameter space for param1 (i), param2 (j), and min_time (k):
   i <- seq(1, 5)
   j <- seq(1, 7)
@@ -362,64 +405,14 @@ eval_gfparam <- function(data, start_date, end_date, cutoff) {
         param1 = param1,
         param2 = param2,
         min_time = min_time,
-        #drecords = nrow(daily_data),
-        #dcows = length(unique(daily_data$RFID)),
-        #dCH4 = CH4_day["mean"],
-        #sd_dCH4 = CH4_day["sd"],
-        #CV_dCH4 = CH4_day["CV"],
-        #mean_dCO2 = CO2_d["mean"], sd_dCO2 = CO2_d["sd"], CV_dCO2 = CO2_d["CV"],
         records = nrow(weekly_data),
         N = length(unique(weekly_data$RFID)),
         mean = CH4_week["mean"],
         SD = CH4_week["sd"],
         CV = CH4_week["CV"],
-        #mean_wCO2 = CO2_w["mean"], sd_wCO2 = CO2_w["sd"], CV_wCO2 = CO2_w["CV"],
         row.names = NULL
       )
     })
 
   return(results)
-}
-
-
-
-
-
-#' @name transform_gases
-#' @title Transform gas production
-#'
-#' @description Transform gas production from g/d to L/d
-#'
-#' @param data a data frame with preliminary or finalized 'GreenFeed' data
-#'
-#' @return A data frame with the gases transform in L/d
-#'
-#' @examples
-#' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
-#' data <- transform_gases(data = file)
-#'
-#' @export
-#' @keywords internal
-transform_gases <- function(data){
-  # CH4 L/d: 1 mol of CH4 weighs 16g (12+1*4) and has a volume of 22.4L
-  if ("CH4GramsPerDay" %in% names(data)) {
-    data$CH4GramsPerDay <- data$CH4GramsPerDay / 16 * 22.4
-  }
-
-  # CO2 L/d: 1 mol of CO2 weighs 44g (12+16*2) and has a volume of 22.4L
-  if ("CO2GramsPerDay" %in% names(data)) {
-    data$CO2GramsPerDay <- data$CO2GramsPerDay / 44 * 22.4
-  }
-
-  # O2 L/d: 1 mol of O2 weighs 32g and has a volume of 22.4L
-  if ("O2GramsPerDay" %in% names(data)) {
-    data$O2GramsPerDay <- data$O2GramsPerDay / 32 * 22.4
-  }
-
-  # H2 L/d: 1 mol of H2 weighs 2.016g (1.008*2) and has a volume of 22.4L
-  if ("H2GramsPerDay" %in% names(data)) {
-    data$H2GramsPerDay <- data$H2GramsPerDay / 2.016 * 22.4
-  }
-
-  return(data)
 }
