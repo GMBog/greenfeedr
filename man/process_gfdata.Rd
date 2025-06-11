@@ -16,6 +16,8 @@
 
 \item{min_time}{an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)}
 
+\item{transform}{A logical representing whether to transform gas production to L/d. If TRUE, gas will be converted from grams/day to liters/day.}
+
 \item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
 }
 \value{

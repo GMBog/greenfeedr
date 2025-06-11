@@ -200,7 +200,10 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Transform gas production to L/d
   if (isTRUE(transform)) {
+    metric <- "(L/d)"
     df <- transform_gases(data = df)
+  } else {
+    metric <- "(g/d)"
   }
 
   # Calculation of average daily gas production
@@ -248,17 +251,17 @@ process_gfdata <- function(data, start_date, end_date,
 
 
   # Description of mean, sd, and CV for weekly gases
-  message(paste0("CO2: ", round(mean(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2)))
-  message(paste0("CO2 CV = ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_df$CO2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("CO2", metric, " = ", round(mean(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE), 2),
+                 " [CV(%) = ", round(stats::sd(weekly_df$CO2GramsPerDay, na.rm = TRUE) / mean(weekly_df$CO2GramsPerDay, na.rm = TRUE) * 100, 1), "]"))
 
-  message(paste0("CH4: ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2)))
-  message(paste0("CH4 CV = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("CH4", metric, " = ", round(mean(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE), 2),
+                 " [CV(%) = ", round(stats::sd(weekly_df$CH4GramsPerDay, na.rm = TRUE) / mean(weekly_df$CH4GramsPerDay, na.rm = TRUE) * 100, 1), "]"))
 
-  message(paste0("O2: ", round(mean(weekly_df$O2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE), 2)))
-  message(paste0("O2 CV = ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE) / mean(weekly_df$O2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("O2", metric, " = ", round(mean(weekly_df$O2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE), 2),
+                 " [CV(%) = ", round(stats::sd(weekly_df$O2GramsPerDay, na.rm = TRUE) / mean(weekly_df$O2GramsPerDay, na.rm = TRUE) * 100, 1), "]"))
 
-  message(paste0("H2: ", round(mean(weekly_df$H2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE), 2)))
-  message(paste0("H2 CV = ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE) / mean(weekly_df$H2GramsPerDay, na.rm = TRUE) * 100, 1), "%"))
+  message(paste0("H2", metric, " = ", round(mean(weekly_df$H2GramsPerDay, na.rm = TRUE), 2), " +- ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE), 2),
+                 " [CV(%) = ", round(stats::sd(weekly_df$H2GramsPerDay, na.rm = TRUE) / mean(weekly_df$H2GramsPerDay, na.rm = TRUE) * 100, 1), "]"))
 
 
   # Transform gas production to L/d
