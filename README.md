@@ -57,11 +57,11 @@ library(greenfeedr)
 
 ## Launch the Shiny App
 
-When using RStudio you can also run the greenfeedr app on your computer
-with:
+When using RStudio you can also run the `greenfeedr` app on your
+computer with:
 
 ``` r
-greenfeedr::launch_gf_app()
+greenfeedr::run_gfapp()
 ```
 
 ## Tutorials

@@ -101,7 +101,48 @@ ui <- fluidPage(
                  )
                )
              )
+    ),
+
+    tabPanel("Calculate Pellet Intakes",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "Username:"),
+                 passwordInput("pass", "Password:"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 304,305"),
+                 textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
+                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 fileInput("feedtimes_file", "Upload feedtimes file (optional):"),
+                 textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
+                 actionButton("run_pellin", "Run")
+               ),
+               mainPanel(
+                 verbatimTextOutput("pellin_status"),
+                 tableOutput("pellin_table")
+               )
+             )
+    ),
+
+    tabPanel("Check Visits",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "User"),
+                 passwordInput("pass", "Password"),
+                 textInput("unit", "GreenFeed Unit(s)"),
+                 dateRangeInput("dates", "Date Range:"),
+                 fileInput("rfid_file", "Upload RFID file:"),
+                 fileInput("feedtimes_file", "Upload Feedtimes file (optional):"),
+                 actionButton("run_viseat", "Run"),
+               ),
+               mainPanel(
+                 textOutput("viseat_status"),
+                 plotOutput("unit_plot"),
+                 downloadButton("download_day", "Download Visits per Day"),
+                 downloadButton("download_animal", "Download Visits per Animal")
+               )
+             )
     )
+
   )
 )
 
@@ -297,6 +338,132 @@ server <- function(input, output, session) {
         theme(legend.position = "none")
     })
   })
+
+  # TAB 5: Pellet Intakes with pellin()
+  observeEvent(input$run_pellin, {
+    req(input$unit, input$gcup)
+
+    unit <- convert_unit(input$unit, 2)
+
+    gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
+    if (any(is.na(gcup))) {
+      output$pellin_status <- renderText("❌ Error: Invalid 'gcup' input. Must be numeric (e.g., 34 or 34,35).")
+      return()
+    }
+
+    rfid_path <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+    file_path <- if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
+    save_dir <- if (input$save_dir == "") tempdir() else input$save_dir
+
+    output$pellin_status <- renderText("Running pellin()...")
+
+    tryCatch({
+      df <- greenfeedr::pellin(
+        user = input$user,
+        pass = input$pass,
+        unit = unit,
+        gcup = gcup,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        rfid_file = rfid_path,
+        file_path = file_path,
+        save_dir = save_dir
+      )
+
+      # Summarize the pellet intakes
+      summary_df <- df %>%
+        dplyr::group_by(FoodType) %>%
+        dplyr::summarise(
+          Animals = dplyr::n_distinct(RFID),
+          Days = dplyr::n_distinct(Date),
+          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
+          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2)
+        )
+
+      output$pellin_status <- renderText({
+        paste(
+          "✅ Pellet intakes processed successfully.\n\nSummary by FoodType:\n",
+          paste(capture.output(print(summary_df, row.names = FALSE)), collapse = "\n")
+        )
+      })
+
+      output$pellin_table <- renderTable(NULL)
+
+    }, error = function(e) {
+      output$pellin_status <- renderText(paste("❌ Error:", e$message))
+      output$pellin_table <- renderTable(NULL)
+    })
+  })
+
+  # TAB 6: Check visitation with viseat()
+  observeEvent(input$run_viseat, {
+    req(input$unit, input$dates)
+
+    unit <- convert_unit(input$unit,1)
+
+    file_path <- if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
+    rfid_path <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+
+    output$viseat_status <- renderText("Running viseat()...")
+
+    tryCatch({
+      results <- greenfeedr::viseat(
+        user = input$user,
+        pass = input$pass,
+        unit = unit,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        rfid_file = rfid_path,
+        file_path = file_path
+      )
+
+      # Plot visits per unit
+      plot_data <- results$feedtimes %>%
+        dplyr::group_by(FID) %>%
+        dplyr::summarise(n = n()) %>%
+        ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
+        geom_bar(stat = "identity", position = position_dodge()) +
+        theme_classic() +
+        labs(
+          title = "TAG reads per unit",
+          x = "Units",
+          y = "Frequency",
+          fill = "Unit"
+        ) +
+        geom_text(aes(label = n),
+                  vjust = 1.9,
+                  color = "black",
+                  position = position_dodge(0.9), size = 3.8
+        )
+
+      output$unit_plot <- renderPlot({ plot_data })
+
+      # Store data for download
+      output$download_day <- downloadHandler(
+        filename = function() {
+          paste0("visits_per_day_", Sys.Date(), ".csv")
+        },
+        content = function(file) {
+          write.csv(results$visits_per_day, file, row.names = FALSE)
+        }
+      )
+
+      output$download_animal <- downloadHandler(
+        filename = function() {
+          paste0("visits_per_animal_", Sys.Date(), ".csv")
+        },
+        content = function(file) {
+          write.csv(results$visits_per_animal, file, row.names = FALSE)
+        }
+      )
+
+      output$viseat_status <- renderText("✅ GreenFeed visits processed successfully.")
+
+    }, error = function(e) {
+      output$viseat_status <- renderText(paste("❌ Error:", e$message))
+    })
+  })
+
 }
 
 shinyApp(ui, server)

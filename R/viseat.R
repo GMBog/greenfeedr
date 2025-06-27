@@ -235,6 +235,7 @@ viseat <- function(user = NA, pass = NA, unit,
 
   # Return a list of data frames
   return(list(
+    feedtimes = df,
     visits_per_day = daily_visits,
     visits_per_animal = animal_visits
   ))

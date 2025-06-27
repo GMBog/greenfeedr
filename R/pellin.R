@@ -180,7 +180,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     )
 
 
-  unit <- convert_unit(unit, t=2)
+  unit <- convert_unit(unit,2)
 
   # Ensure gcup is a vector if it's a single value
   if (length(gcup) == 1 && length(unit) == 1) {

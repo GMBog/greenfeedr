@@ -32,7 +32,8 @@ test_that("viseat returns a list with the correct structure", {
   )
 
   expect_type(result, "list")
-  expect_length(result, 2)
+  expect_length(result, 3)
+  expect_true("feedtimes" %in% names(result))
   expect_true("visits_per_day" %in% names(result))
   expect_true("visits_per_animal" %in% names(result))
 
