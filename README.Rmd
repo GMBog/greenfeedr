@@ -61,9 +61,10 @@ library(greenfeedr)
 
 ## Launch the Shiny App
 
-```{r usage2, message = FALSE}
-# Run this in your R console:
-# launch_gf_app()
+When using RStudio you can also run the greenfeedr app on your computer with:
+
+```{r usage2, eval = FALSE}
+greenfeedr::launch_gf_app()
 ```
 
 
