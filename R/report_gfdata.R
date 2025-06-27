@@ -6,7 +6,7 @@
 #'     If the preliminary option is used, the data is retrieved from the 'C-Lock Inc.' server through an 'API',
 #'     otherwise the data processed by 'C-Lock Inc.' must be provided to generate the report.
 #'
-#' @param input_type a character string representing type of data (options: "prelim" and "final")
+#' @param input_type a character string representing type of data (options: "preliminary" and "finalized")
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers
 #' @param start_date a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")
@@ -28,7 +28,7 @@
 #' report_gfdata(
 #'   user = "your_username",
 #'   pass = "your_password",
-#'   input_type = "prelim",
+#'   input_type = "preliminary",
 #'   exp = "StudyName",
 #'   unit = 1,
 #'   start_date = "2023-01-01",
@@ -65,7 +65,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   input_type <- tolower(input_type)
 
   # Ensure input_type is valid
-  valid_inputs <- c("final", "prelim")
+  valid_inputs <- c("finalized", "preliminary")
   if (!(input_type %in% valid_inputs)) {
     stop(paste("Invalid input type. Choose one of:", paste(valid_inputs, collapse = ", ")))
   }
@@ -182,12 +182,12 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     }
 
     # Create PDF report using Rmarkdown
-    if (input_type == "prelim") {
+    if (input_type == "preliminary") {
       rmarkdown::render(
         input = system.file("DailyReportsGF.Rmd", package = "greenfeedr"),
         output_file = file.path(save_dir, paste0("DailyReport_", exp, ".pdf"))
       )
-    } else if (input_type == "final") {
+    } else if (input_type == "finalized") {
       rmarkdown::render(
         input = system.file("FinalReportsGF.Rmd", package = "greenfeedr"),
         output_file = file.path(save_dir, paste0("FinalReport_", exp, ".pdf"))

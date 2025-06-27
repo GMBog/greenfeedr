@@ -187,6 +187,7 @@ compare_gfdata <- function(prelimrep, finalrep, start_date, end_date) {
   # Return a list of data frames
   return(list(
     out_final = records_out_finalrep,
-    out_prelim = records_out_prelimrep
+    out_prelim = records_out_prelimrep,
+    data = all_data
   ))
 }

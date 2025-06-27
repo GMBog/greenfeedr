@@ -21,7 +21,7 @@ get_gfdata(
 
 \item{pass}{a character string representing password to logging into 'GreenFeed' system}
 
-\item{d}{a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")}
+\item{d}{a character string representing data to download (opts: "visits", "feed", "rfid", "cmds")}
 
 \item{type}{a numeric representing the type of data to retrieve (1=finalized and 2=preliminary)}
 

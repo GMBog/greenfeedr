@@ -7,7 +7,7 @@
 #'
 #' @param user a character string representing the user name to logging into 'GreenFeed' system
 #' @param pass a character string representing password to logging into 'GreenFeed' system
-#' @param d a character string representing data type to download (opts: "visits", "feed", "rfid", "cmds")
+#' @param d a character string representing data to download (opts: "visits", "feed", "rfid", "cmds")
 #' @param type a numeric representing the type of data to retrieve (1=finalized and 2=preliminary)
 #' @param exp a character string representing study name or other study identifier. It is used as file name to save the data
 #' @param unit numeric or character vector, or a list representing one or more 'GreenFeed' unit numbers

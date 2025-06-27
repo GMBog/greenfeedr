@@ -55,6 +55,13 @@ remotes::install_github("GMBog/greenfeedr")
 library(greenfeedr)
 ```
 
+## Launch the Shiny App
+
+``` r
+# Run this in your R console:
+# launch_gf_app()
+```
+
 ## Tutorials
 
 Learn how to use greenfeedr in different workflows:

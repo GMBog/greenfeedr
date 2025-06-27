@@ -4,7 +4,7 @@
 \alias{report_gfdata}
 \title{Download and Report 'GreenFeed' Data}
 \arguments{
-\item{input_type}{a character string representing type of data (options: "prelim" and "final")}
+\item{input_type}{a character string representing type of data (options: "preliminary" and "finalized")}
 
 \item{exp}{a character string representing study name or other study identifier. It is used as file name to save the data}
 
@@ -44,7 +44,7 @@ Generates a PDF report of preliminary and finalized 'GreenFeed' data.
 report_gfdata(
   user = "your_username",
   pass = "your_password",
-  input_type = "prelim",
+  input_type = "preliminary",
   exp = "StudyName",
   unit = 1,
   start_date = "2023-01-01",

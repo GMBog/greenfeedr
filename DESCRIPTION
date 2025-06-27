@@ -30,6 +30,7 @@ Imports:
     readr,
     readxl,
     rmarkdown,
+    shiny,
     stats,
     stringr,
     tidyr
