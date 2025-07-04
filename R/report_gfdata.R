@@ -286,4 +286,6 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   }
 
   message("Report created and saved to ", save_dir)
+
+  return(df)
 }

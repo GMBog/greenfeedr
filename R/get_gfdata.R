@@ -176,4 +176,6 @@ get_gfdata <- function(user, pass, d = "visits", type = 2, exp = NA, unit,
   }
 
   message("Downloading complete.")
+
+  return(df)
 }

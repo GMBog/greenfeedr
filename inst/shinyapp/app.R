@@ -1,6 +1,7 @@
 
 # Load libraries
 library(dplyr)
+library(DT)
 library(ggplot2)
 library(greenfeedr)
 library(readr)
@@ -11,20 +12,53 @@ library(shiny)
 options(shiny.maxRequestSize = 100 * 1024^2)
 
 ui <- fluidPage(
+  tags$head(
+    tags$style(HTML("
+      /* Make tab titles green */
+      .nav-tabs > li > a {
+        color: #006400 !important;  /* dark green */
+        font-weight: bold;
+      }
+
+      /* Make active tab title green */
+      .nav-tabs > li.active > a,
+      .nav-tabs > li.active > a:focus,
+      .nav-tabs > li.active > a:hover {
+        color: #006400 !important;
+        font-weight: bold;
+      }
+
+      /* Make all normal body text green */
+      body, .main-panel, .form-group label, .control-label {
+        color: #006400;
+      }
+      /* Logo at top right corner */
+      .logo-top-right {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+      }
+  "))
+  ),
+  div(class = "logo-top-right",
+      tags$img(src = "GFSticker.png", width = "75px")  # adjust width as needed
+  ),
+
   titlePanel("greenfeedr app"),
   tabsetPanel(
-    tabPanel("Download Data",
+    tabPanel("Downloading",
              sidebarLayout(
                sidebarPanel(
                  textInput("user", "Username:"),
                  passwordInput("pass", "Password:"),
                  selectInput("d", "Data Values:", choices = c("visits", "feed", "rfid", "cmds")),
-                 selectInput("type", "Data Type:", choices = c("finalized" = 1, "preliminary" = 2), selected = 2),
-                 textInput("exp", "Study Name (used as filename):", placeholder = "MyStudyName"),
-                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 304,305"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
+                 selectInput("type", "Data Type:", choices = c("preliminary" = 2, "finalized" = 1), selected = 2),
+                 textInput("exp", "Study Name:", placeholder = "MyStudyName"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
                  textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("download", "Download Data")
+                 actionButton("download", "Run")
                ),
                mainPanel(
                  verbatimTextOutput("status"),
@@ -33,48 +67,81 @@ ui <- fluidPage(
              )
     ),
 
-    tabPanel("Generate Report",
+    tabPanel("Reporting",
              sidebarLayout(
                sidebarPanel(
-                 selectInput("input_type", "Data Type:", choices = c("preliminary", "finalized")),
+                 textInput("user", "Username:"),
+                 passwordInput("pass", "Password:"),
                  textInput("exp", "Study Name:", placeholder = "MyStudyName"),
-                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 304, 305"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
-                 selectInput("plot_opt", "Gases to Plot:", choices = c("All", "CH4", "CO2", "O2", "H2"), selected = "CH4"),
+                 selectInput("input_type", "Data Type:", choices = c("preliminary", "finalized")),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 selectInput("plot_opt", "Gases to Plot:", choices = c("All", "CH4", "CO2", "O2", "H2"), selected = "All"),
                  fileInput("rfid_file", "Upload RFID file (optional):"),
-                 conditionalPanel(
-                   condition = "input.input_type == 'preliminary'",
-                   textInput("user", "Username:"),
-                   passwordInput("pass", "Password:")
-                 ),
-                 conditionalPanel(
-                   condition = "input.input_type == 'finalized'",
-                   fileInput("file_path", "Upload Final Report File", multiple = TRUE)
-                 ),
                  textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("run_report", "Generate Report")
+                 actionButton("run_report", "Run")
                ),
                mainPanel(
-                 verbatimTextOutput("report_status")
+                 verbatimTextOutput("report_status"),
+                 br(),
+                 h4("Plots from GreenFeed Report"),
+                 plotOutput("plot_records"),
+                 plotOutput("plot_dailyCH4"),
+                 plotOutput("plot_dailyCO2"),
+                 plotOutput("plot_dailyO2"),
+                 plotOutput("plot_dailyH2")
                )
              )
     ),
 
-    tabPanel("Process Data",
+    tabPanel("Checking",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "Username:"),
+                 passwordInput("pass", "Password:"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 fileInput("feedtimes_file", "Upload Feedtimes file (optional):"),
+                 textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
+                 actionButton("run_pellin", "Run Pellin"),
+                 actionButton("run_viseat", "Run Viseat")
+               ),
+               mainPanel(
+                 verbatimTextOutput("pellin_status"),
+                 uiOutput("pellin_table"),
+                 br(), hr(), br(),
+                 textOutput("viseat_status"),
+                 plotOutput("unit_plot"),
+                 fluidRow(
+                   column(6, downloadButton("download_day", "Download Visits per Day")),
+                   column(6, downloadButton("download_animal", "Download Visits per Animal"))
+                 )
+               )
+             )
+    ),
+
+    tabPanel("Processing",
              sidebarLayout(
                sidebarPanel(
                  fileInput("gf_file", "Upload GreenFeed Data:"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 actionButton("run_eval_param", "🔍 Evaluate Parameters"),
+                 br(), hr(),
                  numericInput("param1", "N records/day (param1):", value = 2, min = 1),
                  numericInput("param2", "N days/week (param2):", value = 3, min = 1),
                  numericInput("min_time", "Min. minutes per record:", value = 2),
                  checkboxInput("transform", "Transform gases to L/d?", value = FALSE),
                  numericInput("cutoff", "Outlier SD cutoff:", value = 3, min = 1),
-                 actionButton("run_process", "Process Data")
+                 actionButton("run_process", "Run")
                ),
                mainPanel(
+                 br(), hr(),
+                 h4("Evaluation of Parameter Combinations:"),
+                 DTOutput("eval_param_table"),
+                 br(), hr(),
                  verbatimTextOutput("proc_summary"),
-                 br(),
                  h4("Download Processed Files:"),
                  fluidRow(
                    column(4, downloadButton("download_filtered", "Filtered Data")),
@@ -85,13 +152,13 @@ ui <- fluidPage(
              )
     ),
 
-    tabPanel("Compare Data",
+    tabPanel("Comparing",
              sidebarLayout(
                sidebarPanel(
                  fileInput("prelim_file", "Upload Preliminary Data:", accept = ".csv"),
                  fileInput("final_file", "Upload Finalized Data:", accept = c(".xls", ".xlsx")),
                  dateRangeInput("compare_dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
-                 actionButton("run_compare", "Compare Data")
+                 actionButton("run_compare", "Run")
                ),
                mainPanel(
                  verbatimTextOutput("compare_summary"),
@@ -99,46 +166,6 @@ ui <- fluidPage(
                    column(6, plotOutput("ch4_plot")),
                    column(6, plotOutput("co2_plot"))
                  )
-               )
-             )
-    ),
-
-    tabPanel("Calculate Pellet Intakes",
-             sidebarLayout(
-               sidebarPanel(
-                 textInput("user", "Username:"),
-                 passwordInput("pass", "Password:"),
-                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 304,305"),
-                 textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
-                 fileInput("rfid_file", "Upload RFID file (optional):"),
-                 fileInput("feedtimes_file", "Upload feedtimes file (optional):"),
-                 textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("run_pellin", "Run")
-               ),
-               mainPanel(
-                 verbatimTextOutput("pellin_status"),
-                 tableOutput("pellin_table")
-               )
-             )
-    ),
-
-    tabPanel("Check Visits",
-             sidebarLayout(
-               sidebarPanel(
-                 textInput("user", "User"),
-                 passwordInput("pass", "Password"),
-                 textInput("unit", "GreenFeed Unit(s)"),
-                 dateRangeInput("dates", "Date Range:"),
-                 fileInput("rfid_file", "Upload RFID file:"),
-                 fileInput("feedtimes_file", "Upload Feedtimes file (optional):"),
-                 actionButton("run_viseat", "Run"),
-               ),
-               mainPanel(
-                 textOutput("viseat_status"),
-                 plotOutput("unit_plot"),
-                 downloadButton("download_day", "Download Visits per Day"),
-                 downloadButton("download_animal", "Download Visits per Animal")
                )
              )
     )
@@ -150,51 +177,62 @@ server <- function(input, output, session) {
 
   # TAB 1: Download GreenFeed Data
   observeEvent(input$download, {
-    req(input$user, input$pass, input$unit, input$exp)
+  req(input$user, input$pass, input$unit, input$exp)
 
-    unit <- convert_unit(input$unit,1)
+  unit <- convert_unit(input$unit, 1)
+  output$status <- renderText("📥 Downloading data...")
 
-    output$status <- renderText("Downloading data...")
+  tryCatch({
+    file <- greenfeedr::get_gfdata(
+      user = input$user,
+      pass = input$pass,
+      d = input$d,
+      type = as.numeric(input$type),
+      exp = input$exp,
+      unit = unit,
+      start_date = input$dates[1],
+      end_date = input$dates[2],
+      save_dir = input$save_dir
+    )
 
-    tryCatch({
-      file <- greenfeedr::get_gfdata(
-        user = input$user,
-        pass = input$pass,
-        d = input$d,
-        type = as.numeric(input$type),
-        exp = input$exp,
-        unit = unit,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        save_dir = input$save_dir
-      )
-
-      output$status <- renderText("✅ Data downloaded successfully.")
-
-      }, error = function(e) {
-      output$status <- renderText(paste("❌ Error:", e$message))
+    # Check if the file exists or is valid
+    if (is.null(file) || !file.exists(file)) {
+      output$status <- renderText("⚠️ No valid data retrieved.")
       output$preview <- renderTable(NULL)
-    })
+    } else {
+      output$status <- renderText("✅ Data downloaded successfully.")
+      # Optional: Show preview if needed
+      # output$preview <- renderTable(read.csv(file))
+    }
+
+  }, error = function(e) {
+    output$status <- renderText(paste("❌ Error:", e$message))
+    output$preview <- renderTable(NULL)
+   })
   })
 
+
   # TAB 2: Generate GreenFeed Report
+  report_data <- reactiveVal()
+
   observeEvent(input$run_report, {
     req(input$exp, input$unit)
 
-    unit <- convert_unit(input$unit,1)
+    unit <- convert_unit(input$unit, 1)
     rfid <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
     files <- if (!is.null(input$file_path)) input$file_path$datapath else NULL
 
     output$report_status <- renderText("Generating report...")
 
     tryCatch({
-      greenfeedr::report_gfdata(
+      # Call the report function and capture the returned dataframe
+      df <- greenfeedr::report_gfdata(
         input_type = input$input_type,
         exp = input$exp,
         unit = unit,
         start_date = input$dates[1],
         end_date = input$dates[2],
-        save_dir = input$save_dir,
+        save_dir = NULL,           # pass NULL or tempdir() if your function requires a directory but you don't want to save
         plot_opt = input$plot_opt,
         rfid_file = rfid,
         user = if (input$input_type == "preliminary") input$user else NA,
@@ -202,28 +240,78 @@ server <- function(input, output, session) {
         file_path = files
       )
 
+      # Assign returned dataframe to reactiveVal for plotting
+      report_data(df)
+
       output$report_status <- renderText("✅ Report generated successfully.")
 
     }, error = function(e) {
       output$report_status <- renderText(paste("❌ Error:", e$message))
+      report_data(NULL)
     })
   })
+
+  # Reactive plots for GreenFeed report
+  output$plot_records <- renderPlot({
+    req(report_data())
+    greenfeedr::plot_records_per_day(report_data())
+  })
+
+  output$plot_dailyCH4 <- renderPlot({
+    req(report_data())
+    if (input$plot_opt %in% c("All", "CH4")) {
+      greenfeedr::plot_gas_daily(report_data(), gas = "CH4")
+    }
+  })
+
+  output$plot_dailyCO2 <- renderPlot({
+    req(report_data())
+    if (input$plot_opt %in% c("All", "CO2")) {
+      greenfeedr::plot_gas_daily(report_data(), gas = "CO2")
+    }
+  })
+
+  output$plot_dailyO2 <- renderPlot({
+    req(report_data())
+    if (input$plot_opt %in% c("All", "O2")) {
+      greenfeedr::plot_gas_daily(report_data(), gas = "O2")
+    }
+  })
+
+  output$plot_dailyH2 <- renderPlot({
+    req(report_data())
+    if (input$plot_opt %in% c("All", "H2")) {
+      greenfeedr::plot_gas_daily(report_data(), gas = "H2")
+    }
+  })
+
 
   # TAB 3: Process Data
   processed_result <- reactiveVal(NULL)
 
   observeEvent(input$run_process, {
-    req(input$gf_file, input$proc_dates, input$param1, input$param2)
+    req(input$gf_file, input$dates, input$param1, input$param2)
 
-    df <- tryCatch(
-      readr::read_csv(input$gf_file$datapath),
-      error = function(e) {
-        output$proc_summary <- renderText(paste("❌ Failed to read file:", e$message))
-        return(NULL)
+    df <- tryCatch({
+      ext <- tools::file_ext(input$gf_file$name)
+      cat("File extension detected:", ext, "\n")
+      if (tolower(ext) %in% c("xls", "xlsx")) {
+        readxl::read_excel(input$gf_file$datapath)
+      } else if (tolower(ext) == "csv") {
+        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
+      } else {
+        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
-    )
+    }, error = function(e) {
+      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
+      return(NULL)
+    })
 
     if (is.null(df)) return()
+
+    output$proc_summary <- renderText({
+      paste("✅ File read successfully. Rows:", nrow(df), "Columns:", ncol(df))
+    })
 
     result <- tryCatch({
       greenfeedr::process_gfdata(
@@ -284,6 +372,64 @@ server <- function(input, output, session) {
 
   })
 
+  # Reactive value to store eval results
+  eval_param_result <- reactiveVal(NULL)
+
+  observeEvent(input$run_eval_param, {
+    req(input$gf_file, input$dates)
+
+    df <- tryCatch({
+      ext <- tools::file_ext(input$gf_file$name)
+      if (tolower(ext) %in% c("xls", "xlsx")) {
+        readxl::read_excel(input$gf_file$datapath)
+      } else if (tolower(ext) == "csv") {
+        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
+      } else {
+        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
+      }
+    }, error = function(e) {
+      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
+      return(NULL)
+    })
+
+
+    if (is.null(df)) return()
+
+    result <- tryCatch({
+      greenfeedr::eval_gfparam(
+        data = df,
+        start_date = format(input$dates[1], "%d/%m/%Y"),
+        end_date = format(input$dates[2], "%d/%m/%Y")
+      )
+    }, error = function(e) {
+      output$proc_summary <- renderText(paste("❌ Evaluation error:", e$message))
+      return(NULL)
+    })
+
+    eval_param_result(result)
+
+    output$eval_param_table <- renderTable({
+      req(eval_param_result())
+      eval_param_result()
+    })
+
+    output$eval_param_table <- renderDT({
+      req(eval_param_result())
+      datatable(
+        eval_param_result(),
+        options = list(
+          pageLength = 5,
+          autoWidth = FALSE,
+          scrollX = TRUE
+        ),
+        filter = "top",
+        rownames = FALSE
+      )
+    })
+
+  })
+
+
   # TAB 4: Compare Data
   observeEvent(input$run_compare, {
     req(input$prelim_file, input$final_file, input$compare_dates)
@@ -339,21 +485,39 @@ server <- function(input, output, session) {
     })
   })
 
-  # TAB 5: Pellet Intakes with pellin()
-  observeEvent(input$run_pellin, {
-    req(input$unit, input$gcup)
 
-    unit <- convert_unit(input$unit, 2)
+
+  # TAB 5: Checking visits
+  unit_converted <- reactive({
+    req(input$unit)
+    list(
+      pellin = convert_unit(input$unit, 2),
+      viseat = convert_unit(input$unit, 1)
+    )
+  })
+
+  rfid_path <- reactive({
+    if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+  })
+
+  feedtimes_path <- reactive({
+    if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
+  })
+
+  save_dir_path <- reactive({
+    if (input$save_dir == "") tempdir() else input$save_dir
+  })
+
+  # ───── Run pellin() for pellet intake calculation ─────
+  observeEvent(input$run_pellin, {
+    req(input$gcup)
 
     gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
     if (any(is.na(gcup))) {
       output$pellin_status <- renderText("❌ Error: Invalid 'gcup' input. Must be numeric (e.g., 34 or 34,35).")
+      output$pellin_table <- renderUI(NULL)
       return()
     }
-
-    rfid_path <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
-    file_path <- if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
-    save_dir <- if (input$save_dir == "") tempdir() else input$save_dir
 
     output$pellin_status <- renderText("Running pellin()...")
 
@@ -361,48 +525,45 @@ server <- function(input, output, session) {
       df <- greenfeedr::pellin(
         user = input$user,
         pass = input$pass,
-        unit = unit,
+        unit = unit_converted()$pellin,
         gcup = gcup,
         start_date = input$dates[1],
         end_date = input$dates[2],
-        rfid_file = rfid_path,
-        file_path = file_path,
-        save_dir = save_dir
+        rfid_file = rfid_path(),
+        file_path = feedtimes_path(),
+        save_dir = save_dir_path()
       )
 
-      # Summarize the pellet intakes
       summary_df <- df %>%
+        dplyr::filter(!is.na(FoodType)) %>%
         dplyr::group_by(FoodType) %>%
         dplyr::summarise(
           Animals = dplyr::n_distinct(RFID),
           Days = dplyr::n_distinct(Date),
           Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
-          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2)
+          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
+          .groups = "drop"
         )
 
-      output$pellin_status <- renderText({
-        paste(
-          "✅ Pellet intakes processed successfully.\n\nSummary by FoodType:\n",
-          paste(capture.output(print(summary_df, row.names = FALSE)), collapse = "\n")
-        )
+      output$pellin_status <- renderText(
+        paste0("✅ Pellet intakes processed successfully. File saved in: ", save_dir_path())
+      )
+
+      output$pellin_table <- renderUI({
+        table_html <- knitr::kable(summary_df, format = "html") %>%
+          kableExtra::kable_styling("striped", full_width = FALSE)
+        HTML(table_html)
       })
-
-      output$pellin_table <- renderTable(NULL)
 
     }, error = function(e) {
       output$pellin_status <- renderText(paste("❌ Error:", e$message))
-      output$pellin_table <- renderTable(NULL)
+      output$pellin_table <- renderUI(NULL)
     })
   })
 
-  # TAB 6: Check visitation with viseat()
+  # ───── Run viseat() for checking visits ─────
   observeEvent(input$run_viseat, {
-    req(input$unit, input$dates)
-
-    unit <- convert_unit(input$unit,1)
-
-    file_path <- if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
-    rfid_path <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+    req(input$dates)
 
     output$viseat_status <- renderText("Running viseat()...")
 
@@ -410,48 +571,37 @@ server <- function(input, output, session) {
       results <- greenfeedr::viseat(
         user = input$user,
         pass = input$pass,
-        unit = unit,
+        unit = unit_converted()$viseat,
         start_date = input$dates[1],
         end_date = input$dates[2],
-        rfid_file = rfid_path,
-        file_path = file_path
+        rfid_file = rfid_path(),
+        file_path = feedtimes_path()
       )
 
-      # Plot visits per unit
+      # Plot: TAG reads per unit
       plot_data <- results$feedtimes %>%
         dplyr::group_by(FID) %>%
         dplyr::summarise(n = n()) %>%
         ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
         geom_bar(stat = "identity", position = position_dodge()) +
-        theme_classic() +
-        labs(
-          title = "TAG reads per unit",
-          x = "Units",
-          y = "Frequency",
-          fill = "Unit"
-        ) +
         geom_text(aes(label = n),
-                  vjust = 1.9,
-                  color = "black",
-                  position = position_dodge(0.9), size = 3.8
-        )
+                  vjust = 1.9, color = "black", size = 3.8,
+                  position = position_dodge(0.9)) +
+        labs(title = "TAG reads per unit", x = "Units", y = "Frequency", fill = "Unit") +
+        theme_classic()
 
       output$unit_plot <- renderPlot({ plot_data })
 
-      # Store data for download
+      # Downloads
       output$download_day <- downloadHandler(
-        filename = function() {
-          paste0("visits_per_day_", Sys.Date(), ".csv")
-        },
+        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
         content = function(file) {
           write.csv(results$visits_per_day, file, row.names = FALSE)
         }
       )
 
       output$download_animal <- downloadHandler(
-        filename = function() {
-          paste0("visits_per_animal_", Sys.Date(), ".csv")
-        },
+        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
         content = function(file) {
           write.csv(results$visits_per_animal, file, row.names = FALSE)
         }
@@ -463,6 +613,7 @@ server <- function(input, output, session) {
       output$viseat_status <- renderText(paste("❌ Error:", e$message))
     })
   })
+
 
 }
 

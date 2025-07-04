@@ -55,18 +55,17 @@
 
 utils::globalVariables(c(
   "FID", "FeedTime", "CowTag", "Time", "CurrentPeriod", "ndrops",
-  "MassFoodDrop", "Date", "RFID", "pellintakes", "FarmName", "FoodType"
+  "MassFoodDrop", "Date", "RFID", "pellintakes", "FarmName", "FoodType", "n_foodtypes"
 ))
 
 pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
                    save_dir = tempdir(), rfid_file = NULL, file_path = NULL) {
-  message("Please set the 'gcup' parameter based on the 10-drops test.
-           If units have single or dual-hopper with different 'gcup', define a vector with a value for each unit/hopper.")
 
   # Check Date format
   start_date <- ensure_date_format(start_date)
   end_date <- ensure_date_format(end_date)
 
+  # If the 'feedtimes' file is not provided, download data through the API
   if (is.null(file_path)) {
 
     # Authenticate to receive token
@@ -153,12 +152,14 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   # Process the rfid data
   rfid_file <- process_rfid_data(rfid_file)
 
-  # If rfid_file provided, filter and get animal ID not visiting the 'GreenFeed' units
+  # If the 'rfid_file' is provided, filter the data and identify animals not visiting the GreenFeed units
   if (!is.null(rfid_file) && is.data.frame(rfid_file) && nrow(rfid_file) > 0) {
     df <- df[df$CowTag %in% rfid_file$RFID, ]
     noGFvisits <- rfid_file$FarmName[!(rfid_file$RFID %in% df$CowTag)]
 
-    message("Animal ID not visting GreenFeed: ", paste(noGFvisits, collapse = ", "))
+    if (length(noGFvisits) > 0) {
+      message("\nAnimals not visiting the GreenFeed(s):\n", paste(noGFvisits, collapse = "\n"))
+    }
   }
 
   # Create a table with visit day and time and calculate drops per animal/FID/day
@@ -179,38 +180,70 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
       TotalPeriod = max(CurrentPeriod)
     )
 
-
+  # Format the GreenFeed unit numbers
   unit <- convert_unit(unit,2)
 
-  # Ensure gcup is a vector if it's a single value
-  if (length(gcup) == 1 && length(unit) == 1) {
-    # Single unit, single gcup
-    gcup <- rep(gcup, 1)  # No repetition needed
-    message("Single Unit, Single FoodType")
-  } else if (length(gcup) == 1 && length(unit) == 2) {
-    # Two units, single gcup
-    gcup <- rep(gcup, length(unit))  # Repeat gcup for both units
-    message("Two Units, Single FoodType")
-  } else if (length(gcup) == 1 && length(unit) > 2) {
-    # More than two units, single gcup
-    gcup <- rep(gcup, length(unit))  # Repeat gcup for each unit
-    message("Multiple Units, Single FoodType")
+
+  #######
+
+  # Unique combinations of unit (FID) and food type from the data
+  gf_combinations <- df %>%
+    dplyr::select(FID, FoodType) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(FID = as.character(FID),
+                  FoodType = as.character(FoodType)) %>%
+    dplyr::filter(FID != "") %>%   # <-- removes empty unit
+    dplyr::arrange(FID, FoodType)
+
+  # Count food types per unit in the data
+  unit_foodtypes <- gf_combinations %>%
+    dplyr::group_by(FID) %>%
+    dplyr::summarise(n_foodtypes = dplyr::n()) %>%
+    dplyr::ungroup()
+
+  # Case 1: Single gcup value
+  message("\nPlease set the 'gcup' parameter based on the 10-drops test.")
+  if (length(gcup) == 1) {
+    message("Single gcup provided: applying to all FID/FoodType combinations.")
+    gcup_expanded <- rep(gcup, nrow(gf_combinations))
+
+    # Case 2: One gcup per unit, replicate across food types
   } else if (length(gcup) == length(unit)) {
-    # Each unit gets one gcup (one food type per unit)
-    message("Each Unit Drops One FoodType")
-  } else if (length(gcup) == length(unit) * 2) {
-    # Each unit gets two gcup values (two food types per unit)
-    message("Each Unit Drops Two FoodType")
+    # Match gcup to units
+    unit_gcup_df <- data.frame(FID = unit, gcup = gcup, stringsAsFactors = FALSE)
+
+    # Join with actual foodtype counts
+    match_check <- dplyr::left_join(unit_foodtypes, unit_gcup_df, by = "FID")
+
+    if (any(is.na(match_check$gcup))) {
+      stop("Some units in the data do not have a corresponding gcup value.")
+    }
+
+    # Repeat gcup per foodtype
+    gcup_expanded <- match_check %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(gcup = list(rep(gcup, n_foodtypes))) %>%
+      dplyr::pull(gcup) %>%
+      unlist()
+
+    message("gcup provided per unit: applied to each food type within that unit.")
+
+    # Case 3: One gcup per unit-foodtype
+  } else if (length(gcup) == nrow(gf_combinations)) {
+    gcup_expanded <- gcup
+    message("gcup provided per unit-foodtype so used directly.")
+
+    # Case 4: mismatch
   } else {
-    stop("The length of gcup must be consistent with the number of units.")
+    stop("Mismatch between the number of gcup values and detected unit-foodtype combinations.")
   }
 
-  # Now create the data frame with multiple food types per unit
-  grams_df <- data.frame(
-    FID = rep(unit, each = length(gcup) / length(unit)), # Ensure character format
-    FoodType = as.character(rep(seq_len(length(gcup) / length(unit)), times = length(unit))), # Assign food type sequentially
-    gcup = as.numeric(gcup) # Ensure numeric format
-  )
+  # Final result
+  grams_df <- gf_combinations %>%
+    dplyr::mutate(gcup = gcup_expanded)
+
+
+  #######
 
   # Calculate MassFoodDrop by number of cup drops times grams per cup
   pellintakes <- number_drops %>%
@@ -232,8 +265,8 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
   ## Merge pellet intakes with our 'grid' and set to 0 the NA values
   pellintakes <- merge(pellintakes, grid_visits, all = TRUE) %>%
     dplyr::mutate(
-      MassFoodDrop = ifelse(is.na(MassFoodDrop), 0, MassFoodDrop),
-      FoodType = ifelse(is.na(FoodType), 0, FoodType)
+      MassFoodDrop = ifelse(is.na(MassFoodDrop), 0, MassFoodDrop)#,
+      #FoodType = ifelse(is.na(FoodType), 0, FoodType)
     ) %>%
     dplyr::relocate(FoodType, .after = MassFoodDrop)
 
@@ -266,7 +299,7 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
       Date = unique(df$Date),
       RFID = rfid_file$RFID[rfid_file$FarmName %in% noGFvisits],
       PIntake_kg = 0,
-      FoodType = 0
+      FoodType = NA
     )
 
     ## Add the corresponding FarmName for each RFID
@@ -288,12 +321,14 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
     dir.create(save_dir, recursive = TRUE)
   }
 
-  # Save pellet intakes as a csv file with kg of pellets for the period requested
-  readr::write_excel_csv(df,
-    file = paste0(save_dir, "/Pellet_Intakes_", start_date, "_", end_date, ".csv")
-  )
 
-  message("Pellet intakes file created and saved to ", save_dir)
+  # Save pellet intakes as a CSV file with pellet weight (kg) for the requested period
+  file_name <- paste0("Pellet_Intakes_", start_date, "_", end_date, ".csv")
+  file_path <- file.path(save_dir, file_name)
+
+  readr::write_excel_csv(df, file = file_path)
+
+  message("\nPellet intake file saved. Look for '", file_name, "' in: ", save_dir, "\n")
 
   return(df)
 }
