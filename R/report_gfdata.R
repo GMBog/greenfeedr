@@ -77,7 +77,7 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
     TOK <- trimws(httr::content(req, as = "text"))
 
     # Assign type based on input_type
-    type <- ifelse(input_type == "final", 1, 2)
+    type <- ifelse(input_type == "finalized", 1, 2)
 
     # Get data using the login token
     URL <- paste0(
