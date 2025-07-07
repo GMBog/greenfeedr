@@ -3,7 +3,7 @@
 
 server <- function(input, output, session) {
 
-  # TAB 1: Download Data ####
+  # TAB 1: Downloading Data ####
   rv <- reactiveValues(
     filepath = NULL,
     df_preview = NULL
@@ -93,7 +93,126 @@ server <- function(input, output, session) {
 
 
 
-  # TAB 2: Create Report ####
+  # TAB 2: Checking Data ####
+
+  unit_converted <- reactive({
+    req(input$unit)
+    list(
+      pellin = convert_unit(input$unit, 2),
+      viseat = convert_unit(input$unit, 1)
+    )
+  })
+
+  rfid_path <- reactive({
+    if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+  })
+
+  feedtimes_path <- reactive({
+    if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
+  })
+
+  save_dir_path <- reactive({
+    if (input$save_dir == "") tempdir() else input$save_dir
+  })
+
+  # Run pellin function
+  observeEvent(input$run_pellin, {
+    req(input$gcup)
+
+    gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
+    if (any(is.na(gcup))) {
+      output$pellin_status <- renderText("❌ Error: Invalid 'gcup' input. Must be numeric (e.g., 34 or 34,35).")
+      output$pellin_table <- renderUI(NULL)
+      return()
+    }
+
+    tryCatch({
+      df <- greenfeedr::pellin(
+        user = input$user,
+        pass = input$pass,
+        unit = unit_converted()$pellin,
+        gcup = gcup,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        rfid_file = rfid_path(),
+        file_path = feedtimes_path(),
+        save_dir = save_dir_path()
+      )
+
+      summary_df <- df %>%
+        dplyr::filter(!is.na(FoodType)) %>%
+        dplyr::group_by(FoodType) %>%
+        dplyr::summarise(
+          Animals = dplyr::n_distinct(RFID),
+          Days = dplyr::n_distinct(Date),
+          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
+          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
+          .groups = "drop"
+        )
+
+      output$pellin_table <- renderUI({
+        table_html <- knitr::kable(summary_df, format = "html") %>%
+          kableExtra::kable_styling("striped", full_width = FALSE)
+        HTML(table_html)
+      })
+
+    }, error = function(e) {
+      output$pellin_status <- renderText(paste("❌ Error:", e$message))
+      output$pellin_table <- renderUI(NULL)
+    })
+  })
+
+  # Run viseat function
+  observeEvent(input$run_viseat, {
+    req(input$dates)
+
+    tryCatch({
+      results <- greenfeedr::viseat(
+        user = input$user,
+        pass = input$pass,
+        unit = unit_converted()$viseat,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        rfid_file = rfid_path(),
+        file_path = feedtimes_path()
+      )
+
+      # Plot: TAG reads per unit
+      plot_data <- results$feedtimes %>%
+        dplyr::group_by(FID) %>%
+        dplyr::summarise(n = n()) %>%
+        ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
+        geom_bar(stat = "identity", position = position_dodge()) +
+        geom_text(aes(label = n),
+                  vjust = 1.9, color = "black", size = 3.8,
+                  position = position_dodge(0.9)) +
+        labs(title = "TAG reads per unit", x = "Units", y = "Frequency", fill = "Unit") +
+        theme_classic()
+
+      output$unit_plot <- renderPlot({ plot_data })
+
+      # Downloads
+      output$download_day <- downloadHandler(
+        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
+        content = function(file) {
+          write.csv(results$visits_per_day, file, row.names = FALSE)
+        }
+      )
+
+      output$download_animal <- downloadHandler(
+        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
+        content = function(file) {
+          write.csv(results$visits_per_animal, file, row.names = FALSE)
+        }
+      )
+
+    }, error = function(e) {
+      output$viseat_status <- renderText(paste("❌ Error:", e$message))
+    })
+  })
+
+
+  # TAB 3: Reporting Data ####
 
   # Storage for processed data
   report_data <- reactiveVal()
@@ -256,7 +375,10 @@ server <- function(input, output, session) {
         # Make ggplot backgrounds transparent
         plot.background = element_rect(fill = "transparent", color = NA),
         panel.background = element_rect(fill = "transparent", color = NA),
-        legend.background = element_rect(fill = "transparent", color = NA)
+        legend.background = element_rect(fill = "transparent", color = NA),
+        # Remove grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()
       )
     ggplotly(p, tooltip = c("x", "y"))
   })
@@ -409,7 +531,10 @@ server <- function(input, output, session) {
         # Make ggplot backgrounds transparent
         plot.background = element_rect(fill = "transparent", color = NA),
         panel.background = element_rect(fill = "transparent", color = NA),
-        legend.background = element_rect(fill = "transparent", color = NA)
+        legend.background = element_rect(fill = "transparent", color = NA),
+        # Remove grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()
       )
 
     ggplotly(p, tooltip = "text")
@@ -466,7 +591,10 @@ server <- function(input, output, session) {
           # Make ggplot backgrounds transparent
           plot.background = element_rect(fill = "transparent", color = NA),
           panel.background = element_rect(fill = "transparent", color = NA),
-          legend.background = element_rect(fill = "transparent", color = NA)
+          legend.background = element_rect(fill = "transparent", color = NA),
+          # Remove grid lines
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank()
         ) +
         scale_x_continuous(
           breaks = seq(0, 23),
@@ -530,13 +658,83 @@ server <- function(input, output, session) {
   })
 
 
+  # TAB 4: Processing Data ####
 
-  # TAB 3: Process Data ####
+  # Reactive value to store eval results
+  eval_param_result <- reactiveVal(NULL)
+
+  observeEvent(input$run_eval_param, {
+    req(input$gf_file, input$dates)
+
+    # Read data file: preliminary (.csv) and finalized (.xlsx)
+    df <- tryCatch({
+      ext <- tools::file_ext(input$gf_file$name)
+      if (tolower(ext) %in% c("xls", "xlsx")) {
+        readxl::read_excel(input$gf_file$datapath)
+      } else if (tolower(ext) == "csv") {
+        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
+      } else {
+        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
+      }
+    }, error = function(e) {
+      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
+      return(NULL)
+    })
+
+    if (is.null(df)) return()
+
+    # Evaluate all the combination of parameters to process data
+    result <- NULL
+    withProgress(message = "⏳ Evaluating all possible combination of parameters...", value = 0, {
+      result <- tryCatch({
+        greenfeedr::eval_gfparam(
+          data = df,
+          start_date = format(input$dates[1], "%d/%m/%Y"),
+          end_date = format(input$dates[2], "%d/%m/%Y")
+        )
+      }, error = function(e) {
+        output$proc_summary <- renderText(paste("❌ Evaluation error:", e$message))
+        return(NULL)
+      })
+    })
+
+    eval_param_result(result)
+
+    # Render table of evaluation results
+    output$eval_section_title <- renderUI({
+      req(eval_param_result())
+      h4("Evaluation of Parameter Combinations:")
+    })
+
+    output$eval_param_table <- renderTable({
+      req(eval_param_result())
+      eval_param_result()
+    })
+
+    # Define format of the table
+    output$eval_param_table <- renderDT({
+      req(eval_param_result())
+      datatable(
+        eval_param_result(),
+        options = list(
+          pageLength = 5,
+          autoWidth = FALSE,
+          scrollX = TRUE
+        ),
+        filter = "top",
+        rownames = FALSE
+      )
+    })
+
+  })
+
+  # Reactive value to store proccessed results
   processed_result <- reactiveVal(NULL)
 
   observeEvent(input$run_process, {
     req(input$gf_file, input$dates, input$param1, input$param2)
 
+    # Read data file: preliminary (.csv) and finalized (.xlsx)
     df <- tryCatch({
       ext <- tools::file_ext(input$gf_file$name)
       cat("File extension detected:", ext, "\n")
@@ -554,10 +752,7 @@ server <- function(input, output, session) {
 
     if (is.null(df)) return()
 
-    output$proc_summary <- renderText({
-      paste("✅ File read successfully. Rows:", nrow(df), "Columns:", ncol(df))
-    })
-
+    # Process data using the parameters chosen
     result <- tryCatch({
       greenfeedr::process_gfdata(
         data = df,
@@ -579,21 +774,47 @@ server <- function(input, output, session) {
     # Save to reactive value
     processed_result(result)
 
+    # Provide summary using the weekly data
     weekly <- result$weekly_data
 
     gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
-    gas_summary <- lapply(gas_names, function(gas) {
+    gas_stats <- vapply(gas_names, function(gas) {
       vals <- weekly[[gas]]
-      mean_val <- round(mean(vals, na.rm = TRUE), 2)
-      sd_val <- round(sd(vals, na.rm = TRUE), 2)
-      cv_val <- round(sd_val / mean_val * 100, 1)
-      paste0(gas, " = ", mean_val, " ± ", sd_val, " [CV% = ", cv_val, "]")
-    }) |> unlist()
+      mean_val <- mean(vals, na.rm = TRUE)
+      sd_val <- sd(vals, na.rm = TRUE)
+      cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val * 100 else NA
+      c(mean = mean_val, sd = sd_val, cv = cv_val)
+    }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
 
-    output$proc_summary <- renderText({
-      paste("✅ Processing complete.\n\nSummary of gases (weekly):\n", paste(gas_summary, collapse = "\n"))
+    gas_display_name <- function(names_vec) {
+      # Replace GramsPerDay with (g/d)
+      names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
+      # Replace LitersPerDay with (L/d)
+      names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
+      names_vec
+    }
+
+    gas_df <- data.frame(
+      Gas = gas_display_name(gas_names),
+      Mean = round(gas_stats["mean", ], 2),
+      SD = round(gas_stats["sd", ], 2),
+      CV = round(gas_stats["cv", ], 1),
+      stringsAsFactors = FALSE
+    )
+
+    # Render table of processed results
+    output$proc_section_title <- renderUI({
+      req(processed_result())
+      h4("Data Summary:")
     })
 
+    output$proc_summary_table <- renderTable({
+      req(gas_df)
+      gas_df
+    }, digits = 2)
+
+    # Options to download
+    ## Filtered data
     output$download_filtered <- downloadHandler(
       filename = function() { "filtered_data.csv" },
       content = function(file) {
@@ -601,6 +822,7 @@ server <- function(input, output, session) {
       }
     )
 
+    ## Daily average data
     output$download_daily <- downloadHandler(
       filename = function() { "daily_data.csv" },
       content = function(file) {
@@ -608,6 +830,7 @@ server <- function(input, output, session) {
       }
     )
 
+    ## Weekly average data
     output$download_weekly <- downloadHandler(
       filename = function() { "weekly_data.csv" },
       content = function(file) {
@@ -615,248 +838,6 @@ server <- function(input, output, session) {
       }
     )
 
-  })
-
-  # Reactive value to store eval results
-  eval_param_result <- reactiveVal(NULL)
-
-  observeEvent(input$run_eval_param, {
-    req(input$gf_file, input$dates)
-
-    df <- tryCatch({
-      ext <- tools::file_ext(input$gf_file$name)
-      if (tolower(ext) %in% c("xls", "xlsx")) {
-        readxl::read_excel(input$gf_file$datapath)
-      } else if (tolower(ext) == "csv") {
-        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
-      } else {
-        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
-      }
-    }, error = function(e) {
-      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
-      return(NULL)
-    })
-
-
-    if (is.null(df)) return()
-
-    result <- tryCatch({
-      greenfeedr::eval_gfparam(
-        data = df,
-        start_date = format(input$dates[1], "%d/%m/%Y"),
-        end_date = format(input$dates[2], "%d/%m/%Y")
-      )
-    }, error = function(e) {
-      output$proc_summary <- renderText(paste("❌ Evaluation error:", e$message))
-      return(NULL)
-    })
-
-    eval_param_result(result)
-
-    output$eval_param_table <- renderTable({
-      req(eval_param_result())
-      eval_param_result()
-    })
-
-    output$eval_param_table <- renderDT({
-      req(eval_param_result())
-      datatable(
-        eval_param_result(),
-        options = list(
-          pageLength = 5,
-          autoWidth = FALSE,
-          scrollX = TRUE
-        ),
-        filter = "top",
-        rownames = FALSE
-      )
-    })
-
-  })
-
-
-  # TAB 4: Compare Data ####
-  observeEvent(input$run_compare, {
-    req(input$prelim_file, input$final_file, input$compare_dates)
-
-    prelim_path <- input$prelim_file$datapath
-    final_path <- input$final_file$datapath
-
-    result <- tryCatch({
-      compare_gfdata(
-        prelimrep = prelim_path,
-        finalrep = final_path,
-        start_date = input$compare_dates[1],
-        end_date = input$compare_dates[2]
-      )
-    }, error = function(e) {
-      output$compare_summary <- renderText(paste("❌ Comparison error:", e$message))
-      return(NULL)
-    })
-
-    if (is.null(result)) return()
-
-    output$compare_summary <- renderText({
-      paste0("✅ Comparison done.\n\n",
-             nrow(result$out_final), " records were removed from the finalized data.\n",
-             nrow(result$out_prelim), " records were added to the finalized data.")
-    })
-
-    # Use the returned combined data for plots directly
-    output$ch4_plot <- renderPlot({
-      ggplot(result$data, aes(x = group, y = CH4GramsPerDay, fill = group)) +
-        geom_boxplot() +
-        stat_summary(fun = mean, geom = "text",
-                     aes(label = round(after_stat(y), 0)),
-                     vjust = -0.6, size = 4, color = "black") +
-        scale_fill_manual(values = c("D" = "#9FA8DA", "F" = "#A5D6A7")) +
-        scale_x_discrete(labels = c("D" = "Prelim data", "F" = "Final report")) +
-        theme_classic() +
-        labs(y = "CH4 (g/d)", x = NULL) +
-        theme(legend.position = "none")
-    })
-
-    output$co2_plot <- renderPlot({
-      ggplot(result$data, aes(x = group, y = CO2GramsPerDay, fill = group)) +
-        geom_boxplot() +
-        stat_summary(fun = mean, geom = "text",
-                     aes(label = round(after_stat(y), 0)),
-                     vjust = -0.9, size = 4, color = "black") +
-        scale_fill_manual(values = c("D" = "#9FA8DA", "F" = "#A5D6A7")) +
-        scale_x_discrete(labels = c("D" = "Prelim data", "F" = "Final report")) +
-        theme_classic() +
-        labs(y = "CO2 (g/d)", x = NULL) +
-        theme(legend.position = "none")
-    })
-  })
-
-
-
-  # TAB 5: Checking visits ####
-  unit_converted <- reactive({
-    req(input$unit)
-    list(
-      pellin = convert_unit(input$unit, 2),
-      viseat = convert_unit(input$unit, 1)
-    )
-  })
-
-  rfid_path <- reactive({
-    if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
-  })
-
-  feedtimes_path <- reactive({
-    if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
-  })
-
-  save_dir_path <- reactive({
-    if (input$save_dir == "") tempdir() else input$save_dir
-  })
-
-  # ───── Run pellin() for pellet intake calculation ─────
-  observeEvent(input$run_pellin, {
-    req(input$gcup)
-
-    gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
-    if (any(is.na(gcup))) {
-      output$pellin_status <- renderText("❌ Error: Invalid 'gcup' input. Must be numeric (e.g., 34 or 34,35).")
-      output$pellin_table <- renderUI(NULL)
-      return()
-    }
-
-    output$pellin_status <- renderText("Running pellin()...")
-
-    tryCatch({
-      df <- greenfeedr::pellin(
-        user = input$user,
-        pass = input$pass,
-        unit = unit_converted()$pellin,
-        gcup = gcup,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        rfid_file = rfid_path(),
-        file_path = feedtimes_path(),
-        save_dir = save_dir_path()
-      )
-
-      summary_df <- df %>%
-        dplyr::filter(!is.na(FoodType)) %>%
-        dplyr::group_by(FoodType) %>%
-        dplyr::summarise(
-          Animals = dplyr::n_distinct(RFID),
-          Days = dplyr::n_distinct(Date),
-          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
-          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
-          .groups = "drop"
-        )
-
-      output$pellin_status <- renderText(
-        paste0("✅ Pellet intakes processed successfully. File saved in: ", save_dir_path())
-      )
-
-      output$pellin_table <- renderUI({
-        table_html <- knitr::kable(summary_df, format = "html") %>%
-          kableExtra::kable_styling("striped", full_width = FALSE)
-        HTML(table_html)
-      })
-
-    }, error = function(e) {
-      output$pellin_status <- renderText(paste("❌ Error:", e$message))
-      output$pellin_table <- renderUI(NULL)
-    })
-  })
-
-  # ───── Run viseat() for checking visits ─────
-  observeEvent(input$run_viseat, {
-    req(input$dates)
-
-    output$viseat_status <- renderText("Running viseat()...")
-
-    tryCatch({
-      results <- greenfeedr::viseat(
-        user = input$user,
-        pass = input$pass,
-        unit = unit_converted()$viseat,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        rfid_file = rfid_path(),
-        file_path = feedtimes_path()
-      )
-
-      # Plot: TAG reads per unit
-      plot_data <- results$feedtimes %>%
-        dplyr::group_by(FID) %>%
-        dplyr::summarise(n = n()) %>%
-        ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
-        geom_bar(stat = "identity", position = position_dodge()) +
-        geom_text(aes(label = n),
-                  vjust = 1.9, color = "black", size = 3.8,
-                  position = position_dodge(0.9)) +
-        labs(title = "TAG reads per unit", x = "Units", y = "Frequency", fill = "Unit") +
-        theme_classic()
-
-      output$unit_plot <- renderPlot({ plot_data })
-
-      # Downloads
-      output$download_day <- downloadHandler(
-        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_day, file, row.names = FALSE)
-        }
-      )
-
-      output$download_animal <- downloadHandler(
-        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_animal, file, row.names = FALSE)
-        }
-      )
-
-      output$viseat_status <- renderText("✅ GreenFeed visits processed successfully.")
-
-    }, error = function(e) {
-      output$viseat_status <- renderText(paste("❌ Error:", e$message))
-    })
   })
 
 

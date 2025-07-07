@@ -60,9 +60,32 @@ ui <- fluidPage(
         from { box-shadow: 0 0 0 0 rgba(24, 135, 84, 0.7); }
         to   { box-shadow: 0 0 12px 6px rgba(24, 135, 84, 0.15); }
       }
+
+      .form-group .btn-default,
+      .form-group .btn-default:focus,
+      .form-group .btn-default:active,
+      .form-group .btn-default:hover {
+        background: linear-gradient(90deg, #B4E197 0%, #6FCF97 100%) !important;
+        color: #124B12 !important;
+        border: none;
+        border-radius: 8px !important;
+        font-weight: bold;
+        box-shadow: none !important;
+        transition: background 0.2s;
+      }
+      .form-group .btn-default:hover {
+        background: #a0d883 !important;
+        color: #124B12 !important;
+      }
+      /* Make sure action/download buttons don't pick up the .btn-default style */
+      .action-button, .download-button {
+        background: linear-gradient(90deg, #198754 0%, #124B12 100%) !important;
+        color: white !important;
+      }
     "))
   ),
   div(class = "top-bar", "greenfeedr app"),
+
 
   # Main UI layout with tabs
   tabsetPanel(
@@ -72,11 +95,27 @@ ui <- fluidPage(
              div(class = "welcome-container",
                  tags$img(src = "GFSticker.png", width = "120px"),
                  tags$h2("Welcome to the greenfeedr app"),
-                 tags$p("This Shiny application helps you download, process, report, and compare GreenFeed data
-                        for research or monitoring purposes.
-                        Navigate through the tabs to access features like downloading data from the API,
-                        generating reports, checking feed intake, processing gas data, and
-                        comparing preliminary and finalized datasets.")
+                 tags$p(
+                   "This Shiny application helps you download, process, report, and compare GreenFeed data
+                    for research or monitoring purposes.",
+                   "Navigate through the tabs to access features like downloading data from the API,
+                    generating reports, checking visitation and intakes, processing gas data using different filters."
+                 ),
+                 tags$p(
+                   "greenfeedr is an open-source R package developed by Guillermo Martinez-Boggio.",
+                   "The package contains the code for this Shiny app as well as all functions and documentation for processing data,
+                    which can be used directly in R."
+                 ),
+                 tags$p(
+                   "The source code is available on ",
+                   tags$a(href = "https://cran.r-project.org/package=greenfeedr", "CRAN"),
+                   " and ",
+                   tags$a(href = "https://github.com/GMBog/greenfeedr", "GitHub"),
+                   ". This Shiny app is also available at ",
+                   tags$a(href = "https://greenfeedr.shinyapps.io/app/", "shinyapps.io"),
+                   "."
+                 ),
+                 tags$hr()
              )
     ),
 
@@ -100,44 +139,6 @@ ui <- fluidPage(
              )
     ),
 
-    tabPanel(
-      "Reporting",
-      sidebarLayout(
-        sidebarPanel(
-          textInput("user", "Username:", placeholder = "Enter your username"),
-          passwordInput("pass", "Password:", placeholder = "Enter your password"),
-          textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
-          dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-          fileInput("rfid_file", "Upload RFID file (optional):"),
-          actionButton("run_report", "Report Data", class = "btn btn-primary"),
-          selectInput(
-            "which_plot", "Show Plot:",
-            choices = c(
-              "Records Per Day" = "plot_1",
-              "Gas Production Across The Day" = "plot_4",
-              "Records Per Animal" = "plot_3"
-            ),
-            selected = "plot_1"
-          ),
-          # Only show gas selection for plot 4
-          conditionalPanel(
-            condition = "input.which_plot == 'plot_4'",
-            checkboxGroupInput(
-              "plot4_gas",
-              label = "Select gases to plot (multiple allowed):",
-              choices = list("CH4" = "ch4", "CO2" = "co2", "O2" = "o2", "H2" = "h2"),
-              selected = "ch4"
-            )
-          )
-        ),
-        mainPanel(
-          uiOutput("report_summary"),
-          uiOutput("report_preview"),
-          uiOutput("chosen_plot")
-        )
-      )
-    ),
-
     tabPanel("Checking",
              sidebarLayout(
                sidebarPanel(
@@ -149,8 +150,8 @@ ui <- fluidPage(
                  fileInput("rfid_file", "Upload RFID file (optional):"),
                  fileInput("feedtimes_file", "Upload Feedtimes file (optional):"),
                  textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("run_pellin", "Run Pellin"),
-                 actionButton("run_viseat", "Run Viseat")
+                 actionButton("run_pellin", "Run Pellin", icon = icon("running")),
+                 actionButton("run_viseat", "Run Viseat", icon = icon("running"))
                ),
                mainPanel(
                  verbatimTextOutput("pellin_status"),
@@ -158,10 +159,45 @@ ui <- fluidPage(
                  br(), hr(), br(),
                  textOutput("viseat_status"),
                  plotOutput("unit_plot"),
-                 fluidRow(
-                   column(6, downloadButton("download_day", "Download Visits per Day")),
-                   column(6, downloadButton("download_animal", "Download Visits per Animal"))
+                 uiOutput("viseat_download_ui")
+               )
+             )
+    ),
+
+    tabPanel("Reporting",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "Username:", placeholder = "Enter your username"),
+                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 actionButton("run_report", "Report Data", icon = icon("file-alt")),
+                 div(style = "margin-bottom: 15px;"),
+                 selectInput(
+                   "which_plot", "Show Plot:",
+                   choices = c(
+                     "Records Per Day" = "plot_1",
+                     "Gas Production Across The Day" = "plot_4",
+                     "Records Per Animal" = "plot_3"
+                   ),
+                   selected = "plot_1"
+                 ),
+                 # Only show gas selection for plot 4
+                 conditionalPanel(
+                   condition = "input.which_plot == 'plot_4'",
+                   checkboxGroupInput(
+                     "plot4_gas",
+                     label = "Select gases to plot (multiple allowed):",
+                     choices = list("CH4" = "ch4", "CO2" = "co2", "O2" = "o2", "H2" = "h2"),
+                     selected = "ch4"
+                   )
                  )
+               ),
+               mainPanel(
+                 uiOutput("report_summary"),
+                 uiOutput("report_preview"),
+                 uiOutput("chosen_plot")
                )
              )
     ),
@@ -171,54 +207,43 @@ ui <- fluidPage(
                sidebarPanel(
                  fileInput("gf_file", "Upload GreenFeed Data:"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 actionButton("run_eval_param", "🔍 Evaluate Parameters"),
+                 actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
                  br(), hr(),
                  numericInput("param1", "N records/day (param1):", value = 2, min = 1),
                  numericInput("param2", "N days/week (param2):", value = 3, min = 1),
                  numericInput("min_time", "Min. minutes per record:", value = 2),
                  checkboxInput("transform", "Transform gases to L/d?", value = FALSE),
                  numericInput("cutoff", "Outlier SD cutoff:", value = 3, min = 1),
-                 actionButton("run_process", "Run")
+                 actionButton("run_process", "Process Data", icon = icon("sync"))
                ),
                mainPanel(
-                 br(), hr(),
-                 h4("Evaluation of Parameter Combinations:"),
-                 DTOutput("eval_param_table"),
-                 br(), hr(),
-                 verbatimTextOutput("proc_summary"),
-                 h4("Download Processed Files:"),
-                 fluidRow(
-                   column(4, downloadButton("download_filtered", "Filtered Data")),
-                   column(4, downloadButton("download_daily", "Daily Data")),
-                   column(4, downloadButton("download_weekly", "Weekly Data"))
+                 conditionalPanel(
+                   condition = "input.run_eval_param > 0",
+                   hr(),
+                   uiOutput("eval_section_title"),
+                   DTOutput("eval_param_table")
+                 ),
+                 conditionalPanel(
+                   condition = "input.run_process > 0",
+                   br(),hr(),
+                   uiOutput("proc_section_title"),
+                   tableOutput("proc_summary_table"),
+                   br(),
+                   h4("Download Processed Files:"),
+                   fluidRow(
+                     column(4, downloadButton("download_filtered", "Filtered Data")),
+                     column(4, downloadButton("download_daily", "Daily Data")),
+                     column(4, downloadButton("download_weekly", "Weekly Data"))
+                   )
                  )
                )
              )
     ),
 
-    tabPanel("Comparing",
-             sidebarLayout(
-               sidebarPanel(
-                 fileInput("prelim_file", "Upload Preliminary Data:", accept = ".csv"),
-                 fileInput("final_file", "Upload Finalized Data:", accept = c(".xls", ".xlsx")),
-                 dateRangeInput("compare_dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
-                 actionButton("run_compare", "Run")
-               ),
-               mainPanel(
-                 verbatimTextOutput("compare_summary"),
-                 fluidRow(
-                   column(6, plotOutput("ch4_plot")),
-                   column(6, plotOutput("co2_plot"))
-                 )
-               )
-             )
-    )
-  ),
-
   tags$footer(
     style = "text-align: center; padding: 10px 0; color: #999; font-size: 13px; margin-top: 30px;",
     "© 2025 greenfeedr | Built with Shiny & R"
-  )
+  ))
   )
 
 
