@@ -90,42 +90,61 @@ ui <- fluidPage(
   # Main UI layout with tabs
   tabsetPanel(
 
-    # Welcome tab
-    tabPanel("Welcome",
-             div(class = "welcome-container",
-                 tags$img(src = "GFSticker.png", width = "120px"),
-                 tags$h2("Welcome to the greenfeedr app"),
-                 tags$p(
-                   "This Shiny application helps you download, process, report, and compare GreenFeed data
-                    for research or monitoring purposes.",
-                   "Navigate through the tabs to access features like downloading data from the API,
-                    generating reports, checking visitation and intakes, processing gas data using different filters."
-                 ),
-                 tags$p(
-                   "greenfeedr is an open-source R package developed by Guillermo Martinez-Boggio.",
-                   "The package contains the code for this Shiny app as well as all functions and documentation for processing data,
-                    which can be used directly in R."
-                 ),
-                 tags$p(
-                   "The source code is available on ",
-                   tags$a(href = "https://cran.r-project.org/package=greenfeedr", "CRAN"),
-                   " and ",
-                   tags$a(href = "https://github.com/GMBog/greenfeedr", "GitHub"),
-                   ". This Shiny app is also available at ",
-                   tags$a(href = "https://greenfeedr.shinyapps.io/app/", "shinyapps.io"),
-                   "."
-                 ),
-                 tags$hr()
-             )
+    # Welcome tab (improved)
+    tabPanel(
+      "Welcome",
+      div(
+        class = "welcome-container",
+        style = "max-width: 1000px; margin: auto; padding: 20px;",
+        tags$img(src = "GFSticker.png", width = "120px", style = "display: block; margin: 0 auto 20px auto;"),
+        tags$h2("Welcome to the greenfeedr App"),
+        tags$p(
+          "This Shiny application empowers you to download, check, report, and process GreenFeed data
+          for research or monitoring purposes."
+        ),
+        tags$ul(
+          style = "margin-bottom: 20px;",
+          tags$li(tags$b("Downloading:"), " Easily retrieve all types of GreenFeed data."),
+          tags$li(tags$b("Checking:"), " Quickly inspect visits and intakes from your GreenFeed units."),
+          tags$li(tags$b("Reporting:"), " Generate interactive reports for all connected units."),
+          tags$li(tags$b("Processing:"), " Apply custom thresholds and filters to analyze your gas data.")
+        ),
+        tags$div(
+          style = "margin-bottom: 20px;",
+          tags$b("How to use the app:"),
+          tags$ol(
+            tags$li("Download data directly from the API or upload your own files."),
+            tags$li("Check visitation and intake statistics for your trials or monitoring projects."),
+            tags$li("Generate customizable reports by day and by animal."),
+            tags$li("Process and filter gas measurements using your own criteria.")
+          )
+        ),
+        tags$p(
+          "The ", tags$b("greenfeedr"), " package is an open-source R package developed by Guillermo Martinez-Boggio. ",
+          "All the functions and documentation for processing GreenFeed data are available both in this Shiny app and for direct use in R."
+        ),
+        tags$p(
+          "Find the source code on ",
+          tags$a(href = "https://cran.r-project.org/package=greenfeedr", "CRAN"),
+          " and ",
+          tags$a(href = "https://github.com/GMBog/greenfeedr", "GitHub"),
+          "."
+        ),
+        tags$p(
+          "This Shiny app is also hosted online at ",
+          tags$a(href = "https://gmbog.shinyapps.io/shinyapp/", "shinyapps.io"),
+          "."
+        ),
+        tags$hr()
+      )
     ),
 
     tabPanel("Downloading",
              sidebarLayout(
                sidebarPanel(
-                 textInput("user", "Username:"),
-                 passwordInput("pass", "Password:"),
-                 textInput("unit", "Unit(s):", placeholder = "e.g. 55 or 100,101"),
-                 textInput("exp", "Experiment/Study Name:", value = "DemoStudy"),
+                 textInput("user", "Username:", placeholder = "Enter your username"),
+                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
                  selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
                  dateRangeInput("dates", "Date Range:",
                                 start = Sys.Date() - 30, end = Sys.Date() - 1),
@@ -134,6 +153,8 @@ ui <- fluidPage(
                ),
                mainPanel(
                  uiOutput("status_card"),
+                 div(style = "margin-bottom: 15px;"),
+                 uiOutput("error_message"),
                  uiOutput("preview")
                )
              )
@@ -142,8 +163,8 @@ ui <- fluidPage(
     tabPanel("Checking",
              sidebarLayout(
                sidebarPanel(
-                 textInput("user", "Username:"),
-                 passwordInput("pass", "Password:"),
+                 textInput("user", "Username:", placeholder = "Enter your username"),
+                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),

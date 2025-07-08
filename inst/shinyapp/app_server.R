@@ -6,76 +6,173 @@ server <- function(input, output, session) {
   # TAB 1: Downloading Data ####
   rv <- reactiveValues(
     filepath = NULL,
-    df_preview = NULL
+    df_preview = NULL,
+    error_message = NULL
   )
 
   observeEvent(input$download, {
-    req(input$user, input$pass, input$unit, input$exp, input$dates)
+    req(input$user, input$pass, input$unit, input$dates, input$save_dir)
+
+    # Check 'GreenFeed' unit format
     unit <- convert_unit(input$unit, 1)
 
-    tryCatch({
-      # Download and save file
-      greenfeedr::get_gfdata(
-        user = input$user,
-        pass = input$pass,
-        d = input$d,
-        exp = input$exp,
-        unit = unit,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        save_dir = input$save_dir
-      )
-      # Build file path
-      filename <- switch(input$d,
-                         "visits" = paste0(input$exp, "_GFdata.csv"),
-                         "feed"   = paste0(input$exp, "_feedtimes.csv"),
-                         "rfid"   = paste0(input$exp, "_rfids.csv"),
-                         "cmds"   = paste0(input$exp, "_commands.csv")
-      )
-      filepath <- file.path(input$save_dir, filename)
-      rv$filepath <- filepath
+    withProgress(message = "Downloading data...", value = 0, {
+      tryCatch({
+        incProgress(0.1, detail = "Connecting to GreenFeed server...")
 
-      if (file.exists(filepath) && file.info(filepath)$size > 0) {
+        # Authenticate to receive token
+        req_auth <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = input$user, pass = input$pass))
+        httr::stop_for_status(req_auth)
+        TOK <- trimws(httr::content(req_auth, as = "text"))
+
+        # Internal function to download and parse
+        download_and_parse <- function(type) {
+          if (type == "visits") {
+            URL <- paste0(
+              "https://portal.c-lockinc.com/api/getemissions?d=", type, "&fids=", unit,
+              "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00&type=2"
+            )
+          } else {
+            URL <- paste0(
+              "https://portal.c-lockinc.com/api/getraw?d=", type, "&fids=", unit,
+              "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00"
+            )
+          }
+          message(URL)
+          req_data <- httr::POST(URL, body = list(token = TOK))
+          httr::stop_for_status(req_data)
+          a <- httr::content(req_data, as = "text")
+          perline <- stringr::str_split(a, "\\n")[[1]]
+          df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
+          df <- as.data.frame(df)
+          df
+        }
+
+        incProgress(0.3, detail = "Downloading and parsing data...")
+        df <- download_and_parse(input$d)
+
+        # Assign column names
+        if (input$d == "visits") {
+          colnames(df) <- c(
+            "FeederID", "AnimalName", "RFID", "StartTime", "EndTime",
+            "GoodDataDuration", "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay",
+            "H2GramsPerDay", "H2SGramsPerDay", "AirflowLitersPerSec", "AirflowCf",
+            "WindSpeedMetersPerSec", "WindDirDeg", "WindCf", "WasInterrupted",
+            "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
+          )
+        } else if (input$d == "feed") {
+          colnames(df) <- c(
+            "FID", "FeedTime", "CowTag", "CurrentCup", "MaxCups",
+            "CurrentPeriod", "MaxPeriods", "CupDelay", "PeriodDelay", "FoodType"
+          )
+        } else if (input$d == "rfid") {
+          colnames(df) <- c(
+            "FID", "ScanTime", "CowTag", "InOrOut", "Tray(IfApplicable)"
+          )
+        } else if (input$d == "cmds") {
+          colnames(df) <- c(
+            "FID", "CommandTime", "Cmd"
+          )
+        }
+
+        # Ensure save_dir is an absolute path
+        save_dir <- normalizePath(input$save_dir, mustWork = FALSE)
+        if (!dir.exists(save_dir)) {
+          dir.create(save_dir, recursive = TRUE)
+        }
+        incProgress(0.2, detail = "Saving file...")
+
+        # Build file_path to save data
+        filename <- switch(input$d,
+                           "visits" = paste0("GreenFeed_Summarized_Data_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+                           "feed"   = paste0("Feedtimes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+                           "rfid"   = paste0("Rfids_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+                           "cmds"   = paste0("Commands_", unit, "_", input$dates[1], "_", input$dates[2], ".csv")
+        )
+        filepath <- file.path(save_dir, filename)
+        rv$filepath <- filepath
+
+        # Save the data
+        readr::write_csv(df, filepath)
+
+        incProgress(0.2, detail = "Preparing data preview...")
+
         # Read preview for summary and preview table
-        df_preview <- tryCatch(readr::read_csv(filepath, n_max = 100), error = function(e) NULL)
-        rv$df_preview <- df_preview
-      } else {
+        if (file.exists(filepath) && file.info(filepath)$size > 0) {
+          df_preview <- tryCatch(readr::read_csv(filepath, n_max = 100), error = function(e) NULL)
+          rv$df_preview <- df_preview
+        } else {
+          rv$df_preview <- NULL
+        }
+
+        incProgress(0.2, detail = "Done!")
+        rv$error_message <- NULL
+
+      }, error = function(e) {
+        msg <- as.character(e$message)
+        if (grepl("names.*must be the same length as the vector", msg)) {
+          rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        } else if (grepl("Cannot open file for writing", msg)) {
+          rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+        } else {
+          rv$error_message <- paste("Unexpected error:", msg)
+        }
+        rv$filepath <- NULL
         rv$df_preview <- NULL
-      }
-    }, error = function(e) {
-      rv$filepath <- NULL
-      rv$df_preview <- NULL
-      showNotification(paste("❌ Error:", e$message), type = "error")
+      })
     })
   })
 
+  # Status card
   output$status_card <- renderUI({
     req(input$download)
+    # Warning message if errors in the inputs
     if (is.null(rv$filepath) || is.null(rv$df_preview)) {
-      div(class = "warning-card",
-          icon("exclamation-triangle", style = "color:#e65100; font-size:30px;"),
-          h4("Data file was not saved or is empty!")
+      div(
+        class = "warning-card",
+        style = "display: flex; align-items: center; gap: 10px;",
+        icon("exclamation-triangle", style = "color:#e65100; font-size:30px;"),
+        h4("Data file was not saved or is empty!", style = "margin: 0;")
       )
     } else {
+      # Summary of data results
       df <- rv$df_preview
       date_col <- grep("StartTime|Date", names(df), value = TRUE)[1]
       animal_col <- grep("Animal(Name)?|RFID", names(df), value = TRUE)[1]
       tagList(
-        div(class = "summary-card",
+        div(
+          class = "summary-card",
+          # Flex row for icon and h4 header
+          div(
+            style = "display: flex; align-items: center; gap: 10px;",
             icon("check-circle", style = "color:#388e3c; font-size:30px;"),
-            h4("Data file saved successfully!"),
-            tags$p(tags$b("Rows:"), nrow(df)),
-            tags$p(tags$b("Columns:"), ncol(df)),
-            if (!is.null(date_col)) tags$p(tags$b("Date range:"),
-                                           as.character(min(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE)), "to",
-                                           as.character(max(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE))),
-            if (!is.null(animal_col)) tags$p(tags$b("Unique IDs:"), length(unique(df[[animal_col]]))),
-            tags$p("You can find your file in the directory you specified above.")
+            h4("Data file saved successfully!", style = "margin: 0;")
+          ),
+          tags$div(style = "height: 15px;"),
+          tags$p(tags$b("Rows:"), nrow(df)),
+          tags$p(tags$b("Columns:"), ncol(df)),
+          if (!is.null(date_col)) tags$p(
+            tags$b("Date range:"),
+            as.character(min(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE)), "to",
+            as.character(max(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE))
+          ),
+          if (!is.null(animal_col)) tags$p(tags$b("Unique IDs:"), length(unique(df[[animal_col]]))),
+          tags$p("You can find your file in the directory you specified above.")
         )
       )
     }
   })
 
+  # Show error message
+  output$error_message <- renderUI({
+    req(rv$error_message)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message)
+    )
+  })
+
+  # Show table (is hidden)
   output$preview <- renderUI({
     req(rv$df_preview)
     tags$details(
@@ -84,12 +181,10 @@ server <- function(input, output, session) {
       DT::dataTableOutput("preview_table")
     )
   })
-
   output$preview_table <- DT::renderDataTable({
     req(rv$df_preview)
     DT::datatable(head(rv$df_preview, 10), options = list(scrollX = TRUE, pageLength = 10))
   })
-
 
 
 
@@ -839,6 +934,7 @@ server <- function(input, output, session) {
     )
 
   })
+
 
 
 }
