@@ -204,10 +204,6 @@ server <- function(input, output, session) {
     if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
   })
 
-  save_dir_path <- reactive({
-    if (input$save_dir == "") tempdir() else input$save_dir
-  })
-
   # Run viseat function
   observeEvent(input$run_viseat, {
     req(input$dates)
@@ -257,16 +253,6 @@ server <- function(input, output, session) {
         mean_visits_day <- if (!is.null(visits_by_day)) round(mean(visits_by_day), 2) else "Unknown"
         n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
 
-        # Date range
-        date_range <- if (date_col %in% names(df)) {
-          start_dates <- as.Date(df[[date_col]])
-          paste0(
-            as.character(min(start_dates, na.rm = TRUE)),
-            " to ",
-            as.character(max(start_dates, na.rm = TRUE))
-          )
-        } else "Unknown"
-
         div(
           class = "summary-card",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
@@ -279,25 +265,46 @@ server <- function(input, output, session) {
               tags$ul(
                 lapply(seq_along(visits_by_unit), function(i) {
                   tags$li(
-                    style = "margin-left:2px;",
                     tags$b("Unit ",names(visits_by_unit)[i]), ": ", visits_by_unit[i]
                   )
                 })
               )
             ),
-            tags$li(strong("Visits/Animal/Day: Median= "), mean_visits_animal_per_day)
+            tags$li(strong("Median Visits per Animal-Day: "), mean_visits_animal_per_day)
           )
         )
       })
 
-      # Boxplot: Visits per Animal
+      # Plot Visits per Animal
       output$boxplot_animal <- renderPlotly({
         df <- results()$visits_per_day
         # Dynamically choose the animal ID column
         animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
         if (is.null(animal_col)) return(NULL)
 
-        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
+        # Compute stats per animal (keep original column name)
+        stats <- df %>%
+          dplyr::group_by(.data[[animal_col]]) %>%
+          dplyr::summarise(
+            min_visits = min(visits, na.rm = TRUE),
+            median_visits = median(visits, na.rm = TRUE),
+            max_visits = max(visits, na.rm = TRUE),
+            .groups = "drop"
+          )
+
+        # Now join using the correct column name
+        df <- df %>%
+          dplyr::left_join(stats, by = animal_col) %>%
+          dplyr::mutate(
+            tooltip_text = paste0(
+              "ID: ", .data[[animal_col]], "\n",
+              "Min: ", min_visits, "\n",
+              "Median: ", median_visits, "\n",
+              "Max: ", max_visits
+            )
+          )
+
+        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits, text = tooltip_text)) +
           geom_boxplot(fill = "#43a047", alpha = 0.87, outlier.color = "red") +
           labs(
             title = "Visits Per Animal",
@@ -307,8 +314,9 @@ server <- function(input, output, session) {
           theme_minimal(base_size = 12) +
           theme(
             plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
-            axis.text.x = element_blank(),
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 6),
             axis.title.y = element_text(size = 10, face = "bold"),
+            axis.title.x = element_text(size = 10, face = "bold"),
             panel.grid.major.x = element_blank(),
             plot.background = element_rect(fill = "transparent", color = NA),
             panel.background = element_rect(fill = "transparent", color = NA),
@@ -316,29 +324,29 @@ server <- function(input, output, session) {
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank()
           )
-        ggplotly(p_animal, tooltip = c("x", "y"))
+
+        ggplotly(p_animal, tooltip = "text")
       })
 
-      # Downloads
-      output$download_day <- downloadHandler(
-        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_day, file, row.names = FALSE)
-        }
-      )
-
-      output$download_animal <- downloadHandler(
-        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_animal, file, row.names = FALSE)
-        }
-      )
+      # # Downloads
+      # output$download_day <- downloadHandler(
+      #   filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
+      #   content = function(file) {
+      #     write.csv(results$visits_per_day, file, row.names = FALSE)
+      #   }
+      # )
+      #
+      # output$download_animal <- downloadHandler(
+      #   filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
+      #   content = function(file) {
+      #     write.csv(results$visits_per_animal, file, row.names = FALSE)
+      #   }
+      # )
 
     }, error = function(e) {
       output$viseat_status <- renderText(paste("❌ Error:", e$message))
     })
   })
-
 
 
   # Run 'pellin' function
@@ -361,7 +369,7 @@ server <- function(input, output, session) {
         start_date = input$dates[1],
         end_date = input$dates[2],
         rfid_file = rfid_path(),
-        save_dir = save_dir_path()
+        save_dir = NULL
       )
 
       summary_df <- df %>%
@@ -380,6 +388,36 @@ server <- function(input, output, session) {
           kableExtra::kable_styling("striped", full_width = FALSE)
         HTML(table_html)
       })
+
+      # Pellin Summary Card
+      output$pellin_summary <- renderUI({
+        if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
+
+        # Calculate summary statistics
+        n_animals <- dplyr::n_distinct(df$RFID)
+        n_days <- dplyr::n_distinct(df$Date)
+        total_intake <- round(sum(df$PIntake_kg, na.rm = TRUE), 2)
+        mean_intake <- round(mean(df$PIntake_kg, na.rm = TRUE), 2)
+
+        div(
+          class = "summary-card",
+          icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+          strong("Pellin Report Summary"),
+          tags$ul(
+            tags$li(strong("Animals: "), n_animals),
+            tags$li(strong("Days: "), n_days),
+            tags$li(strong("Mean Pellet Intake per Animal-Day (g): "), mean_intake*1000)
+          )
+        )
+      })
+
+      # Downloads
+      output$download_pellin <- downloadHandler(
+        filename = function() paste0("PelletIntakes_", unit_converted()$pellin, "_", input$dates[1], "_", input$dates[2], ".csv"),
+        content = function(file) {
+          write.csv(df, file, row.names = FALSE)
+        }
+      )
 
     }, error = function(e) {
       output$pellin_status <- renderText(paste("❌ Error:", e$message))

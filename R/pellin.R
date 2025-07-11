@@ -314,21 +314,22 @@ pellin <- function(user = NA, pass = NA, unit, gcup, start_date, end_date,
 
 
   # Ensure save_dir is an absolute path
-  save_dir <- normalizePath(save_dir, mustWork = FALSE)
+  if (!is.null(save_dir)) {
+    save_dir <- normalizePath(save_dir, mustWork = FALSE)
 
-  # Check if the directory exists, and create it if necessary
-  if (!dir.exists(save_dir)) {
-    dir.create(save_dir, recursive = TRUE)
-  }
+    # Check if the directory exists, and create it if necessary
+    if (!dir.exists(save_dir)) {
+      dir.create(save_dir, recursive = TRUE)
+    }
 
+    # Save pellet intakes as a CSV file with pellet weight (kg) for the requested period
+    file_name <- paste0("Pellet_Intakes_", start_date, "_", end_date, ".csv")
+    file_path <- file.path(save_dir, file_name)
 
-  # Save pellet intakes as a CSV file with pellet weight (kg) for the requested period
-  file_name <- paste0("Pellet_Intakes_", start_date, "_", end_date, ".csv")
-  file_path <- file.path(save_dir, file_name)
+    readr::write_excel_csv(df, file = file_path)
 
-  readr::write_excel_csv(df, file = file_path)
-
-  message("\nPellet intake file saved. Look for '", file_name, "' in: ", save_dir, "\n")
+    message("\nPellet intake file saved. Look for '", file_name, "' in: ", save_dir, "\n")
+    }
 
   return(df)
 }

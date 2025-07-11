@@ -170,7 +170,6 @@ ui <- fluidPage(
                  actionButton("run_viseat", "Run Viseat", icon = icon("running")),
                  div(style = "margin-bottom: 25px;"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
-                 textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
                  fileInput("rfid_file", "Upload RFID file (optional):"),
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
@@ -179,15 +178,11 @@ ui <- fluidPage(
                  uiOutput("report_summary1"),
                  br(),
                  plotlyOutput("boxplot_animal"),
-                 br(),
-                 conditionalPanel(
-                   condition = "output.showDownloads == true",
-                   downloadButton("download_day", "Download Visits Per Day"),
-                   downloadButton("download_animal", "Download Visits Per Animal")
-                 ),
                  br(), hr(), br(),
                  verbatimTextOutput("pellin_status"),
-                 uiOutput("pellin_table")
+                 uiOutput("pellin_summary"),
+                 uiOutput("pellin_table"),
+                 downloadButton("download_pellin", "Download Pellin Results")
                )
              )
     ),
