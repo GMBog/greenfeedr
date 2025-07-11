@@ -190,6 +190,8 @@ server <- function(input, output, session) {
 
   # TAB 2: Checking Data ####
 
+  results <- reactiveVal(NULL)
+
   unit_converted <- reactive({
     req(input$unit)
     list(
@@ -202,15 +204,144 @@ server <- function(input, output, session) {
     if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
   })
 
-  feedtimes_path <- reactive({
-    if (!is.null(input$feedtimes_file)) input$feedtimes_file$datapath else NULL
-  })
-
   save_dir_path <- reactive({
     if (input$save_dir == "") tempdir() else input$save_dir
   })
 
-  # Run pellin function
+  # Run viseat function
+  observeEvent(input$run_viseat, {
+    req(input$dates)
+
+    tryCatch({
+      results(greenfeedr::viseat(
+        user = input$user,
+        pass = input$pass,
+        unit = unit_converted()$viseat,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        rfid_file = rfid_path()
+      ))
+
+      # summary card: always defined at top-level
+      output$report_summary1 <- renderUI({
+        req(input$run_viseat > 0)
+        df <- results()$feedtimes
+        unit_col <- "FID"
+
+        if (is.null(df) || !is.data.frame(df) || nrow(df) == 0 || !unit_col %in% names(df)) return(NULL)
+
+        visits_by_unit <- table(df[[unit_col]])
+
+        # Animal info
+        animal_col <- "CowTag"
+        visits_by_animal <- if (animal_col %in% names(df)) table(df[[animal_col]]) else NULL
+        mean_visits_animal <- if (!is.null(visits_by_animal)) round(mean(visits_by_animal), 2) else "Unknown"
+        n_animals <- if (!is.null(visits_by_animal)) length(visits_by_animal) else "Unknown"
+
+        # Use the same data for mean visits per animal per day as the plot
+        visits_per_day_df <- results()$visits_per_day
+        if (!is.null(visits_per_day_df) && is.data.frame(visits_per_day_df) && nrow(visits_per_day_df) > 0) {
+          animal_col_plot <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
+          if (!is.null(animal_col_plot) && "visits" %in% names(visits_per_day_df)) {
+            mean_visits_animal_per_day <- median(as.numeric(visits_per_day_df$visits), na.rm = T)
+          } else {
+            mean_visits_animal_per_day <- "Unknown"
+          }
+        } else {
+          mean_visits_animal_per_day <- "Unknown"
+        }
+
+        # Day info
+        date_col <- "FeedTime"
+        visits_by_day <- if (date_col %in% names(df)) table(as.Date(df[[date_col]])) else NULL
+        mean_visits_day <- if (!is.null(visits_by_day)) round(mean(visits_by_day), 2) else "Unknown"
+        n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
+
+        # Date range
+        date_range <- if (date_col %in% names(df)) {
+          start_dates <- as.Date(df[[date_col]])
+          paste0(
+            as.character(min(start_dates, na.rm = TRUE)),
+            " to ",
+            as.character(max(start_dates, na.rm = TRUE))
+          )
+        } else "Unknown"
+
+        div(
+          class = "summary-card",
+          icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+          strong("GreenFeed Report Summary"),
+          tags$ul(
+            tags$li(strong("Animals: "), n_animals),
+            tags$li(strong("Days: "), n_days),
+            tags$li(
+              strong("Total Visits: "),
+              tags$ul(
+                lapply(seq_along(visits_by_unit), function(i) {
+                  tags$li(
+                    style = "margin-left:2px;",
+                    tags$b("Unit ",names(visits_by_unit)[i]), ": ", visits_by_unit[i]
+                  )
+                })
+              )
+            ),
+            tags$li(strong("Visits/Animal/Day: Median= "), mean_visits_animal_per_day)
+          )
+        )
+      })
+
+      # Boxplot: Visits per Animal
+      output$boxplot_animal <- renderPlotly({
+        df <- results()$visits_per_day
+        # Dynamically choose the animal ID column
+        animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
+        if (is.null(animal_col)) return(NULL)
+
+        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
+          geom_boxplot(fill = "#43a047", alpha = 0.87, outlier.color = "red") +
+          labs(
+            title = "Visits Per Animal",
+            x = "Animal",
+            y = "Visits"
+          ) +
+          theme_minimal(base_size = 12) +
+          theme(
+            plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
+            axis.text.x = element_blank(),
+            axis.title.y = element_text(size = 10, face = "bold"),
+            panel.grid.major.x = element_blank(),
+            plot.background = element_rect(fill = "transparent", color = NA),
+            panel.background = element_rect(fill = "transparent", color = NA),
+            legend.background = element_rect(fill = "transparent", color = NA),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank()
+          )
+        ggplotly(p_animal, tooltip = c("x", "y"))
+      })
+
+      # Downloads
+      output$download_day <- downloadHandler(
+        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
+        content = function(file) {
+          write.csv(results$visits_per_day, file, row.names = FALSE)
+        }
+      )
+
+      output$download_animal <- downloadHandler(
+        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
+        content = function(file) {
+          write.csv(results$visits_per_animal, file, row.names = FALSE)
+        }
+      )
+
+    }, error = function(e) {
+      output$viseat_status <- renderText(paste("❌ Error:", e$message))
+    })
+  })
+
+
+
+  # Run 'pellin' function
   observeEvent(input$run_pellin, {
     req(input$gcup)
 
@@ -230,7 +361,6 @@ server <- function(input, output, session) {
         start_date = input$dates[1],
         end_date = input$dates[2],
         rfid_file = rfid_path(),
-        file_path = feedtimes_path(),
         save_dir = save_dir_path()
       )
 
@@ -254,55 +384,6 @@ server <- function(input, output, session) {
     }, error = function(e) {
       output$pellin_status <- renderText(paste("❌ Error:", e$message))
       output$pellin_table <- renderUI(NULL)
-    })
-  })
-
-  # Run viseat function
-  observeEvent(input$run_viseat, {
-    req(input$dates)
-
-    tryCatch({
-      results <- greenfeedr::viseat(
-        user = input$user,
-        pass = input$pass,
-        unit = unit_converted()$viseat,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        rfid_file = rfid_path(),
-        file_path = feedtimes_path()
-      )
-
-      # Plot: TAG reads per unit
-      plot_data <- results$feedtimes %>%
-        dplyr::group_by(FID) %>%
-        dplyr::summarise(n = n()) %>%
-        ggplot(aes(x = as.factor(FID), y = n, fill = as.factor(FID))) +
-        geom_bar(stat = "identity", position = position_dodge()) +
-        geom_text(aes(label = n),
-                  vjust = 1.9, color = "black", size = 3.8,
-                  position = position_dodge(0.9)) +
-        labs(title = "TAG reads per unit", x = "Units", y = "Frequency", fill = "Unit") +
-        theme_classic()
-
-      output$unit_plot <- renderPlot({ plot_data })
-
-      # Downloads
-      output$download_day <- downloadHandler(
-        filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_day, file, row.names = FALSE)
-        }
-      )
-
-      output$download_animal <- downloadHandler(
-        filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
-        content = function(file) {
-          write.csv(results$visits_per_animal, file, row.names = FALSE)
-        }
-      )
-
-    }, error = function(e) {
-      output$viseat_status <- renderText(paste("❌ Error:", e$message))
     })
   })
 
@@ -375,9 +456,6 @@ server <- function(input, output, session) {
 
       cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
       df[cols_to_convert] <- lapply(df[cols_to_convert], as.numeric)
-
-      #DEBUG: print dimension after cleaning
-      print(paste("Rows after cleaning:", nrow(df)))
 
       report_data(df)
       output$report_status <- renderText("")  # clear previous error

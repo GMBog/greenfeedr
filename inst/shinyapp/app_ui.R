@@ -166,21 +166,28 @@ ui <- fluidPage(
                  textInput("user", "Username:", placeholder = "Enter your username"),
                  passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
-                 textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 fileInput("rfid_file", "Upload RFID file (optional):"),
-                 fileInput("feedtimes_file", "Upload Feedtimes file (optional):"),
+                 actionButton("run_viseat", "Run Viseat", icon = icon("running")),
+                 div(style = "margin-bottom: 25px;"),
+                 textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
                  textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("run_pellin", "Run Pellin", icon = icon("running")),
-                 actionButton("run_viseat", "Run Viseat", icon = icon("running"))
+                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
-                 verbatimTextOutput("pellin_status"),
-                 uiOutput("pellin_table"),
-                 br(), hr(), br(),
                  textOutput("viseat_status"),
-                 plotOutput("unit_plot"),
-                 uiOutput("viseat_download_ui")
+                 uiOutput("report_summary1"),
+                 br(),
+                 plotlyOutput("boxplot_animal"),
+                 br(),
+                 conditionalPanel(
+                   condition = "output.showDownloads == true",
+                   downloadButton("download_day", "Download Visits Per Day"),
+                   downloadButton("download_animal", "Download Visits Per Animal")
+                 ),
+                 br(), hr(), br(),
+                 verbatimTextOutput("pellin_status"),
+                 uiOutput("pellin_table")
                )
              )
     ),

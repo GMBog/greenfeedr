@@ -99,8 +99,8 @@ viseat <- function(user = NA, pass = NA, unit,
     df <- df %>%
       dplyr::mutate(
         CowTag = gsub("^0+", "", CowTag),
-        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-      )
+        FeedTime = as.POSIXct(FeedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")) %>%
+      dplyr::filter(!is.na(FeedTime))
   } else {
 
     file_path <- normalizePath(file_path, mustWork = FALSE) # Convert to absolute path
@@ -197,12 +197,12 @@ viseat <- function(user = NA, pass = NA, unit,
       dplyr::summarise(
         ndrops = dplyr::n(),
         visits = max(CurrentPeriod)
-      )
+      ) %>%
+      dplyr::mutate(visits = as.numeric(visits))
 
     # Calculate the number of drops and visits per animal
     animal_visits <- daily_visits %>%
       dplyr::group_by(RFID, FoodType) %>%
-      dplyr::mutate(visits = as.numeric(visits)) %>%
       dplyr::summarise(
         total_drops = sum(ndrops),
         total_visits = sum(visits),
