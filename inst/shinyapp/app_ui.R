@@ -236,10 +236,10 @@ ui <- fluidPage(
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
                  fileInput("gf_file", "Upload GreenFeed Data:"),
                  actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
-                 br(), hr(),
-                 numericInput("param1", "N records/day (param1):", value = 2, min = 1),
-                 numericInput("param2", "N days/week (param2):", value = 3, min = 1),
-                 numericInput("min_time", "Min. minutes per record:", value = 2),
+                 div(style = "margin-bottom: 15px;"), hr(),
+                 numericInput("param1", "N Records-Day (Param1):", value = 2, min = 1),
+                 numericInput("param2", "N Days-Week (Param2):", value = 3, min = 1),
+                 numericInput("min_time", "Min. minutes per record (Min_time):", value = 2),
                  checkboxInput("transform", "Transform gases to L/d?", value = FALSE),
                  numericInput("cutoff", "Outlier SD cutoff:", value = 3, min = 1),
                  actionButton("run_process", "Process Data", icon = icon("sync"))
@@ -253,11 +253,10 @@ ui <- fluidPage(
                  ),
                  conditionalPanel(
                    condition = "input.run_process > 0",
-                   br(),hr(),
+                   div(style = "margin-bottom: 15px;"), hr(),
                    uiOutput("proc_section_title"),
                    tableOutput("proc_summary_table"),
-                   br(),
-                   h4("Download Processed Files:"),
+                   div(style = "margin-bottom: 15px;"),
                    fluidRow(
                      column(4, downloadButton("download_filtered", "Filtered Data")),
                      column(4, downloadButton("download_daily", "Daily Data")),
@@ -266,7 +265,7 @@ ui <- fluidPage(
                  )
                )
              )
-    ),
+  ),
 
   tags$footer(
     style = "text-align: center; padding: 10px 0; color: #999; font-size: 13px; margin-top: 30px;",

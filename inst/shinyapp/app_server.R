@@ -579,7 +579,7 @@ server <- function(input, output, session) {
   output$report_table <- DT::renderDataTable({
     df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
-    DT::datatable(head(df, 100), options = list(scrollX = TRUE, pageLength = 10))
+    DT::datatable(head(df, 100), options = list(scrollX = TRUE, pageLength = 5))
   })
 
   # Grid to Choose the Plot
@@ -855,17 +855,20 @@ server <- function(input, output, session) {
   })
 
 
-  # TAB 4: Processing Data ####
+  ## TAB 4: Processing Data ####
 
-  # Reactive value to store eval results
-  eval_param_result <- reactiveVal(NULL)
+  # Define reactive values
+  rv <- reactiveValues(
+    eval_param_result = NULL,
+    processed_result = NULL,
+    error_message = NULL
+  )
 
-  observeEvent(input$run_eval_param, {
-    req(input$gf_file, input$dates)
-
-    # Read data file: preliminary (.csv) and finalized (.xlsx)
-    df <- tryCatch({
-      ext <- tools::file_ext(input$gf_file$name)
+  # Read data file (preliminary (.csv) or finalized (.xlsx))
+  df <- reactive({
+    req(input$gf_file)
+    ext <- tools::file_ext(input$gf_file$name)
+    tryCatch({
       if (tolower(ext) %in% c("xls", "xlsx")) {
         readxl::read_excel(input$gf_file$datapath)
       } else if (tolower(ext) == "csv") {
@@ -874,45 +877,46 @@ server <- function(input, output, session) {
         stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
     }, error = function(e) {
-      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
-      return(NULL)
+      rv$error_message <- paste("❌ File error:", e$message)
+      NULL
     })
+  })
 
-    if (is.null(df)) return()
+  if (is.null(df)) return()
 
-    # Evaluate all the combination of parameters to process data
-    result <- NULL
-    withProgress(message = "⏳ Evaluating all possible combination of parameters...", value = 0, {
+  observeEvent(input$run_eval_param, {
+    req(df(), input$dates)
+
+    # Run code to evaluate parameters
+    withProgress(message = "⏳ Evaluating all parameters...", value = 0, {
       result <- tryCatch({
         greenfeedr::eval_gfparam(
-          data = df,
-          start_date = format(input$dates[1], "%d/%m/%Y"),
-          end_date = format(input$dates[2], "%d/%m/%Y")
+          data = df(),
+          start_date = input$dates[1],
+          end_date = input$dates[2]
         )
       }, error = function(e) {
-        output$proc_summary <- renderText(paste("❌ Evaluation error:", e$message))
-        return(NULL)
+        rv$error_message <- paste("❌ Evaluation error:", e$message)
+        NULL
       })
+      rv$eval_param_result <- result
     })
 
-    eval_param_result(result)
-
-    # Render table of evaluation results
+    # Show table with results
     output$eval_section_title <- renderUI({
-      req(eval_param_result())
-      h4("Evaluation of Parameter Combinations:")
+      req(rv$eval_param_result)
+      h4("Evaluation of Parameter Combinations")
     })
 
-    output$eval_param_table <- renderTable({
-      req(eval_param_result())
-      eval_param_result()
-    })
-
-    # Define format of the table
-    output$eval_param_table <- renderDT({
-      req(eval_param_result())
-      datatable(
-        eval_param_result(),
+    output$eval_param_table <- DT::renderDataTable({
+      df <- rv$eval_param_result
+      df$param1 <- as.character(df$param1)
+      df$param2 <- as.character(df$param2)
+      df$min_time <- as.character(df$min_time)
+      names(df) <- c("Param1", "Param2", "Min_time", "N Records", "N Animals",
+                     "Mean CH4", "SD CH4", "CV CH4")
+      DT::datatable(
+        df,
         options = list(
           pageLength = 5,
           autoWidth = FALSE,
@@ -920,39 +924,26 @@ server <- function(input, output, session) {
         ),
         filter = "top",
         rownames = FALSE
-      )
+      ) %>%
+        DT::formatStyle(
+          columns = names(df),
+          'text-align' = 'center'
+        )
     })
 
+    output$proc_summary <- renderText({
+      rv$error_message
+    })
   })
 
-  # Reactive value to store proccessed results
-  processed_result <- reactiveVal(NULL)
 
   observeEvent(input$run_process, {
-    req(input$gf_file, input$dates, input$param1, input$param2)
-
-    # Read data file: preliminary (.csv) and finalized (.xlsx)
-    df <- tryCatch({
-      ext <- tools::file_ext(input$gf_file$name)
-      cat("File extension detected:", ext, "\n")
-      if (tolower(ext) %in% c("xls", "xlsx")) {
-        readxl::read_excel(input$gf_file$datapath)
-      } else if (tolower(ext) == "csv") {
-        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
-      } else {
-        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
-      }
-    }, error = function(e) {
-      output$proc_summary <- renderText(paste("❌ Error reading file:", e$message))
-      return(NULL)
-    })
-
-    if (is.null(df)) return()
+    req(df(), input$dates, input$param1, input$param2)
 
     # Process data using the parameters chosen
     result <- tryCatch({
       greenfeedr::process_gfdata(
-        data = df,
+        data = df(),
         start_date = input$dates[1],
         end_date = input$dates[2],
         param1 = input$param1,
@@ -965,14 +956,14 @@ server <- function(input, output, session) {
       output$proc_summary <- renderText(paste("❌ Processing error:", e$message))
       return(NULL)
     })
-
     if (is.null(result)) return()
-
-    # Save to reactive value
-    processed_result(result)
+    rv$processed_result <- result
+  })
 
     # Provide summary using the weekly data
-    weekly <- result$weekly_data
+  output$proc_summary_table <- renderTable({
+    req(rv$processed_result)
+    weekly <- rv$processed_result$weekly_data
 
     gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
     gas_stats <- vapply(gas_names, function(gas) {
@@ -984,9 +975,7 @@ server <- function(input, output, session) {
     }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
 
     gas_display_name <- function(names_vec) {
-      # Replace GramsPerDay with (g/d)
       names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
-      # Replace LitersPerDay with (L/d)
       names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
       names_vec
     }
@@ -998,44 +987,64 @@ server <- function(input, output, session) {
       CV = round(gas_stats["cv", ], 1),
       stringsAsFactors = FALSE
     )
+    gas_df
+  }, digits = 2)
 
     # Render table of processed results
     output$proc_section_title <- renderUI({
-      req(processed_result())
-      h4("Data Summary:")
+      req(rv$processed_result)
+      h4("GreenFeed Data Summary")
     })
 
     output$proc_summary_table <- renderTable({
-      req(gas_df)
+      req(rv$processed_result)
+      weekly <- rv$processed_result$weekly_data
+
+      gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
+      gas_stats <- vapply(gas_names, function(gas) {
+        vals <- weekly[[gas]]
+        mean_val <- mean(vals, na.rm = TRUE)
+        sd_val <- sd(vals, na.rm = TRUE)
+        cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val * 100 else NA
+        c(mean = mean_val, sd = sd_val, cv = cv_val)
+      }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
+
+      gas_display_name <- function(names_vec) {
+        names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
+        names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
+        names_vec
+      }
+
+      gas_df <- data.frame(
+        Gas = gas_display_name(gas_names),
+        Mean = round(gas_stats["mean", ], 2),
+        SD = round(gas_stats["sd", ], 2),
+        CV = round(gas_stats["cv", ], 1),
+        stringsAsFactors = FALSE
+      )
       gas_df
     }, digits = 2)
 
-    # Options to download
-    ## Filtered data
     output$download_filtered <- downloadHandler(
       filename = function() { "filtered_data.csv" },
       content = function(file) {
-        write.csv(processed_result()$filtered_data, file, row.names = FALSE)
+        write.csv(rv$processed_result$filtered_data, file, row.names = FALSE)
       }
     )
 
-    ## Daily average data
     output$download_daily <- downloadHandler(
       filename = function() { "daily_data.csv" },
       content = function(file) {
-        write.csv(processed_result()$daily_data, file, row.names = FALSE)
+        write.csv(rv$processed_result$daily_data, file, row.names = FALSE)
       }
     )
 
-    ## Weekly average data
     output$download_weekly <- downloadHandler(
       filename = function() { "weekly_data.csv" },
       content = function(file) {
-        write.csv(processed_result()$weekly_data, file, row.names = FALSE)
+        write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
       }
     )
-
-  })
 
 
 
