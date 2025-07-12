@@ -991,11 +991,6 @@ server <- function(input, output, session) {
   }, digits = 2)
 
     # Render table of processed results
-    output$proc_section_title <- renderUI({
-      req(rv$processed_result)
-      h4("GreenFeed Data Summary")
-    })
-
     output$proc_summary_table <- renderTable({
       req(rv$processed_result)
       weekly <- rv$processed_result$weekly_data
@@ -1025,6 +1020,8 @@ server <- function(input, output, session) {
       gas_df
     }, digits = 2)
 
+    # Download files
+    #1. Filtered data
     output$download_filtered <- downloadHandler(
       filename = function() { "filtered_data.csv" },
       content = function(file) {
@@ -1032,6 +1029,7 @@ server <- function(input, output, session) {
       }
     )
 
+    #2. Daily data
     output$download_daily <- downloadHandler(
       filename = function() { "daily_data.csv" },
       content = function(file) {
@@ -1039,13 +1037,13 @@ server <- function(input, output, session) {
       }
     )
 
+    #3. Weekly data
     output$download_weekly <- downloadHandler(
       filename = function() { "weekly_data.csv" },
       content = function(file) {
         write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
       }
     )
-
 
 
 }

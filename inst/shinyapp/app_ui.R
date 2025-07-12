@@ -185,7 +185,7 @@ ui <- fluidPage(
                  uiOutput("pellin_table"),
                  conditionalPanel(
                    condition = "input.run_pellin > 0",
-                   downloadButton("download_pellin", "Download Pellin Results")
+                   downloadButton("download_pellin", "Download Intakes")
                  )
              )
           )
@@ -247,20 +247,18 @@ ui <- fluidPage(
                mainPanel(
                  conditionalPanel(
                    condition = "input.run_eval_param > 0",
-                   hr(),
-                   uiOutput("eval_section_title"),
                    DTOutput("eval_param_table")
                  ),
                  conditionalPanel(
                    condition = "input.run_process > 0",
-                   div(style = "margin-bottom: 15px;"), hr(),
-                   uiOutput("proc_section_title"),
+                   hr(),
+                   div(style = "margin-bottom: 15px;"),
                    tableOutput("proc_summary_table"),
                    div(style = "margin-bottom: 15px;"),
                    fluidRow(
-                     column(4, downloadButton("download_filtered", "Filtered Data")),
-                     column(4, downloadButton("download_daily", "Daily Data")),
-                     column(4, downloadButton("download_weekly", "Weekly Data"))
+                     column(4, downloadButton("download_filtered", "Download Filtered Data")),
+                     column(4, downloadButton("download_daily", "Download Daily Data")),
+                     column(4, downloadButton("download_weekly", "Download Weekly Data"))
                    )
                  )
                )
