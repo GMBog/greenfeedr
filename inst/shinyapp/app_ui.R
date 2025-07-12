@@ -205,16 +205,16 @@ ui <- fluidPage(
                    "which_plot", "Show Plot:",
                    choices = c(
                      "Records Per Day" = "plot_1",
-                     "Gas Production Across The Day" = "plot_4",
-                     "Records Per Animal" = "plot_3"
+                     "Gas Production Across The Day" = "plot_3",
+                     "Records Per Animal" = "plot_2"
                    ),
                    selected = "plot_1"
                  ),
-                 # Only show gas selection for plot 4
+                 # Only show gas selection for plot 3
                  conditionalPanel(
-                   condition = "input.which_plot == 'plot_4'",
+                   condition = "input.which_plot == 'plot_3'",
                    checkboxGroupInput(
-                     "plot4_gas",
+                     "plot3_gas",
                      label = "Select gases to plot (multiple allowed):",
                      choices = list("CH4" = "ch4", "CO2" = "co2", "O2" = "o2", "H2" = "h2"),
                      selected = "ch4"
@@ -222,6 +222,7 @@ ui <- fluidPage(
                  )
                ),
                mainPanel(
+                 uiOutput("error_message"),
                  uiOutput("report_summary"),
                  uiOutput("report_preview"),
                  uiOutput("chosen_plot")

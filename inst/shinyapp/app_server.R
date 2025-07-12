@@ -341,8 +341,6 @@ server <- function(input, output, session) {
    })
   })
 
-
-
   # Run code to calculate intakes ('pellin' function)
   observeEvent(input$run_pellin, {
     req(input$gcup, input$unit)
@@ -442,112 +440,133 @@ server <- function(input, output, session) {
   })
 
 
-  # TAB 3: Reporting Data ####
+  ## TAB 3: Reporting Data ####
 
-  # Storage for processed data
-  report_data <- reactiveVal()
+  # Define reactive values
+  rv <- reactiveValues(
+    report_data = NULL,
+    error_message = NULL
+  )
 
-  # Run report
+  # Run code to report data ('report_gfdata' function)
   observeEvent(input$run_report, {
     req(input$unit, input$user, input$pass, input$dates)
 
+    # Check inputs
     unit <- convert_unit(input$unit, 1)
-    rfid <- if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
 
-    tryCatch({
-      #Authentication and API download
-      req(input$user, input$pass)
-      login_req <- httr::POST(
-        "https://portal.c-lockinc.com/api/login",
-        body = list(user = input$user, pass = input$pass)
-      )
-      httr::stop_for_status(login_req)
-      token <- trimws(httr::content(login_req, as = "text"))
+    # Reactive expression to get the path
+    rfid_path <- reactive({
+      if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+    })
 
-      url <- paste0(
-        "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
-        "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00&type=2"
-      )
-      message(url)
-      data_req <- httr::POST(url, body = list(token = token))
-      httr::stop_for_status(data_req)
-      raw_txt <- httr::content(data_req, as = "text")
+    withProgress(message = "Downloading and processing data...", value = 0, {
+      tryCatch({
+        # Step 1: Authentication
+        req(input$user, input$pass)
+        login_req <- httr::POST(
+          "https://portal.c-lockinc.com/api/login",
+          body = list(user = input$user, pass = input$pass)
+        )
+        httr::stop_for_status(login_req)
+        token <- trimws(httr::content(login_req, as = "text"))
+        incProgress(0.2, detail = "Authenticated...")
 
-      #Convert to dataframe
-      lines <- stringr::str_split(raw_txt, "\n")[[1]]
-      df <- do.call("rbind", stringr::str_split(lines[3:length(lines)], ","))
-      df <- as.data.frame(df)
-      colnames(df) <- c(
-        "FeederID", "AnimalName", "RFID", "StartTime", "EndTime", "GoodDataDuration",
-        "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay", "H2SGramsPerDay",
-        "AirflowLitersPerSec", "AirflowCf", "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
-        "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
-      )
+        # Step 2: Data download
+        url <- paste0(
+          "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
+          "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00&type=2"
+        )
+        message(url)
+        data_req <- httr::POST(url, body = list(token = token))
+        httr::stop_for_status(data_req)
+        raw_txt <- httr::content(data_req, as = "text")
+        incProgress(0.3, detail = "Data downloaded...")
 
-      #Process RFID file
-      rfid_df <- if (!is.null(rfid)) process_rfid_data(rfid) else NULL
+        # Step 3: Convert to dataframe
+        lines <- stringr::str_split(raw_txt, "\n")[[1]]
+        df <- do.call("rbind", stringr::str_split(lines[3:length(lines)], ","))
+        df <- as.data.frame(df)
+        colnames(df) <- c(
+          "FeederID", "AnimalName", "RFID", "StartTime", "EndTime", "GoodDataDuration",
+          "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay", "H2SGramsPerDay",
+          "AirflowLitersPerSec", "AirflowCf", "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
+          "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
+        )
+        incProgress(0.2, detail = "Data parsed...")
 
-      #Clean and process data
-      df <- df %>%
-        dplyr::filter(RFID != "unknown") %>%
-        dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-        { if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
-        dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
-        dplyr::mutate(
-          GoodDataDuration = round(
-            as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +
-              as.numeric(substr(GoodDataDuration, 4, 5)) +
-              as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
-            2
-          ),
-          HourOfDay = round(
-            as.numeric(substr(substr(StartTime, 12, 19), 1, 2)) +
-              as.numeric(substr(substr(StartTime, 12, 19), 4, 5)) / 60,
-            2
-          )
-        ) %>%
-        dplyr::filter(AirflowLitersPerSec >= 25)
+        # Step 4: Process RFID file
+        rfid_df <- if (!is.null(rfid_path)) process_rfid_data(rfid_path) else NULL
 
-      cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
-      df[cols_to_convert] <- lapply(df[cols_to_convert], as.numeric)
+        # Step 5: Clean and process data
+        df <- df %>%
+          dplyr::filter(RFID != "unknown") %>%
+          dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
+          { if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
+          dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
+          dplyr::mutate(
+            GoodDataDuration = round(
+              as.numeric(substr(GoodDataDuration, 1, 2)) * 60 +
+                as.numeric(substr(GoodDataDuration, 4, 5)) +
+                as.numeric(substr(GoodDataDuration, 7, 8)) / 60,
+              2
+            ),
+            HourOfDay = round(
+              as.numeric(substr(substr(StartTime, 12, 19), 1, 2)) +
+                as.numeric(substr(substr(StartTime, 12, 19), 4, 5)) / 60,
+              2
+            )
+          ) %>%
+          dplyr::filter(AirflowLitersPerSec >= 25)
 
-      report_data(df)
-      output$report_status <- renderText("")  # clear previous error
-    }, error = function(e) {
-      output$report_status <- renderText(paste("❌ Error:", e$message))
-      report_data(NULL)
+        cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
+        df[cols_to_convert] <- lapply(df[cols_to_convert], as.numeric)
+        incProgress(0.3, detail = "Data cleaned...")
+
+        rv$report_data <- df
+
+        # Handle error messages
+        rv$error_message <- NULL
+
+      }, error = function(e) {
+        msg <- as.character(e$message)
+        if (grepl("names.*must be the same length as the vector", msg)) {
+          rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        } else if (grepl("Cannot open file for writing", msg)) {
+          rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+        } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
+          rv$error_message <- "Error: Mismatch between number of units and gcup."
+        } else {
+          rv$error_message <- paste("Unexpected error:", msg)
+        }
+      })
     })
   })
 
   # Summary Card
   output$report_summary <- renderUI({
-    df <- report_data()
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
 
     date_col <- "StartTime"
     animal_col <- "RFID"
-    date_range <- if (date_col %in% names(df))
-      paste0(
-        as.character(min(as.Date(df[[date_col]]), na.rm=TRUE)),
-        " to ",
-        as.character(max(as.Date(df[[date_col]]), na.rm=TRUE))
-      ) else "Unknown"
+    n_days <- dplyr::n_distinct(as.Date(df$StartTime))
     n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
     div(
       class = "summary-card",
       icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
       strong("GreenFeed Report Summary"),
       tags$ul(
-        tags$li(strong("Records: "), nrow(df)),
         tags$li(strong("Animals: "), n_animals),
-        tags$li(strong("Date range: "), date_range)
+        tags$li(strong("Days: "), n_days),
+        tags$li(strong("Total Records: "), nrow(df)),
       )
     )
   })
 
-  # Collapsible Data Preview
+  # Create collapsible data preview
   output$report_preview <- renderUI({
-    df <- report_data()
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
     tags$details(
       tags$summary(style = "font-weight:bold; text-decoration:underline; cursor:pointer;",
@@ -556,15 +575,16 @@ server <- function(input, output, session) {
     )
   })
 
+  # Show data table
   output$report_table <- DT::renderDataTable({
-    df <- report_data()
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
     DT::datatable(head(df, 100), options = list(scrollX = TRUE, pageLength = 10))
   })
 
   # Grid to Choose the Plot
   output$chosen_plot <- renderUI({
-    df <- report_data()
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
     plotname <- input$which_plot
     if (is.null(plotname)) return(NULL)
@@ -573,7 +593,7 @@ server <- function(input, output, session) {
 
   # Plot 1: Records per Day
   output$plot_1 <- renderPlotly({
-    df <- report_data()
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) {
       return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No data for Records Per Day"))
     }
@@ -588,7 +608,7 @@ server <- function(input, output, session) {
       labs(
         title = "Records Per Day",
         subtitle = paste0("From ", min(df_count$Date), " to ", max(df_count$Date)),
-        x = "Date",
+        x = "",
         y = "Number of Records"
       ) +
       scale_x_date(date_breaks = "1 day", date_labels = "%d-%b") +
@@ -610,58 +630,9 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = c("x", "y"))
   })
 
-  # # Plot 2: CO2 and CH4 production per Day
-  # output$plot_2 <- renderPlotly({
-  #   df <- report_data()
-  #   if (is.null(df) || nrow(df) == 0) {
-  #     return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No data for Normalized Gas Production"))
-  #   }
-  #
-  #   df <- df %>%
-  #     dplyr::mutate(
-  #       CH4GramsPerDay = as.numeric(CH4GramsPerDay),
-  #       CO2GramsPerDay = as.numeric(CO2GramsPerDay)
-  #     ) %>%
-  #     dplyr::filter(!is.na(CH4GramsPerDay), !is.na(CO2GramsPerDay))
-  #   if(nrow(df) == 0) {
-  #     return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No valid CH₄/CO₂ data for plot"))
-  #   }
-  #
-  #   df_long <- df %>%
-  #     dplyr::mutate(
-  #       CH4 = as.numeric(scale(CH4GramsPerDay)),
-  #       CO2 = as.numeric(scale(CO2GramsPerDay)),
-  #       Day = as.character(as.Date(StartTime))
-  #     ) %>%
-  #     tidyr::pivot_longer(cols = c(CH4, CO2), names_to = "GasType", values_to = "NormalizedValue")
-  #
-  #   p <- ggplot(df_long, aes(x = Day, y = NormalizedValue, color = GasType, fill = GasType)) +
-  #     geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA, width = 0.7, alpha = 0.3) +
-  #     labs(
-  #       title = "Normalized Methane (CH₄) & CO₂ Production Per Animal Per Day",
-  #       x = "Day",
-  #       y = "Normalized Prod (g/d)",
-  #       color = "Gas Type",
-  #       fill = "Gas Type"
-  #     ) +
-  #     scale_color_manual(values = c("CH4" = "#43a047", "CO2" = "#1976d2")) +
-  #     scale_fill_manual(values = c("CH4" = "#43a047", "CO2" = "#1976d2")) +
-  #     geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.5) +
-  #     theme_classic(base_size = 13) +
-  #     theme(
-  #       plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
-  #       axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-  #       axis.title.y = element_text(size = 10, face = "bold"),
-  #       legend.title = element_blank(),
-  #       legend.position = "bottom"
-  #     )
-  #   ggplotly(p, tooltip = c("x", "y", "text"))
-  # })
-
-
-  # Plot 3: Records per Animal
-  output$plot_3 <- renderPlotly({
-    df <- report_data()
+  # Plot 2: Records per Animal
+  output$plot_2 <- renderPlotly({
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) {
       return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No data for Total Records Per Animal/Farm"))
     }
@@ -752,6 +723,7 @@ server <- function(input, output, session) {
       theme_minimal(base_size = 12) +
       theme(
         plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
+        plot.subtitle = element_text(size = 11, color = "#424242", hjust = 0.5),
         axis.text.x = element_blank(),
         axis.title.y = element_text(size = 10, face = "bold"),
         legend.position = "none",
@@ -767,16 +739,15 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = "text")
   })
 
-
-  # Plot 4: Gas Production Across the Day (user selects gases to plot, default = ch4)
-  output$plot_4 <- renderPlotly({
-    df <- report_data()
+  # Plot 3: Gas Production Across the Day (user selects gases to plot, default = ch4)
+  output$plot_3 <- renderPlotly({
+    df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) {
       return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No data for Gas Production Across The Day"))
     }
 
     # Use UI input for selected gases, default to "ch4" if none selected
-    plot_opt <- input$plot4_gas
+    plot_opt <- input$plot3_gas
     if (is.null(plot_opt) || length(plot_opt) == 0) plot_opt <- "ch4"
 
     # Generate the combined plot (function must be defined in your server or sourced)
@@ -809,11 +780,10 @@ server <- function(input, output, session) {
         ) +
         theme_minimal(base_size = 12) +
         theme(
-          plot.title = element_text(size = 11, face = "bold"),
-          axis.text.x = element_text(angle = 0, size = 9),
-          axis.text.y = element_text(angle = 0, size = 9),
+          plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
+          plot.subtitle = element_text(size = 11, color = "#424242", hjust = 0.5),
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
           axis.title.y = element_text(size = 10, face = "bold"),
-          axis.title.x = element_text(size = 10, face = "bold"),
           legend.position = "none",
           # Make ggplot backgrounds transparent
           plot.background = element_rect(fill = "transparent", color = NA),
