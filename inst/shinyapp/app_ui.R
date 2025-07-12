@@ -145,9 +145,8 @@ ui <- fluidPage(
                  textInput("user", "Username:", placeholder = "Enter your username"),
                  passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
                  selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
-                 dateRangeInput("dates", "Date Range:",
-                                start = Sys.Date() - 30, end = Sys.Date() - 1),
                  textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
                  actionButton("download", "Download Data", icon = icon("download"))
                ),
@@ -174,17 +173,22 @@ ui <- fluidPage(
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
+                 uiOutput("error_message"),
                  textOutput("viseat_status"),
                  uiOutput("report_summary1"),
-                 br(),
+                 div(style = "margin-bottom: 15px;"),
                  plotlyOutput("boxplot_animal"),
-                 br(), hr(), br(),
+                 div(style = "margin-bottom: 15px;"),
+                 hr(),
                  verbatimTextOutput("pellin_status"),
                  uiOutput("pellin_summary"),
                  uiOutput("pellin_table"),
-                 downloadButton("download_pellin", "Download Pellin Results")
-               )
+                 conditionalPanel(
+                   condition = "input.run_pellin > 0",
+                   downloadButton("download_pellin", "Download Pellin Results")
+                 )
              )
+          )
     ),
 
     tabPanel("Reporting",
@@ -228,8 +232,8 @@ ui <- fluidPage(
     tabPanel("Processing",
              sidebarLayout(
                sidebarPanel(
-                 fileInput("gf_file", "Upload GreenFeed Data:"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 fileInput("gf_file", "Upload GreenFeed Data:"),
                  actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
                  br(), hr(),
                  numericInput("param1", "N records/day (param1):", value = 2, min = 1),

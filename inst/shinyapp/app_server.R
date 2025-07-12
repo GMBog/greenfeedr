@@ -3,19 +3,23 @@
 
 server <- function(input, output, session) {
 
-  # TAB 1: Downloading Data ####
+  ## TAB 1: Downloading Data ####
+
+  # Define reactive values
   rv <- reactiveValues(
     filepath = NULL,
     df_preview = NULL,
     error_message = NULL
   )
 
+  # Run code for download data
   observeEvent(input$download, {
     req(input$user, input$pass, input$unit, input$dates, input$save_dir)
 
     # Check 'GreenFeed' unit format
     unit <- convert_unit(input$unit, 1)
 
+    # Show a progress bar (start downloading)
     withProgress(message = "Downloading data...", value = 0, {
       tryCatch({
         incProgress(0.1, detail = "Connecting to GreenFeed server...")
@@ -48,6 +52,7 @@ server <- function(input, output, session) {
           df
         }
 
+        # Show a progress bar (continuation)
         incProgress(0.3, detail = "Downloading and parsing data...")
         df <- download_and_parse(input$d)
 
@@ -80,6 +85,7 @@ server <- function(input, output, session) {
         if (!dir.exists(save_dir)) {
           dir.create(save_dir, recursive = TRUE)
         }
+        # Show a progress bar (start saving)
         incProgress(0.2, detail = "Saving file...")
 
         # Build file_path to save data
@@ -95,6 +101,7 @@ server <- function(input, output, session) {
         # Save the data
         readr::write_csv(df, filepath)
 
+        # Show a progress bar (start data preview)
         incProgress(0.2, detail = "Preparing data preview...")
 
         # Read preview for summary and preview table
@@ -105,7 +112,10 @@ server <- function(input, output, session) {
           rv$df_preview <- NULL
         }
 
+        # Show a progress bar (end)
         incProgress(0.2, detail = "Done!")
+
+        # Handle error messages
         rv$error_message <- NULL
 
       }, error = function(e) {
@@ -126,6 +136,7 @@ server <- function(input, output, session) {
   # Status card
   output$status_card <- renderUI({
     req(input$download)
+
     # Warning message if errors in the inputs
     if (is.null(rv$filepath) || is.null(rv$df_preview)) {
       div(
@@ -135,6 +146,7 @@ server <- function(input, output, session) {
         h4("Data file was not saved or is empty!", style = "margin: 0;")
       )
     } else {
+
       # Summary of data results
       df <- rv$df_preview
       date_col <- grep("StartTime|Date", names(df), value = TRUE)[1]
@@ -163,7 +175,7 @@ server <- function(input, output, session) {
     }
   })
 
-  # Show error message
+  # Error message card
   output$error_message <- renderUI({
     req(rv$error_message)
     div(
@@ -172,15 +184,17 @@ server <- function(input, output, session) {
     )
   })
 
-  # Show table (is hidden)
+  # Data preview (hidden in a link)
   output$preview <- renderUI({
     req(rv$df_preview)
+    # Show a link to press and access data
     tags$details(
       tags$summary(style = "font-weight:bold; text-decoration:underline; cursor:pointer;",
                    "Show/hide data preview"),
       DT::dataTableOutput("preview_table")
     )
   })
+  # Table data preview
   output$preview_table <- DT::renderDataTable({
     req(rv$df_preview)
     DT::datatable(head(rv$df_preview, 10), options = list(scrollX = TRUE, pageLength = 10))
@@ -188,57 +202,59 @@ server <- function(input, output, session) {
 
 
 
-  # TAB 2: Checking Data ####
+  ## TAB 2: Checking Data ####
 
-  results <- reactiveVal(NULL)
+  # Define reactive values
+  rv <- reactiveValues(
+    results = NULL,
+    error_message = NULL
+  )
 
-  unit_converted <- reactive({
-    req(input$unit)
-    list(
-      pellin = convert_unit(input$unit, 2),
-      viseat = convert_unit(input$unit, 1)
-    )
-  })
-
+  # Reactive expression to get the path
   rfid_path <- reactive({
     if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
   })
 
-  # Run viseat function
+  # Run code to check visitation ('viseat' function)
   observeEvent(input$run_viseat, {
-    req(input$dates)
+    req(input$dates, input$unit)
 
-    tryCatch({
-      results(greenfeedr::viseat(
-        user = input$user,
-        pass = input$pass,
-        unit = unit_converted()$viseat,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        rfid_file = rfid_path()
-      ))
+    # Check inputs
+    unit <- convert_unit(input$unit, 1)
 
-      # summary card: always defined at top-level
+    withProgress(message = 'Running Viseat...', value = 0, {
+      tryCatch({
+        rv$results <- greenfeedr::viseat(
+          user = input$user,
+          pass = input$pass,
+          unit = unit,
+          start_date = input$dates[1],
+          end_date = input$dates[2],
+          rfid_file = rfid_path()
+        )
+
+      # Summary card
       output$report_summary1 <- renderUI({
         req(input$run_viseat > 0)
-        df <- results()$feedtimes
+        df <- rv$results$feedtimes
         unit_col <- "FID"
 
+        # Check if data exist
         if (is.null(df) || !is.data.frame(df) || nrow(df) == 0 || !unit_col %in% names(df)) return(NULL)
 
+        # Get visits per unit
         visits_by_unit <- table(df[[unit_col]])
 
-        # Animal info
+        # Get number of animals using units
         animal_col <- "CowTag"
         visits_by_animal <- if (animal_col %in% names(df)) table(df[[animal_col]]) else NULL
-        mean_visits_animal <- if (!is.null(visits_by_animal)) round(mean(visits_by_animal), 2) else "Unknown"
         n_animals <- if (!is.null(visits_by_animal)) length(visits_by_animal) else "Unknown"
 
-        # Use the same data for mean visits per animal per day as the plot
-        visits_per_day_df <- results()$visits_per_day
+        # Calculate mean visits per animal per day
+        visits_per_day_df <- rv$results$visits_per_day
         if (!is.null(visits_per_day_df) && is.data.frame(visits_per_day_df) && nrow(visits_per_day_df) > 0) {
-          animal_col_plot <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
-          if (!is.null(animal_col_plot) && "visits" %in% names(visits_per_day_df)) {
+          animal_col <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
+          if (!is.null(animal_col) && "visits" %in% names(visits_per_day_df)) {
             mean_visits_animal_per_day <- median(as.numeric(visits_per_day_df$visits), na.rm = T)
           } else {
             mean_visits_animal_per_day <- "Unknown"
@@ -247,12 +263,12 @@ server <- function(input, output, session) {
           mean_visits_animal_per_day <- "Unknown"
         }
 
-        # Day info
+        # Get number of days with visits
         date_col <- "FeedTime"
         visits_by_day <- if (date_col %in% names(df)) table(as.Date(df[[date_col]])) else NULL
-        mean_visits_day <- if (!is.null(visits_by_day)) round(mean(visits_by_day), 2) else "Unknown"
         n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
 
+        # Create summary card
         div(
           class = "summary-card",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
@@ -275,40 +291,18 @@ server <- function(input, output, session) {
         )
       })
 
-      # Plot Visits per Animal
+      # Plot 1: Visits per Animal
       output$boxplot_animal <- renderPlotly({
-        df <- results()$visits_per_day
+        df <- rv$results$visits_per_day
         # Dynamically choose the animal ID column
         animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
         if (is.null(animal_col)) return(NULL)
 
-        # Compute stats per animal (keep original column name)
-        stats <- df %>%
-          dplyr::group_by(.data[[animal_col]]) %>%
-          dplyr::summarise(
-            min_visits = min(visits, na.rm = TRUE),
-            median_visits = median(visits, na.rm = TRUE),
-            max_visits = max(visits, na.rm = TRUE),
-            .groups = "drop"
-          )
-
-        # Now join using the correct column name
-        df <- df %>%
-          dplyr::left_join(stats, by = animal_col) %>%
-          dplyr::mutate(
-            tooltip_text = paste0(
-              "ID: ", .data[[animal_col]], "\n",
-              "Min: ", min_visits, "\n",
-              "Median: ", median_visits, "\n",
-              "Max: ", max_visits
-            )
-          )
-
-        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits, text = tooltip_text)) +
-          geom_boxplot(fill = "#43a047", alpha = 0.87, outlier.color = "red") +
+        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
+          geom_boxplot(fill = "#43a047", alpha = 0.87) +
           labs(
             title = "Visits Per Animal",
-            x = "Animal",
+            x = "",
             y = "Visits"
           ) +
           theme_minimal(base_size = 12) +
@@ -325,76 +319,57 @@ server <- function(input, output, session) {
             panel.grid.minor = element_blank()
           )
 
-        ggplotly(p_animal, tooltip = "text")
+        # Plot interactively
+        ggplotly(p_animal)
       })
 
-      # # Downloads
-      # output$download_day <- downloadHandler(
-      #   filename = function() paste0("visits_per_day_", Sys.Date(), ".csv"),
-      #   content = function(file) {
-      #     write.csv(results$visits_per_day, file, row.names = FALSE)
-      #   }
-      # )
-      #
-      # output$download_animal <- downloadHandler(
-      #   filename = function() paste0("visits_per_animal_", Sys.Date(), ".csv"),
-      #   content = function(file) {
-      #     write.csv(results$visits_per_animal, file, row.names = FALSE)
-      #   }
-      # )
+      # Handle error messages
+      rv$error_message <- NULL
 
     }, error = function(e) {
-      output$viseat_status <- renderText(paste("❌ Error:", e$message))
+      msg <- as.character(e$message)
+      if (grepl("names.*must be the same length as the vector", msg)) {
+        rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+      } else if (grepl("Cannot open file for writing", msg)) {
+        rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+      } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
+        rv$error_message <- "Error: Mismatch between number of units and gcup."
+      } else {
+        rv$error_message <- paste("Unexpected error:", msg)
+      }
     })
+   })
   })
 
 
-  # Run 'pellin' function
+
+  # Run code to calculate intakes ('pellin' function)
   observeEvent(input$run_pellin, {
-    req(input$gcup)
+    req(input$gcup, input$unit)
 
+    # Check inputs
     gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
-    if (any(is.na(gcup))) {
-      output$pellin_status <- renderText("❌ Error: Invalid 'gcup' input. Must be numeric (e.g., 34 or 34,35).")
-      output$pellin_table <- renderUI(NULL)
-      return()
-    }
+    unit <- convert_unit(input$unit, 2)
 
-    tryCatch({
-      df <- greenfeedr::pellin(
-        user = input$user,
-        pass = input$pass,
-        unit = unit_converted()$pellin,
-        gcup = gcup,
-        start_date = input$dates[1],
-        end_date = input$dates[2],
-        rfid_file = rfid_path(),
-        save_dir = NULL
-      )
-
-      summary_df <- df %>%
-        dplyr::filter(!is.na(FoodType)) %>%
-        dplyr::group_by(FoodType) %>%
-        dplyr::summarise(
-          Animals = dplyr::n_distinct(RFID),
-          Days = dplyr::n_distinct(Date),
-          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
-          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
-          .groups = "drop"
+    withProgress(message = 'Running Pellin...', value = 0, {
+      tryCatch({
+        df <- greenfeedr::pellin(
+          user = input$user,
+          pass = input$pass,
+          unit = unit,
+          gcup = gcup,
+          start_date = input$dates[1],
+          end_date = input$dates[2],
+          rfid_file = rfid_path(),
+          save_dir = NULL #this argument avoid function to save files directly
         )
 
-      output$pellin_table <- renderUI({
-        table_html <- knitr::kable(summary_df, format = "html") %>%
-          kableExtra::kable_styling("striped", full_width = FALSE)
-        HTML(table_html)
-      })
-
-      # Pellin Summary Card
+      # Summary Card
       output$pellin_summary <- renderUI({
         if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
 
         # Calculate summary statistics
-        n_animals <- dplyr::n_distinct(df$RFID)
+        n_animals <- dplyr::n_distinct(df$RFID[!is.na(df$FoodType)])
         n_days <- dplyr::n_distinct(df$Date)
         total_intake <- round(sum(df$PIntake_kg, na.rm = TRUE), 2)
         mean_intake <- round(mean(df$PIntake_kg, na.rm = TRUE), 2)
@@ -411,18 +386,59 @@ server <- function(input, output, session) {
         )
       })
 
+      # Process 'feedtimes' data
+      summary_df <- df %>%
+        dplyr::filter(!is.na(FoodType)) %>%
+        dplyr::group_by(FoodType) %>%
+        dplyr::summarise(
+          Animals = dplyr::n_distinct(RFID),
+          Days = dplyr::n_distinct(Date),
+          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
+          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
+          .groups = "drop"
+        )
+
+      # Create summary table
+      output$pellin_table <- renderUI({
+        table_html <- knitr::kable(summary_df, format = "html") %>%
+          kableExtra::kable_styling("striped", full_width = FALSE)
+        HTML(table_html)
+      })
+
       # Downloads
       output$download_pellin <- downloadHandler(
-        filename = function() paste0("PelletIntakes_", unit_converted()$pellin, "_", input$dates[1], "_", input$dates[2], ".csv"),
+        filename = function()
+          paste0("PelletIntakes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
         content = function(file) {
           write.csv(df, file, row.names = FALSE)
         }
       )
 
+      # Handle error messages
+      rv$error_message <- NULL
+
     }, error = function(e) {
-      output$pellin_status <- renderText(paste("❌ Error:", e$message))
-      output$pellin_table <- renderUI(NULL)
+      msg <- as.character(e$message)
+      if (grepl("names.*must be the same length as the vector", msg)) {
+        rv$error_message <- "Error: No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+      } else if (grepl("Cannot open file for writing", msg)) {
+        rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+      } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)){
+        rv$error_message <- "Error: Mismatch between number of units and gcup."
+      } else {
+        rv$error_message <- paste("Unexpected error:", msg)
+      }
     })
+   })
+  })
+
+  # Show error messages
+  output$error_message <- renderUI({
+    req(rv$error_message)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message)
+    )
   })
 
 
