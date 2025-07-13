@@ -104,10 +104,10 @@ ui <- fluidPage(
         ),
         tags$ul(
           style = "margin-bottom: 20px;",
-          tags$li(tags$b("Downloading:"), " Easily retrieve all types of GreenFeed data."),
-          tags$li(tags$b("Checking:"), " Quickly inspect visits and intakes from your GreenFeed units."),
-          tags$li(tags$b("Reporting:"), " Generate interactive reports for all connected units."),
-          tags$li(tags$b("Processing:"), " Apply custom thresholds and filters to analyze your gas data.")
+          tags$li(tags$b("Downloading Data:"), " Easily retrieve all types of GreenFeed data (emissions, visits, feed, and commands)."),
+          tags$li(tags$b("Checking Data:"), " Quickly inspect visits and calculate intakes from your GreenFeed units."),
+          tags$li(tags$b("Reporting Data:"), " Generate interactive reports for all your GreenFeed units."),
+          tags$li(tags$b("Processing Data:"), " Process your GreenFeed records using different filters and parameters.")
         ),
         tags$div(
           style = "margin-bottom: 20px;",
@@ -139,7 +139,29 @@ ui <- fluidPage(
       )
     ),
 
-    tabPanel("Checking",
+    tabPanel("Downloading Data",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "Username:", placeholder = "Enter your username"),
+                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
+                 fluidRow(
+                   column(6, actionButton("load_data", "Load Data", icon = icon("sync"))),
+                   column(6, uiOutput("download_ui"))
+                 )
+               ),
+               mainPanel(
+                 uiOutput("status_card"),
+                 div(style = "margin-bottom: 15px;"),
+                 uiOutput("error_message"),
+                 uiOutput("preview")
+               )
+             )
+    ),
+
+    tabPanel("Checking Data",
              sidebarLayout(
                sidebarPanel(
                  textInput("user", "Username:", placeholder = "Enter your username"),
@@ -171,7 +193,7 @@ ui <- fluidPage(
           )
     ),
 
-    tabPanel("Reporting",
+    tabPanel("Reporting Data",
              sidebarLayout(
                sidebarPanel(
                  textInput("user", "Username:", placeholder = "Enter your username"),
@@ -210,29 +232,7 @@ ui <- fluidPage(
              )
     ),
 
-    tabPanel("Downloading",
-             sidebarLayout(
-               sidebarPanel(
-                 textInput("user", "Username:", placeholder = "Enter your username"),
-                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
-                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
-                 fluidRow(
-                   column(6, actionButton("load_data", "Load Data", icon = icon("sync"))),
-                   column(6, uiOutput("download_ui"))
-                 )
-               ),
-               mainPanel(
-                 uiOutput("status_card"),
-                 div(style = "margin-bottom: 15px;"),
-                 uiOutput("error_message"),
-                 uiOutput("preview")
-               )
-             )
-    ),
-
-    tabPanel("Processing",
+    tabPanel("Processing Data",
              sidebarLayout(
                sidebarPanel(
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),

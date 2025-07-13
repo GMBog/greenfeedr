@@ -253,7 +253,7 @@ server <- function(input, output, session) {
           class = "summary-card",
           style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
-          strong("GreenFeed Report Summary"),
+          strong("Visitation Report Summary"),
           tags$ul(
             tags$li(strong("Animals: "), n_animals),
             tags$li(strong("Days: "), n_days),
@@ -357,7 +357,7 @@ server <- function(input, output, session) {
           class = "summary-card",
           style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
-          strong("Pellin Report Summary"),
+          strong("Intakes Report Summary"),
           tags$ul(
             tags$li(strong("Animals: "), n_animals),
             tags$li(strong("Days: "), n_days),
@@ -1027,6 +1027,7 @@ server <- function(input, output, session) {
         write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
       }
     )
+
 
 
 }
