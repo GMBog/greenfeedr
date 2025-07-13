@@ -113,27 +113,20 @@ ui <- fluidPage(
           style = "margin-bottom: 20px;",
           tags$b("How to use the app:"),
           tags$ol(
-            tags$li("Download data directly from the API or upload your own files."),
-            tags$li("Check visitation and intake statistics for your trials or monitoring projects."),
-            tags$li("Generate customizable reports by day and by animal."),
-            tags$li("Process and filter gas measurements using your own criteria.")
+            tags$li("Download data directly from the API"),
+            tags$li("Check visitation and calculate intakes for your ongoing trials"),
+            tags$li("Generate data reports by day and by animal"),
+            tags$li("Process and filter gas measurements using your own criteria")
           )
         ),
         tags$p(
-          "The ", tags$b("greenfeedr"), " package is an open-source R package developed by Guillermo Martinez-Boggio. ",
-          "All the functions and documentation for processing GreenFeed data are available both in this Shiny app and for direct use in R."
+          "The ", tags$b("greenfeedr"), " package is an open-source R package developed by ",
+          tags$a(href = "https://github.com/GMBog", "Guillermo Martinez-Boggio")
         ),
         tags$p(
-          "Find the source code on ",
-          tags$a(href = "https://cran.r-project.org/package=greenfeedr", "CRAN"),
-          " and ",
-          tags$a(href = "https://github.com/GMBog/greenfeedr", "GitHub"),
-          "."
-        ),
-        tags$p(
-          "This Shiny app is also hosted online at ",
-          tags$a(href = "https://gmbog.shinyapps.io/shinyapp/", "shinyapps.io"),
-          "."
+          "All the functions and documentation for processing GreenFeed data are available both
+          in this ", tags$a(href = "https://gmbog.shinyapps.io/shinyapp/", "shinyapps.io"), "and
+          for direct use in ", tags$a(href = "https://cran.r-project.org/package=greenfeedr", "R")
         ),
         tags$hr()
       )
@@ -269,7 +262,7 @@ ui <- fluidPage(
 
   tags$footer(
     style = "text-align: center; padding: 10px 0; color: #999; font-size: 13px; margin-top: 30px;",
-    "© 2025 greenfeedr | Built with Shiny & R"
+    "2025 greenfeedr | Develop by Guillermo Martinez-Boggio"
   ))
   )
 
