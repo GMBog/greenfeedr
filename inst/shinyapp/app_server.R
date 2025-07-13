@@ -9,7 +9,7 @@ server <- function(input, output, session) {
   rv <- reactiveValues(
     data = NULL,
     df_preview = NULL,
-    error_message = NULL
+    error_message1 = NULL
   )
 
   # Run code for download data
@@ -83,18 +83,20 @@ server <- function(input, output, session) {
         # Store preview for UI and download
         rv$data <- df
         rv$df_preview <- head(df, 100)
-        rv$error_message <- NULL
 
         incProgress(0.2, detail = "Done!")
+
+        # Handle error messages
+        rv$error_message1 = NULL
 
       }, error = function(e) {
         msg <- as.character(e$message)
         if (grepl("names.*must be the same length as the vector", msg)) {
-          rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+          rv$error_message1 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
         } else {
-          rv$error_message <- paste("Unexpected error:", msg)
+          rv$error_message1 <- paste("Unexpected error:", msg)
         }
-        rv$df_preview <- NULL
+        rv$df_preview = NULL
       })
     })
   })
@@ -128,18 +130,13 @@ server <- function(input, output, session) {
   # Status card
   output$status_card <- renderUI({
     req(input$load_data)
+    df <- rv$data
 
-    if (is.null(rv$data) || is.null(rv$df_preview)) {
-      div(
-        class = "warning-card",
-        style = "display: flex; align-items: center; gap: 10px;",
-        icon("exclamation-triangle", style = "color:#e65100; font-size:30px;"),
-        h4("Data file was not saved or is empty!", style = "margin: 0;")
-      )
-    } else {
-      df <- rv$df_preview
-      animal_col <- grep("Animal(Name)?|RFID", names(df), value = TRUE)[1]
+    if (!is.null(df) && is.data.frame(df) && nrow(df) > 0 && is.null(rv$error_message1)) {
+      animal_col <- grep("RFID|CowTag", names(df), value = TRUE)[1]
       unique_ids <- if (!is.null(animal_col)) length(unique(df[[animal_col]])) else "N/A"
+      date_col <- grep("StartTime|FeedTime|ScanTime|CommandTime", names(df), value = TRUE)[1]
+      n_days <- if (!is.null(date_col)) length(unique(as.Date(df[[date_col]]))) else "Unknown"
 
       div(
         class = "summary-card",
@@ -148,19 +145,21 @@ server <- function(input, output, session) {
         strong("GreenFeed Data Summary"),
         tags$ul(
           tags$li(strong("Animals: "), unique_ids),
-          tags$li(strong("Rows: "), nrow(df)),
-          tags$li(strong("Columns: "), ncol(df))
+          tags$li(strong("Days: "), n_days),
+          tags$li(strong("Rows: "), nrow(df))
         )
       )
+    } else {
+      NULL
     }
   })
 
-  # Error message card
-  output$error_message <- renderUI({
-    req(rv$error_message)
+  # Show error messages
+  output$error_message1 <- renderUI({
+    req(rv$error_message1)
     div(
       style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message)
+      HTML(rv$error_message1)
     )
   })
 
@@ -170,14 +169,15 @@ server <- function(input, output, session) {
     # Show a link to press and access data
     tags$details(
       tags$summary(style = "font-weight:bold; text-decoration:underline; cursor:pointer;",
-                   "Show/hide data preview"),
+                   "Show/Hide Data Preview"),
       DT::dataTableOutput("preview_table")
     )
   })
+
   # Table data preview
   output$preview_table <- DT::renderDataTable({
     req(rv$df_preview)
-    DT::datatable(head(rv$df_preview, 10), options = list(scrollX = TRUE, pageLength = 10))
+    DT::datatable(head(rv$df_preview, 5), options = list(scrollX = TRUE, pageLength = 5))
   })
 
 
@@ -187,7 +187,7 @@ server <- function(input, output, session) {
   # Define reactive values
   rv <- reactiveValues(
     results = NULL,
-    error_message = NULL
+    error_message2 = NULL
   )
 
   # Reactive expression to get the path
@@ -305,18 +305,18 @@ server <- function(input, output, session) {
       })
 
       # Handle error messages
-      rv$error_message <- NULL
+      rv$error_message2 = NULL
 
     }, error = function(e) {
       msg <- as.character(e$message)
       if (grepl("names.*must be the same length as the vector", msg)) {
-        rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$error_message2 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
       } else if (grepl("Cannot open file for writing", msg)) {
-        rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+        rv$error_message2 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
       } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
-        rv$error_message <- "Error: Mismatch between number of units and gcup."
+        rv$error_message2 <- "Error: Mismatch between number of units and gcup."
       } else {
-        rv$error_message <- paste("Unexpected error:", msg)
+        rv$error_message2 <- paste("Unexpected error:", msg)
       }
     })
    })
@@ -395,29 +395,29 @@ server <- function(input, output, session) {
       )
 
       # Handle error messages
-      rv$error_message <- NULL
+      rv$error_message2 = NULL
 
     }, error = function(e) {
       msg <- as.character(e$message)
       if (grepl("names.*must be the same length as the vector", msg)) {
-        rv$error_message <- "Error: No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$error_message2 <- "Error: No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
       } else if (grepl("Cannot open file for writing", msg)) {
-        rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+        rv$error_message2 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
       } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)){
-        rv$error_message <- "Error: Mismatch between number of units and gcup."
+        rv$error_message2 <- "Error: Mismatch between number of units and gcup."
       } else {
-        rv$error_message <- paste("Unexpected error:", msg)
+        rv$error_message2 <- paste("Unexpected error:", msg)
       }
     })
    })
   })
 
   # Show error messages
-  output$error_message <- renderUI({
-    req(rv$error_message)
+  output$error_message2 <- renderUI({
+    req(rv$error_message2)
     div(
       style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message)
+      HTML(rv$error_message2)
     )
   })
 
@@ -427,7 +427,7 @@ server <- function(input, output, session) {
   # Define reactive values
   rv <- reactiveValues(
     report_data = NULL,
-    error_message = NULL
+    error_message3 = NULL
   )
 
   # Run code to report data ('report_gfdata' function)
@@ -508,18 +508,18 @@ server <- function(input, output, session) {
         rv$report_data <- df
 
         # Handle error messages
-        rv$error_message <- NULL
+        rv$error_message = NULL
 
       }, error = function(e) {
         msg <- as.character(e$message)
         if (grepl("names.*must be the same length as the vector", msg)) {
-          rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+          rv$error_message3 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
         } else if (grepl("Cannot open file for writing", msg)) {
-          rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
+          rv$error_message3 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
         } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
-          rv$error_message <- "Error: Mismatch between number of units and gcup."
+          rv$error_message3 <- "Error: Mismatch between number of units and gcup."
         } else {
-          rv$error_message <- paste("Unexpected error:", msg)
+          rv$error_message3 <- paste("Unexpected error:", msg)
         }
       })
     })
@@ -942,36 +942,6 @@ server <- function(input, output, session) {
     if (is.null(result)) return()
     rv$processed_result <- result
   })
-
-    # Provide summary using the weekly data
-  output$proc_summary_table <- renderTable({
-    req(rv$processed_result)
-    weekly <- rv$processed_result$weekly_data
-
-    gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
-    gas_stats <- vapply(gas_names, function(gas) {
-      vals <- weekly[[gas]]
-      mean_val <- mean(vals, na.rm = TRUE)
-      sd_val <- sd(vals, na.rm = TRUE)
-      cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val * 100 else NA
-      c(mean = mean_val, sd = sd_val, cv = cv_val)
-    }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
-
-    gas_display_name <- function(names_vec) {
-      names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
-      names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
-      names_vec
-    }
-
-    gas_df <- data.frame(
-      Gas = gas_display_name(gas_names),
-      Mean = round(gas_stats["mean", ], 2),
-      SD = round(gas_stats["sd", ], 2),
-      CV = round(gas_stats["cv", ], 1),
-      stringsAsFactors = FALSE
-    )
-    gas_df
-  }, digits = 2)
 
     # Render table of processed results
     output$proc_summary_table <- renderTable({

@@ -147,8 +147,8 @@ ui <- fluidPage(
                ),
                mainPanel(
                  uiOutput("status_card"),
+                 uiOutput("error_message1"),
                  div(style = "margin-bottom: 15px;"),
-                 uiOutput("error_message"),
                  uiOutput("preview")
                )
              )
@@ -168,7 +168,7 @@ ui <- fluidPage(
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
-                 uiOutput("error_message"),
+                 uiOutput("error_message2"),
                  textOutput("viseat_status"),
                  uiOutput("report_summary1"),
                  div(style = "margin-bottom: 15px;"),
@@ -217,7 +217,7 @@ ui <- fluidPage(
                  )
                ),
                mainPanel(
-                 uiOutput("error_message"),
+                 uiOutput("error_message3"),
                  uiOutput("report_summary"),
                  uiOutput("report_preview"),
                  uiOutput("chosen_plot")
