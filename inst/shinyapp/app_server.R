@@ -7,14 +7,14 @@ server <- function(input, output, session) {
 
   # Define reactive values
   rv <- reactiveValues(
-    filepath = NULL,
+    data = NULL,
     df_preview = NULL,
     error_message = NULL
   )
 
   # Run code for download data
-  observeEvent(input$download, {
-    req(input$user, input$pass, input$unit, input$dates, input$save_dir)
+  observeEvent(input$load_data, {
+    req(input$user, input$pass, input$unit, input$dates)
 
     # Check 'GreenFeed' unit format
     unit <- convert_unit(input$unit, 1)
@@ -56,7 +56,7 @@ server <- function(input, output, session) {
         incProgress(0.3, detail = "Downloading and parsing data...")
         df <- download_and_parse(input$d)
 
-        # Assign column names
+        # Assign column names to different datasets
         if (input$d == "visits") {
           colnames(df) <- c(
             "FeederID", "AnimalName", "RFID", "StartTime", "EndTime",
@@ -80,65 +80,56 @@ server <- function(input, output, session) {
           )
         }
 
-        # Ensure save_dir is an absolute path
-        save_dir <- normalizePath(input$save_dir, mustWork = FALSE)
-        if (!dir.exists(save_dir)) {
-          dir.create(save_dir, recursive = TRUE)
-        }
-        # Show a progress bar (start saving)
-        incProgress(0.2, detail = "Saving file...")
-
-        # Build file_path to save data
-        filename <- switch(input$d,
-                           "visits" = paste0("GreenFeed_Summarized_Data_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
-                           "feed"   = paste0("Feedtimes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
-                           "rfid"   = paste0("Rfids_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
-                           "cmds"   = paste0("Commands_", unit, "_", input$dates[1], "_", input$dates[2], ".csv")
-        )
-        filepath <- file.path(save_dir, filename)
-        rv$filepath <- filepath
-
-        # Save the data
-        readr::write_csv(df, filepath)
-
-        # Show a progress bar (start data preview)
-        incProgress(0.2, detail = "Preparing data preview...")
-
-        # Read preview for summary and preview table
-        if (file.exists(filepath) && file.info(filepath)$size > 0) {
-          df_preview <- tryCatch(readr::read_csv(filepath, n_max = 100), error = function(e) NULL)
-          rv$df_preview <- df_preview
-        } else {
-          rv$df_preview <- NULL
-        }
-
-        # Show a progress bar (end)
-        incProgress(0.2, detail = "Done!")
-
-        # Handle error messages
+        # Store preview for UI and download
+        rv$data <- df
+        rv$df_preview <- head(df, 100)
         rv$error_message <- NULL
+
+        incProgress(0.2, detail = "Done!")
 
       }, error = function(e) {
         msg <- as.character(e$message)
         if (grepl("names.*must be the same length as the vector", msg)) {
           rv$error_message <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-        } else if (grepl("Cannot open file for writing", msg)) {
-          rv$error_message <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
         } else {
           rv$error_message <- paste("Unexpected error:", msg)
         }
-        rv$filepath <- NULL
         rv$df_preview <- NULL
       })
     })
   })
 
+  # Conditionally show download button
+  output$download_ui <- renderUI({
+    if (!is.null(rv$data)) {
+      downloadButton("download_data", "Download Data")
+    }
+    # else returns NULL (button hidden)
+  })
+
+  # Download handler lets user choose where to save
+  output$download_data <- downloadHandler(
+    filename = function() {
+      # Build file_path to save data
+      unit <- gsub("[,\\s]+", "_", input$unit)
+      switch(input$d,
+             "visits" = paste0("GreenFeed_Summarized_Data_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+             "feed"   = paste0("Feedtimes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+             "rfid"   = paste0("Rfids_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
+             "cmds"   = paste0("Commands_", unit, "_", input$dates[1], "_", input$dates[2], ".csv")
+      )
+    },
+    content = function(file) {
+      req(rv$data)
+      readr::write_csv(rv$data, file)
+    }
+  )
+
   # Status card
   output$status_card <- renderUI({
-    req(input$download)
+    req(input$load_data)
 
-    # Warning message if errors in the inputs
-    if (is.null(rv$filepath) || is.null(rv$df_preview)) {
+    if (is.null(rv$data) || is.null(rv$df_preview)) {
       div(
         class = "warning-card",
         style = "display: flex; align-items: center; gap: 10px;",
@@ -146,30 +137,19 @@ server <- function(input, output, session) {
         h4("Data file was not saved or is empty!", style = "margin: 0;")
       )
     } else {
-
-      # Summary of data results
       df <- rv$df_preview
-      date_col <- grep("StartTime|Date", names(df), value = TRUE)[1]
       animal_col <- grep("Animal(Name)?|RFID", names(df), value = TRUE)[1]
-      tagList(
-        div(
-          class = "summary-card",
-          # Flex row for icon and h4 header
-          div(
-            style = "display: flex; align-items: center; gap: 10px;",
-            icon("check-circle", style = "color:#388e3c; font-size:30px;"),
-            h4("Data file saved successfully!", style = "margin: 0;")
-          ),
-          tags$div(style = "height: 15px;"),
-          tags$p(tags$b("Rows:"), nrow(df)),
-          tags$p(tags$b("Columns:"), ncol(df)),
-          if (!is.null(date_col)) tags$p(
-            tags$b("Date range:"),
-            as.character(min(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE)), "to",
-            as.character(max(as.Date(df[[date_col]], origin = "1970-01-01"), na.rm=TRUE))
-          ),
-          if (!is.null(animal_col)) tags$p(tags$b("Unique IDs:"), length(unique(df[[animal_col]]))),
-          tags$p("You can find your file in the directory you specified above.")
+      unique_ids <- if (!is.null(animal_col)) length(unique(df[[animal_col]])) else "N/A"
+
+      div(
+        class = "summary-card",
+        style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+        icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+        strong("GreenFeed Data Summary"),
+        tags$ul(
+          tags$li(strong("Animals: "), unique_ids),
+          tags$li(strong("Rows: "), nrow(df)),
+          tags$li(strong("Columns: "), ncol(df))
         )
       )
     }
@@ -271,6 +251,7 @@ server <- function(input, output, session) {
         # Create summary card
         div(
           class = "summary-card",
+          style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
           strong("GreenFeed Report Summary"),
           tags$ul(
@@ -374,6 +355,7 @@ server <- function(input, output, session) {
 
         div(
           class = "summary-card",
+          style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
           strong("Pellin Report Summary"),
           tags$ul(
@@ -554,6 +536,7 @@ server <- function(input, output, session) {
     n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
     div(
       class = "summary-card",
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
       icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
       strong("GreenFeed Report Summary"),
       tags$ul(

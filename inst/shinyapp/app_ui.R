@@ -3,9 +3,8 @@
 
 ui <- fluidPage(
   tags$head(
-    tags$link(
-      href = "https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap", rel = "stylesheet"
-    ),
+    tags$link(href = "https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap", rel = "stylesheet"),
+    tags$link(href = "https://fonts.googleapis.com/css?family=Merriweather:700,400&display=swap", rel = "stylesheet"),
     tags$link(rel = "shortcut icon", href = "favicon.ico"),
     tags$style(HTML("
       body, .main-panel, .form-group label, .control-label {
@@ -13,6 +12,7 @@ ui <- fluidPage(
         color: #006400;
       }
       .top-bar {
+        ont-family: 'Merriweather', serif;
         background-color: #124B12;
         color: white;
         padding: 10px 20px;
@@ -90,7 +90,7 @@ ui <- fluidPage(
   # Main UI layout with tabs
   tabsetPanel(
 
-    # Welcome tab (improved)
+    # Welcome tab
     tabPanel(
       "Welcome",
       div(
@@ -137,26 +137,6 @@ ui <- fluidPage(
         ),
         tags$hr()
       )
-    ),
-
-    tabPanel("Downloading",
-             sidebarLayout(
-               sidebarPanel(
-                 textInput("user", "Username:", placeholder = "Enter your username"),
-                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
-                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
-                 textInput("save_dir", "Save Directory:", placeholder = "e.g. /Users/Downloads/"),
-                 actionButton("download", "Download Data", icon = icon("download"))
-               ),
-               mainPanel(
-                 uiOutput("status_card"),
-                 div(style = "margin-bottom: 15px;"),
-                 uiOutput("error_message"),
-                 uiOutput("preview")
-               )
-             )
     ),
 
     tabPanel("Checking",
@@ -226,6 +206,28 @@ ui <- fluidPage(
                  uiOutput("report_summary"),
                  uiOutput("report_preview"),
                  uiOutput("chosen_plot")
+               )
+             )
+    ),
+
+    tabPanel("Downloading",
+             sidebarLayout(
+               sidebarPanel(
+                 textInput("user", "Username:", placeholder = "Enter your username"),
+                 passwordInput("pass", "Password:", placeholder = "Enter your password"),
+                 textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 selectInput("d", "Data Type:", choices = c("visits", "feed", "rfid", "cmds")),
+                 fluidRow(
+                   column(6, actionButton("load_data", "Load Data", icon = icon("sync"))),
+                   column(6, uiOutput("download_ui"))
+                 )
+               ),
+               mainPanel(
+                 uiOutput("status_card"),
+                 div(style = "margin-bottom: 15px;"),
+                 uiOutput("error_message"),
+                 uiOutput("preview")
                )
              )
     ),
