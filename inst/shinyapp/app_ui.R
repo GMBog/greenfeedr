@@ -205,7 +205,6 @@ ui <- fluidPage(
                    ),
                    selected = "plot_1"
                  ),
-                 # Only show gas selection for plot 3
                  conditionalPanel(
                    condition = "input.which_plot == 'plot_3'",
                    checkboxGroupInput(
@@ -242,11 +241,11 @@ ui <- fluidPage(
                mainPanel(
                  conditionalPanel(
                    condition = "input.run_eval_param > 0",
-                   DTOutput("eval_param_table")
+                   uiOutput("error_message4"),
+                   DTOutput("eval_param_table"),
                  ),
                  conditionalPanel(
                    condition = "input.run_process > 0",
-                   hr(),
                    div(style = "margin-bottom: 15px;"),
                    tableOutput("proc_summary_table"),
                    div(style = "margin-bottom: 15px;"),

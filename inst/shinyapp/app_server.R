@@ -508,7 +508,7 @@ server <- function(input, output, session) {
         rv$report_data <- df
 
         # Handle error messages
-        rv$error_message = NULL
+        rv$error_message3 = NULL
 
       }, error = function(e) {
         msg <- as.character(e$message)
@@ -544,6 +544,15 @@ server <- function(input, output, session) {
         tags$li(strong("Days: "), n_days),
         tags$li(strong("Total Records: "), nrow(df)),
       )
+    )
+  })
+
+  # Show error messages
+  output$error_message3 <- renderUI({
+    req(rv$error_message3)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message3)
     )
   })
 
@@ -844,7 +853,7 @@ server <- function(input, output, session) {
   rv <- reactiveValues(
     eval_param_result = NULL,
     processed_result = NULL,
-    error_message = NULL
+    error_message4 = NULL
   )
 
   # Read data file (preliminary (.csv) or finalized (.xlsx))
@@ -860,63 +869,70 @@ server <- function(input, output, session) {
         stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
     }, error = function(e) {
-      rv$error_message <- paste("❌ File error:", e$message)
+      rv$error_message4 <- paste0("Error: ", e$message)
       NULL
     })
   })
 
-  if (is.null(df)) return()
-
   observeEvent(input$run_eval_param, {
-    req(df(), input$dates)
+    rv$error_message4 <- NULL
+    # Check for file read errors
+    data <- df()
+    if (is.null(data)) {
+      rv$eval_param_result <- NULL
+      return()
+    }
+    req(input$dates)
 
     # Run code to evaluate parameters
     withProgress(message = "⏳ Evaluating all parameters...", value = 0, {
       result <- tryCatch({
         greenfeedr::eval_gfparam(
-          data = df(),
+          data = data,
           start_date = input$dates[1],
           end_date = input$dates[2]
         )
       }, error = function(e) {
-        rv$error_message <- paste("❌ Evaluation error:", e$message)
+        rv$error_message4 <- paste0("Error: ", e$message)
         NULL
       })
       rv$eval_param_result <- result
-    })
 
-    # Show table with results
-    output$eval_section_title <- renderUI({
-      req(rv$eval_param_result)
-      h4("Evaluation of Parameter Combinations")
+      # Custom error: check for all zeros in column 4 and 5
+      if (!is.null(rv$eval_param_result)) {
+        df_check <- rv$eval_param_result
+        zero_col4 <- all(df_check[[4]] == 0)
+        zero_col5 <- all(df_check[[5]] == 0)
+        if (zero_col4 && zero_col5) {
+          rv$error_message4 <- "Error: No records found in the selected date range. Please check your file and date selection."
+          rv$eval_param_result <- NULL
+        }
+      }
     })
+  })
 
-    output$eval_param_table <- DT::renderDataTable({
-      df <- rv$eval_param_result
-      df$param1 <- as.character(df$param1)
-      df$param2 <- as.character(df$param2)
-      df$min_time <- as.character(df$min_time)
-      names(df) <- c("Param1", "Param2", "Min_time", "N Records", "N Animals",
-                     "Mean CH4", "SD CH4", "CV CH4")
-      DT::datatable(
-        df,
-        options = list(
-          pageLength = 5,
-          autoWidth = FALSE,
-          scrollX = TRUE
-        ),
-        filter = "top",
-        rownames = FALSE
-      ) %>%
-        DT::formatStyle(
-          columns = names(df),
-          'text-align' = 'center'
-        )
-    })
-
-    output$proc_summary <- renderText({
-      rv$error_message
-    })
+  output$eval_param_table <- DT::renderDataTable({
+    req(rv$eval_param_result)
+    df <- rv$eval_param_result
+    df$param1 <- as.character(df$param1)
+    df$param2 <- as.character(df$param2)
+    df$min_time <- as.character(df$min_time)
+    names(df) <- c("Param1", "Param2", "Min_time", "N Records", "N Animals",
+                   "Mean CH4", "SD CH4", "CV CH4")
+    DT::datatable(
+      df,
+      options = list(
+        pageLength = 5,
+        autoWidth = FALSE,
+        scrollX = TRUE
+      ),
+      filter = "top",
+      rownames = FALSE
+    ) %>%
+      DT::formatStyle(
+        columns = names(df),
+        'text-align' = 'center'
+      )
   })
 
 
@@ -936,10 +952,9 @@ server <- function(input, output, session) {
         cutoff = input$cutoff
       )
     }, error = function(e) {
-      output$proc_summary <- renderText(paste("❌ Processing error:", e$message))
+      output$error_message4 <- renderText(paste("❌ Processing error:", e$message))
       return(NULL)
     })
-    if (is.null(result)) return()
     rv$processed_result <- result
   })
 
@@ -973,6 +988,7 @@ server <- function(input, output, session) {
       gas_df
     }, digits = 2)
 
+
     # Download files
     #1. Filtered data
     output$download_filtered <- downloadHandler(
@@ -997,6 +1013,16 @@ server <- function(input, output, session) {
         write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
       }
     )
+
+
+    # Show error messages
+    output$error_message4 <- renderUI({
+      req(rv$error_message4)
+      div(
+        style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+        HTML(rv$error_message4)
+      )
+    })
 
 
 
