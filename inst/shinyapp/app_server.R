@@ -192,7 +192,7 @@ server <- function(input, output, session) {
 
   # Reactive expression to get the path
   rfid_path <- reactive({
-    if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+    if (!is.null(input$rfid_file1)) input$rfid_file1$datapath else NULL
   })
 
   # Run code to check visitation ('viseat' function)
@@ -439,7 +439,7 @@ server <- function(input, output, session) {
 
     # Reactive expression to get the path
     rfid_path <- reactive({
-      if (!is.null(input$rfid_file)) input$rfid_file$datapath else NULL
+      if (!is.null(input$rfid_file2)) input$rfid_file2$datapath else NULL
     })
 
     withProgress(message = "Downloading and processing data...", value = 0, {
@@ -630,7 +630,7 @@ server <- function(input, output, session) {
     }
 
     # Try to read the RFID file
-    rfid_file <- input$rfid_file
+    rfid_file <- input$rfid_file2
     rfid_df <- NULL
     if (!is.null(rfid_file)) {
       ext <- tools::file_ext(rfid_file$datapath)
@@ -858,13 +858,13 @@ server <- function(input, output, session) {
 
   # Read data file (preliminary (.csv) or finalized (.xlsx))
   df <- reactive({
-    req(input$gf_file)
-    ext <- tools::file_ext(input$gf_file$name)
+    req(input$gf_file1)
+    ext <- tools::file_ext(input$gf_file1$name)
     tryCatch({
       if (tolower(ext) %in% c("xls", "xlsx")) {
-        readxl::read_excel(input$gf_file$datapath)
+        readxl::read_excel(input$gf_file1$datapath)
       } else if (tolower(ext) == "csv") {
-        readr::read_csv(input$gf_file$datapath, show_col_types = FALSE)
+        readr::read_csv(input$gf_file1$datapath, show_col_types = FALSE)
       } else {
         stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
@@ -1022,9 +1022,165 @@ server <- function(input, output, session) {
         style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
         HTML(rv$error_message4)
       )
+  })
+
+
+
+  ## TAB 5: Analyzing Data ####
+
+    # Define reactive values
+    rv <- reactiveValues(
+      processed_df = NULL,
+      group_summary = NULL,
+      tukey_sig_df = NULL,
+      error_message5 = NULL
+    )
+
+    # Read GreenFeed data file (preliminary or finalized)
+    df <- reactive({
+      req(input$gf_file2)
+      ext <- tools::file_ext(input$gf_file2$name)
+      tryCatch({
+        if (tolower(ext) %in% c("xls", "xlsx")) {
+          readxl::read_excel(input$gf_file2$datapath)
+        } else if (tolower(ext) == "csv") {
+          readr::read_csv(input$gf_file2$datapath, show_col_types = FALSE)
+        } else {
+          stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
+        }
+      }, error = function(e) {
+        rv$error_message5 <- paste0("Error: ", e$message)
+        NULL
+      })
     })
 
+    # Read RFID/Groups data
+    rfid_df <- reactive({
+      req(input$rfid_file3)
+      process_rfid_data(input$rfid_file3$datapath)
+    })
 
+    observeEvent(input$run_analysis, {
+      req(df(), input$dates, input$param1, input$param2, input$min_time, input$cutoff)
+
+      # Process GreenFeed data using the set of parameters defined by the user
+      result <- tryCatch({
+        greenfeedr::process_gfdata(
+          data = df(),
+          start_date = input$dates[1],
+          end_date = input$dates[2],
+          param1 = input$param1,
+          param2 = input$param2,
+          min_time = input$min_time,
+          cutoff = input$cutoff
+        )
+      }, error = function(e) {
+        rv$error_message5 <- paste0("Error: ", e$message)
+        NULL
+      })
+
+      if (!is.null(result) && !is.null(rfid_df()) && !is.null(result$daily_data)) {
+        # Get daily data
+        daily_df <- result$daily_data
+
+        # Join daily GreenFeed data and group info
+        joined_df <- dplyr::left_join(rfid_df(), daily_df, by = "RFID")
+        rv$processed_df <- joined_df
+
+        # Summary records and gases per group/treatment
+        group_summary <- joined_df %>%
+          dplyr::group_by(Group) %>%
+          dplyr::summarise(
+            N_Records = sum(n, na.rm = TRUE),
+            Animals = n_distinct(RFID),
+            Avg_CO2 = mean(CO2GramsPerDay, na.rm = TRUE),
+            Avg_CH4 = mean(CH4GramsPerDay, na.rm = TRUE),
+            Avg_O2 = mean(O2GramsPerDay, na.rm = TRUE),
+            Avg_H2 = mean(H2GramsPerDay, na.rm = TRUE),
+            .groups = "drop"
+          )
+        rv$group_summary <- group_summary
+
+        # Compute a Tukey HSD Post-hoc test between groups
+        gases <- c("CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
+        tukey_sig_df <- NULL
+
+        for (gas in gases) {
+          df_test <- joined_df[!is.na(joined_df[[gas]]) & !is.na(joined_df$Group), ]
+          if (length(unique(df_test$Group)) > 1) {
+            aov_res <- aov(df_test[[gas]] ~ df_test$Group)
+            tukey_res <- TukeyHSD(aov_res)
+            sig <- as.data.frame(tukey_res$`df_test$Group`)
+            sig$Comparison <- rownames(sig)
+            sig$Gas <- gas
+            sig <- sig[sig$`p adj` < 0.05, c("Gas", "Comparison", "p adj")]
+            if (nrow(sig) > 0) {
+              tukey_sig_df <- bind_rows(tukey_sig_df, sig)
+            }
+          }
+        }
+        rv$tukey_sig_df <- tukey_sig_df
+
+      } else {
+        rv$group_summary <- NULL
+        rv$tukey_sig_df <- NULL
+        print("Either result, rfid_df, or result$daily_data is NULL")
+      }
+    })
+
+    # Show error messages
+    output$error_message5 <- renderUI({
+      req(rv$error_message5)
+      div(
+        style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+        HTML(rv$error_message5)
+      )
+    })
+
+    output$summary_card <- renderUI({
+      req(rv$processed_df)
+      n_groups <- rv$group_summary %>% dplyr::pull(Group) %>% unique() %>% length()
+      n_animals <- rv$processed_df %>% dplyr::pull(RFID) %>% unique() %>% length()
+
+      div(
+        style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+        icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+        strong("Group Analysis Summary"),
+        tags$ul(
+          tags$li(strong("Animals: "), n_animals),
+          tags$li(strong("Groups: "), n_groups)
+        )
+      )
+    })
+
+    # Render group summary table
+    output$group_summary_table <- renderTable({
+      req(rv$group_summary)
+      rv$group_summary
+    })
+
+    # Update choices for selectInput based on available gases
+    observe({
+      req(rv$tukey_sig_df)
+      updateSelectInput(
+        session,
+        "selected_gas",
+        choices = unique(rv$tukey_sig_df$Gas)
+      )
+    })
+
+    # Render filtered Tukey table
+    output$tukey_table <- renderTable({
+      req(rv$tukey_sig_df)
+      df <- rv$tukey_sig_df
+      df$p_value <- signif(df$`p adj`, 4)
+      df <- df[, c("Gas", "Comparison", "p_value")]
+      names(df) <- c("Gas", "Group Comparison", "Adjusted p-value")
+      # Filter by selected gas
+      req(input$selected_gas)
+      df <- df[df$Gas == input$selected_gas, ]
+      df
+    })
 
 }
 

@@ -164,7 +164,7 @@ ui <- fluidPage(
                  actionButton("run_viseat", "Run Viseat", icon = icon("running")),
                  div(style = "margin-bottom: 25px;"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
-                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 fileInput("rfid_file1", "Upload RFID file (optional):"),
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
@@ -193,7 +193,7 @@ ui <- fluidPage(
                  passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 fileInput("rfid_file", "Upload RFID file (optional):"),
+                 fileInput("rfid_file2", "Upload RFID file (optional):"),
                  actionButton("run_report", "Report Data", icon = icon("file-alt")),
                  div(style = "margin-bottom: 15px;"),
                  selectInput(
@@ -228,7 +228,7 @@ ui <- fluidPage(
              sidebarLayout(
                sidebarPanel(
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
-                 fileInput("gf_file", "Upload GreenFeed Data:"),
+                 fileInput("gf_file1", "Upload GreenFeed Data:"),
                  actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
                  div(style = "margin-bottom: 15px;"), hr(),
                  numericInput("param1", "N Records-Day (Param1):", value = 2, min = 1),
@@ -257,6 +257,37 @@ ui <- fluidPage(
                  )
                )
              )
+  ),
+
+  tabPanel("Analyzing Data",
+           sidebarLayout(
+             sidebarPanel(
+               dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+               fileInput("gf_file2", "Upload GreenFeed Data:"),
+               fileInput("rfid_file3", "Upload Groups File:"),
+               numericInput("param1", "N Records-Day (Param1):", value = 2, min = 1),
+               numericInput("param2", "N Days-Week (Param2):", value = 3, min = 1),
+               numericInput("min_time", "Min. minutes per record (Min_time):", value = 2),
+               numericInput("cutoff", "Outlier SD cutoff:", value = 3, min = 1),
+               actionButton("run_analysis", "Analyze Data", icon = icon("sync"))
+             ),
+             mainPanel(
+               conditionalPanel(
+                 condition = "input.run_analysis > 0",
+                 uiOutput("summary_card"),
+                 tableOutput("group_summary_table"),
+                 div(style = "margin-bottom: 15px;"), hr(),
+                 selectInput("selected_gas", "Choose gas to plot:",
+                             choices = c("CO2" = "CO2",
+                                         "CH4" = "CH4",
+                                         "O2" = "O2",
+                                         "H2" = "H2"),
+                             selected = "CH4"
+                 ),
+                 tableOutput("tukey_table")
+               )
+             )
+           )
   ),
 
   tags$footer(

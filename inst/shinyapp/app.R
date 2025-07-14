@@ -13,6 +13,7 @@ library(DT)
 library(stringr)
 library(httr)
 library(rlang)
+library(stats)
 
 # Set upload size limit
 options(shiny.maxRequestSize = 100 * 1024^2)
