@@ -1165,7 +1165,7 @@ server <- function(input, output, session) {
       updateSelectInput(
         session,
         "selected_gas",
-        choices = unique(rv$tukey_sig_df$Gas)
+        choices = gsub("GramsPerDay", "", unique(rv$tukey_sig_df$Gas))
       )
     })
 
@@ -1173,6 +1173,7 @@ server <- function(input, output, session) {
     output$tukey_table <- renderTable({
       req(rv$tukey_sig_df)
       df <- rv$tukey_sig_df
+      df$Gas <- gsub("GramsPerDay", "", df$Gas)
       df$p_value <- signif(df$`p adj`, 4)
       df <- df[, c("Gas", "Comparison", "p_value")]
       names(df) <- c("Gas", "Group Comparison", "Adjusted p-value")

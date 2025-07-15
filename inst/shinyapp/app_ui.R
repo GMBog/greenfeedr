@@ -104,10 +104,11 @@ ui <- fluidPage(
         ),
         tags$ul(
           style = "margin-bottom: 20px;",
-          tags$li(tags$b("Downloading Data:"), " Easily retrieve all types of GreenFeed data (emissions, visits, feed, and commands)."),
-          tags$li(tags$b("Checking Data:"), " Quickly inspect visits and calculate intakes from your GreenFeed units."),
-          tags$li(tags$b("Reporting Data:"), " Generate interactive reports for all your GreenFeed units."),
-          tags$li(tags$b("Processing Data:"), " Process your GreenFeed records using different filters and parameters.")
+          tags$li(tags$b("Downloading Data:"), " Easily retrieve all types of GreenFeed data (emissions, visits, feed, and commands)"),
+          tags$li(tags$b("Checking Data:"), " Quickly inspect visits and calculate intakes from your GreenFeed units"),
+          tags$li(tags$b("Reporting Data:"), " Generate interactive reports for all your GreenFeed units"),
+          tags$li(tags$b("Processing Data:"), " Process your GreenFeed records using different filters and parameters"),
+          tags$li(tags$b("Analayzing Data:"), " Analyze your GreenFeed records based on groups or treatments"),
         ),
         tags$div(
           style = "margin-bottom: 20px;",
@@ -116,7 +117,8 @@ ui <- fluidPage(
             tags$li("Download data directly from the API"),
             tags$li("Check visitation and calculate intakes for your ongoing trials"),
             tags$li("Generate data reports by day and by animal"),
-            tags$li("Process and filter gas measurements using your own criteria")
+            tags$li("Process and filter gas measurements using your own criteria"),
+            tags$li("Analyze gas measurements per group or treatments"),
           )
         ),
         tags$p(
@@ -278,11 +280,11 @@ ui <- fluidPage(
                  tableOutput("group_summary_table"),
                  div(style = "margin-bottom: 15px;"), hr(),
                  selectInput("selected_gas", "Choose gas to plot:",
-                             choices = c("CO2" = "CO2",
-                                         "CH4" = "CH4",
-                                         "O2" = "O2",
-                                         "H2" = "H2"),
-                             selected = "CH4"
+                             choices = c("CO2" = "CO2GramsPerDay",
+                                         "CH4" = "CH4GramsPerDay",
+                                         "O2" = "O2GramsPerDay",
+                                         "H2" = "H2GramsPerDay"),
+                             selected = "CH4GramsPerDay"
                  ),
                  tableOutput("tukey_table")
                )
