@@ -20,7 +20,7 @@ server <- function(input, output, session) {
     unit <- convert_unit(input$unit, 1)
 
     # Show a progress bar (start downloading)
-    withProgress(message = "Downloading data...", value = 0, {
+    withProgress(message = "Loading data...", value = 0, {
       tryCatch({
         incProgress(0.1, detail = "Connecting to GreenFeed server...")
 
@@ -47,13 +47,14 @@ server <- function(input, output, session) {
           httr::stop_for_status(req_data)
           a <- httr::content(req_data, as = "text")
           perline <- stringr::str_split(a, "\\n")[[1]]
+          perline <- perline[trimws(perline) != ""]
           df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
           df <- as.data.frame(df)
           df
         }
 
         # Show a progress bar (continuation)
-        incProgress(0.3, detail = "Downloading and parsing data...")
+        incProgress(0.3, detail = "This could take a while...")
         df <- download_and_parse(input$d)
 
         # Assign column names to different datasets
@@ -134,7 +135,11 @@ server <- function(input, output, session) {
 
     if (!is.null(df) && is.data.frame(df) && nrow(df) > 0 && is.null(rv$error_message1)) {
       animal_col <- grep("RFID|CowTag", names(df), value = TRUE)[1]
-      unique_ids <- if (!is.null(animal_col)) length(unique(df[[animal_col]])) else "N/A"
+      unique_ids <- if (!is.null(animal_col)) {
+        length(unique(df[[animal_col]][!is.na(df[[animal_col]]) & df[[animal_col]] != "unknown"]))
+      } else {
+        "N/A"
+      }
       date_col <- grep("StartTime|FeedTime|ScanTime|CommandTime", names(df), value = TRUE)[1]
       n_days <- if (!is.null(date_col)) length(unique(as.Date(df[[date_col]]))) else "Unknown"
 
@@ -177,7 +182,7 @@ server <- function(input, output, session) {
   # Table data preview
   output$preview_table <- DT::renderDataTable({
     req(rv$df_preview)
-    DT::datatable(head(rv$df_preview, 5), options = list(scrollX = TRUE, pageLength = 5))
+    DT::datatable(head(rv$df_preview, 100), options = list(scrollX = TRUE, pageLength = 5))
   })
 
 
@@ -856,11 +861,11 @@ server <- function(input, output, session) {
     error_message4 = NULL
   )
 
-  # Read data file (preliminary (.csv) or finalized (.xlsx))
-  df <- reactive({
-    req(input$gf_file1)
+  observeEvent(input$run_eval_param, {
+    req(input$gf_file1)  # Ensure the file is uploaded
     ext <- tools::file_ext(input$gf_file1$name)
-    tryCatch({
+    print(paste("Reading file at:", input$gf_file1$datapath))
+    data <- tryCatch({
       if (tolower(ext) %in% c("xls", "xlsx")) {
         readxl::read_excel(input$gf_file1$datapath)
       } else if (tolower(ext) == "csv") {
@@ -869,15 +874,13 @@ server <- function(input, output, session) {
         stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
     }, error = function(e) {
+      print(paste("Error reading file:", e$message))
       rv$error_message4 <- paste0("Error: ", e$message)
       NULL
     })
-  })
+    print("After file read, data is:")
+    print(str(data))
 
-  observeEvent(input$run_eval_param, {
-    rv$error_message4 <- NULL
-    # Check for file read errors
-    data <- df()
     if (is.null(data)) {
       rv$eval_param_result <- NULL
       return()
@@ -893,9 +896,13 @@ server <- function(input, output, session) {
           end_date = input$dates[2]
         )
       }, error = function(e) {
+        print(paste("Error in eval_gfparam:", e$message))
         rv$error_message4 <- paste0("Error: ", e$message)
         NULL
       })
+      print("Result from eval_gfparam:")
+      print(str(result))
+
       rv$eval_param_result <- result
 
       # Custom error: check for all zeros in column 4 and 5
@@ -906,10 +913,12 @@ server <- function(input, output, session) {
         if (zero_col4 && zero_col5) {
           rv$error_message4 <- "Error: No records found in the selected date range. Please check your file and date selection."
           rv$eval_param_result <- NULL
+          print("All zeros in column 4 and 5!")
         }
       }
     })
   })
+
 
   output$eval_param_table <- DT::renderDataTable({
     req(rv$eval_param_result)

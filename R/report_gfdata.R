@@ -71,55 +71,11 @@ report_gfdata <- function(input_type, exp = NA, unit, start_date, end_date = Sys
   }
 
   if (is.null(file_path)) {
-    # First Authenticate to receive token:
-    req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
-    httr::stop_for_status(req)
-    TOK <- trimws(httr::content(req, as = "text"))
-
     # Assign type based on input_type
     type <- ifelse(input_type == "finalized", 1, 2)
 
-    # Get data using the login token
-    URL <- paste0(
-      "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
-    )
-    message(URL)
-
-    req <- httr::POST(URL, body = list(token = TOK))
-    httr::stop_for_status(req)
-    a <- httr::content(req, as = "text")
-    message(a)
-
-    # Split the lines
-    perline <- stringr::str_split(a, "\\n")[[1]]
-
-    # Split the commas into a dataframe, while getting rid of the "Parameters" line and the headers line
-    df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
-    df <- as.data.frame(df)
-    colnames(df) <- c(
-      "FeederID",
-      "AnimalName",
-      "RFID",
-      "StartTime",
-      "EndTime",
-      "GoodDataDuration",
-      "CO2GramsPerDay",
-      "CH4GramsPerDay",
-      "O2GramsPerDay",
-      "H2GramsPerDay",
-      "H2SGramsPerDay",
-      "AirflowLitersPerSec",
-      "AirflowCf",
-      "WindSpeedMetersPerSec",
-      "WindDirDeg",
-      "WindCf",
-      "WasInterrupted",
-      "InterruptingTags",
-      "TempPipeDegreesCelsius",
-      "IsPreliminary",
-      "RunTime"
-    )
+    # Download data (using internal function in 'utils.R')
+    df <- download_data(user, pass, d = "visits", type, unit, start_date, end_date)
 
     # Ensure save_dir is an absolute path
     save_dir <- normalizePath(save_dir, mustWork = FALSE)

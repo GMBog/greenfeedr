@@ -2,6 +2,7 @@
 
 export(compare_gfdata)
 export(convert_unit)
+export(download_data)
 export(ensure_date_format)
 export(eval_gfparam)
 export(filter_within_range)

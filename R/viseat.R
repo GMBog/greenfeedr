@@ -46,7 +46,7 @@
 #' @import utils
 
 utils::globalVariables(c(
-  "FID", "FeedTime", "CowTag", "Date", "visits", "Foodtype",
+  "FID", "FeedTime", "CowTag", "Date", "visits", "Foodtype", "type",
   "Time", "CurrentPeriod", "ndrops", "Date", "FarmName"
 ))
 
@@ -60,40 +60,8 @@ viseat <- function(user = NA, pass = NA, unit,
     # Ensure unit is a comma-separated string
     unit <- convert_unit(unit,1)
 
-    # Authenticate to receive token
-    req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
-    httr::stop_for_status(req)
-    TOK <- trimws(httr::content(req, as = "text"))
-
-    # Get data using the login token
-    URL <- paste0(
-      "https://portal.c-lockinc.com/api/getraw?d=feed&fids=", unit,
-      "&st=", start_date, "&et=", end_date, "%2012:00:00"
-    )
-    message(URL)
-
-    req <- httr::POST(URL, body = list(token = TOK))
-    httr::stop_for_status(req)
-    a <- httr::content(req, as = "text")
-
-    # Split the lines
-    perline <- stringr::str_split(a, "\\n")[[1]]
-
-    # Split the commas into a data frame, while getting rid of the "Parameters" line and the headers line
-    df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
-    df <- as.data.frame(df)
-    colnames(df) <- c(
-      "FID",
-      "FeedTime",
-      "CowTag",
-      "CurrentCup",
-      "MaxCups",
-      "CurrentPeriod",
-      "MaxPeriods",
-      "CupDelay",
-      "PeriodDelay",
-      "FoodType"
-    )
+    # Download data (using internal function in 'utils.R')
+    df <- download_data(user, pass, d = "feed", type, unit = convert_unit(unit,1), start_date, end_date)
 
     # Remove leading zeros from tag IDs and formatting Date
     df <- df %>%

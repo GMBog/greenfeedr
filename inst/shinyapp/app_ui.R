@@ -162,7 +162,7 @@ ui <- fluidPage(
                  textInput("user", "Username:", placeholder = "Enter your username"),
                  passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
-                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
                  actionButton("run_viseat", "Run Viseat", icon = icon("running")),
                  div(style = "margin-bottom: 25px;"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
@@ -244,7 +244,7 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.run_eval_param > 0",
                    uiOutput("error_message4"),
-                   DTOutput("eval_param_table"),
+                   DTOutput("eval_param_table")
                  ),
                  conditionalPanel(
                    condition = "input.run_process > 0",

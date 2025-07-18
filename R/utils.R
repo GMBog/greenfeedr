@@ -35,6 +35,136 @@ has_credentials <- function() {
 }
 
 
+#' @name download_data
+#' @title Download data from 'API'
+#'
+#' @description Download all types of 'GreenFeed' from 'API'
+#'
+#' @return A dataframe
+#' @examplesIf has_credentials()
+#' # Please replace "your_username" and "your_password" with your actual 'GreenFeed' credentials.
+#' # By default, the function downloads the preliminary 'GreenFeed' data,
+#' # if raw data is needed use options: "feed", "rfid", or "cmds"
+#'
+#' download_data(
+#'   user = "your_username",
+#'   pass = "your_password",
+#'   d = "visits",
+#'   type = 2,
+#'   unit = c(304, 305),
+#'   start_date = "2024-01-01",
+#'   end_date = Sys.Date()
+#' )
+#'
+#' @export
+#' @keywords internal
+
+download_data <- function(user, pass, d, type = 2, unit = NULL, start_date = NULL, end_date = NULL) {
+
+  # Authenticate to receive token
+  req <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = user, pass = pass))
+  httr::stop_for_status(req)
+  TOK <- trimws(httr::content(req, as = "text"))
+
+  get_data <- function(type) {
+    if (d == "visits") {
+      URL <- paste0(
+        "https://portal.c-lockinc.com/api/getemissions?d=", d, "&fids=", unit,
+        "&st=", start_date, "&et=", end_date, "%2012:00:00&type=", type
+      )
+    } else {
+      URL <- paste0(
+        "https://portal.c-lockinc.com/api/getraw?d=", d, "&fids=", unit,
+        "&st=", start_date, "&et=", end_date, "%2012:00:00"
+      )
+    }
+    message(URL)
+    req <- httr::POST(URL, body = list(token = TOK))
+    httr::stop_for_status(req)
+    a <- httr::content(req, as = "text")
+    perline <- stringr::str_split(a, "\\n")[[1]]
+    perline <- perline[trimws(perline) != ""]
+    if(length(perline) < 3) return(NULL)
+    df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
+    as.data.frame(df)
+  }
+
+  df <- tryCatch({
+    df <- get_data(type)
+    if (is.null(df) || nrow(df) <= 1) {
+      if (d == "visits" && type == 1) {
+        message("No finalized data. Trying preliminary data (type = 2)...")
+        df <- get_data(2)
+      }
+    }
+    df
+  }, error = function(e) {
+    message("Download failed: ", e$message)
+    return(NULL)
+  })
+
+  if (is.null(df) || nrow(df) <= 1) {
+    message("No valid data retrieved.")
+    return(invisible(NULL))
+  }
+
+  if (d == "visits") {
+    colnames(df) <- c(
+      "FeederID",
+      "AnimalName",
+      "RFID",
+      "StartTime",
+      "EndTime",
+      "GoodDataDuration",
+      "CO2GramsPerDay",
+      "CH4GramsPerDay",
+      "O2GramsPerDay",
+      "H2GramsPerDay",
+      "H2SGramsPerDay",
+      "AirflowLitersPerSec",
+      "AirflowCf",
+      "WindSpeedMetersPerSec",
+      "WindDirDeg",
+      "WindCf",
+      "WasInterrupted",
+      "InterruptingTags",
+      "TempPipeDegreesCelsius",
+      "IsPreliminary",
+      "RunTime"
+    )
+  } else if (d == "feed") {
+    colnames(df) <- c(
+      "FID",
+      "FeedTime",
+      "CowTag",
+      "CurrentCup",
+      "MaxCups",
+      "CurrentPeriod",
+      "MaxPeriods",
+      "CupDelay",
+      "PeriodDelay",
+      "FoodType"
+    )
+  } else if (d == "rfid") {
+    colnames(df) <- c(
+      "FID",
+      "ScanTime",
+      "CowTag",
+      "InOrOut",
+      "Tray(IfApplicable)"
+    )
+  } else if (d == "cmds") {
+    colnames(df) <- c(
+      "FID",
+      "CommandTime",
+      "Cmd"
+    )
+  }
+  return(df)
+}
+
+
+
 #' @name ensure_date_format
 #' @title Check date format and transform in a usable one
 #'
