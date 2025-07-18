@@ -24,62 +24,9 @@ server <- function(input, output, session) {
       tryCatch({
         incProgress(0.1, detail = "Connecting to GreenFeed server...")
 
-        # Authenticate to receive token
-        req_auth <- httr::POST("https://portal.c-lockinc.com/api/login", body = list(user = input$user, pass = input$pass))
-        httr::stop_for_status(req_auth)
-        TOK <- trimws(httr::content(req_auth, as = "text"))
-
-        # Internal function to download and parse
-        download_and_parse <- function(type) {
-          if (type == "visits") {
-            URL <- paste0(
-              "https://portal.c-lockinc.com/api/getemissions?d=", type, "&fids=", unit,
-              "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00&type=2"
-            )
-          } else {
-            URL <- paste0(
-              "https://portal.c-lockinc.com/api/getraw?d=", type, "&fids=", unit,
-              "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00"
-            )
-          }
-          message(URL)
-          req_data <- httr::POST(URL, body = list(token = TOK))
-          httr::stop_for_status(req_data)
-          a <- httr::content(req_data, as = "text")
-          perline <- stringr::str_split(a, "\\n")[[1]]
-          perline <- perline[trimws(perline) != ""]
-          df <- do.call("rbind", stringr::str_split(perline[3:length(perline)], ","))
-          df <- as.data.frame(df)
-          df
-        }
-
         # Show a progress bar (continuation)
         incProgress(0.3, detail = "This could take a while...")
-        df <- download_and_parse(input$d)
-
-        # Assign column names to different datasets
-        if (input$d == "visits") {
-          colnames(df) <- c(
-            "FeederID", "AnimalName", "RFID", "StartTime", "EndTime",
-            "GoodDataDuration", "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay",
-            "H2GramsPerDay", "H2SGramsPerDay", "AirflowLitersPerSec", "AirflowCf",
-            "WindSpeedMetersPerSec", "WindDirDeg", "WindCf", "WasInterrupted",
-            "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
-          )
-        } else if (input$d == "feed") {
-          colnames(df) <- c(
-            "FID", "FeedTime", "CowTag", "CurrentCup", "MaxCups",
-            "CurrentPeriod", "MaxPeriods", "CupDelay", "PeriodDelay", "FoodType"
-          )
-        } else if (input$d == "rfid") {
-          colnames(df) <- c(
-            "FID", "ScanTime", "CowTag", "InOrOut", "Tray(IfApplicable)"
-          )
-        } else if (input$d == "cmds") {
-          colnames(df) <- c(
-            "FID", "CommandTime", "Cmd"
-          )
-        }
+        df <- download_data(input$user, input$pass, input$d, type = 2, unit, input$dates[1], input$dates[2])
 
         # Store preview for UI and download
         rv$data <- df
@@ -102,7 +49,7 @@ server <- function(input, output, session) {
     })
   })
 
-  # Conditionally show download button
+  # Conditional on loading data show download button
   output$download_ui <- renderUI({
     if (!is.null(rv$data)) {
       downloadButton("download_data", "Download Data")
@@ -129,17 +76,19 @@ server <- function(input, output, session) {
   )
 
   # Status card
-  output$status_card <- renderUI({
+  output$summary_card1 <- renderUI({
     req(input$load_data)
     df <- rv$data
 
     if (!is.null(df) && is.data.frame(df) && nrow(df) > 0 && is.null(rv$error_message1)) {
+      # Select ID col and get unique IDs (removing NA and unknown ones)
       animal_col <- grep("RFID|CowTag", names(df), value = TRUE)[1]
       unique_ids <- if (!is.null(animal_col)) {
         length(unique(df[[animal_col]][!is.na(df[[animal_col]]) & df[[animal_col]] != "unknown"]))
       } else {
         "N/A"
       }
+      # Select the Date col and get number of days requested
       date_col <- grep("StartTime|FeedTime|ScanTime|CommandTime", names(df), value = TRUE)[1]
       n_days <- if (!is.null(date_col)) length(unique(as.Date(df[[date_col]]))) else "Unknown"
 
@@ -149,9 +98,9 @@ server <- function(input, output, session) {
         icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
         strong("GreenFeed Data Summary"),
         tags$ul(
-          tags$li(strong("Animals: "), unique_ids),
+          tags$li(strong("IDs: "), unique_ids),
           tags$li(strong("Days: "), n_days),
-          tags$li(strong("Rows: "), nrow(df))
+          tags$li(strong("Dimensions: "), nrow(df), "rows x ", ncol(df), "columns")
         )
       )
     } else {
@@ -218,8 +167,8 @@ server <- function(input, output, session) {
           rfid_file = rfid_path()
         )
 
-      # Summary card
-      output$report_summary1 <- renderUI({
+      # Status card
+      output$summary_card2_1 <- renderUI({
         req(input$run_viseat > 0)
         df <- rv$results$feedtimes
         unit_col <- "FID"
@@ -260,7 +209,7 @@ server <- function(input, output, session) {
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
           strong("Visitation Report Summary"),
           tags$ul(
-            tags$li(strong("Animals: "), n_animals),
+            tags$li(strong("IDs: "), n_animals),
             tags$li(strong("Days: "), n_days),
             tags$li(
               strong("Total Visits: "),
@@ -277,14 +226,14 @@ server <- function(input, output, session) {
         )
       })
 
-      # Plot 1: Visits per Animal
-      output$boxplot_animal <- renderPlotly({
+      # Plot 2.1: Visits per Animal
+      output$plot2_1 <- renderPlotly({
         df <- rv$results$visits_per_day
         # Dynamically choose the animal ID column
         animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
         if (is.null(animal_col)) return(NULL)
 
-        p_animal <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
+        p1 <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
           geom_boxplot(fill = "#43a047", alpha = 0.87) +
           labs(
             title = "Visits Per Animal",
@@ -306,7 +255,52 @@ server <- function(input, output, session) {
           )
 
         # Plot interactively
-        ggplotly(p_animal)
+        ggplotly(p1)
+      })
+
+      # Plot 2.2: Visits per Day-Unit
+      output$plot2_2 <- renderPlotly({
+        df <- rv$results$feedtimes
+
+        # Safely get columns
+        date_col <- "FeedTime"
+        unit_col <- "FID"
+        if (!all(c(date_col, unit_col) %in% names(df))) return(NULL)
+
+        # Parse dates if not already
+        df[[date_col]] <- as.Date(df[[date_col]])
+
+        # Aggregate visits per day per unit
+        agg_df <- df %>%
+          dplyr::group_by(.data[[date_col]], .data[[unit_col]]) %>%
+          dplyr::summarise(visits = dplyr::n(), .groups = "drop")
+
+        # If only one unit, don't use fill
+        p2 <- ggplot(agg_df, aes(x = .data[[date_col]], y = visits, fill = factor(.data[[unit_col]]))) +
+          geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+          scale_fill_brewer(palette = "Greens", direction = -5) +
+          labs(
+            title = "Visits Per Day (by Unit)",
+            x = "",
+            y = "Visits",
+            fill = "Unit"
+          ) +
+          theme_minimal(base_size = 12) +
+          theme(
+            plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+            axis.title.y = element_text(size = 10, face = "bold"),
+            axis.title.x = element_text(size = 10, face = "bold"),
+            panel.grid.major.x = element_blank(),
+            plot.background = element_rect(fill = "transparent", color = NA),
+            panel.background = element_rect(fill = "transparent", color = NA),
+            legend.background = element_rect(fill = "transparent", color = NA),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.position = "none"
+          )
+
+        ggplotly(p2)
       })
 
       # Handle error messages
@@ -326,6 +320,7 @@ server <- function(input, output, session) {
     })
    })
   })
+
 
   # Run code to calculate intakes ('pellin' function)
   observeEvent(input$run_pellin, {
@@ -349,7 +344,7 @@ server <- function(input, output, session) {
         )
 
       # Summary Card
-      output$pellin_summary <- renderUI({
+      output$summary_card2_2 <- renderUI({
         if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
 
         # Calculate summary statistics
@@ -364,7 +359,7 @@ server <- function(input, output, session) {
           icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
           strong("Intakes Report Summary"),
           tags$ul(
-            tags$li(strong("Animals: "), n_animals),
+            tags$li(strong("IDs: "), n_animals),
             tags$li(strong("Days: "), n_days),
             tags$li(strong("Mean Pellet Intake per Animal-Day (g): "), mean_intake*1000)
           )

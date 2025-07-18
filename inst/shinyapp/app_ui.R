@@ -148,7 +148,7 @@ ui <- fluidPage(
                  )
                ),
                mainPanel(
-                 uiOutput("status_card"),
+                 uiOutput("summary_card1"),
                  uiOutput("error_message1"),
                  div(style = "margin-bottom: 15px;"),
                  uiOutput("preview")
@@ -170,15 +170,16 @@ ui <- fluidPage(
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
-                 uiOutput("error_message2"),
                  textOutput("viseat_status"),
-                 uiOutput("report_summary1"),
+                 uiOutput("summary_card2_1"),
+                 uiOutput("error_message2"),
                  div(style = "margin-bottom: 15px;"),
-                 plotlyOutput("boxplot_animal"),
+                 plotlyOutput("plot2_1"),
+                 plotlyOutput("plot2_2"),
                  div(style = "margin-bottom: 15px;"),
                  hr(),
                  verbatimTextOutput("pellin_status"),
-                 uiOutput("pellin_summary"),
+                 uiOutput("summary_card2_2"),
                  uiOutput("pellin_table"),
                  conditionalPanel(
                    condition = "input.run_pellin > 0",
