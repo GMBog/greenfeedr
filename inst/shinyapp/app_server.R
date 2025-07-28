@@ -121,10 +121,16 @@ server <- function(input, output, session) {
   output$preview <- renderUI({
     req(rv$df_preview)
     # Show a link to press and access data
-    tags$details(
-      tags$summary(style = "font-weight:bold; text-decoration:underline; cursor:pointer;",
-                   "Show/Hide Data Preview"),
-      DT::dataTableOutput("preview_table")
+    tagList(
+      tags$details(
+        tags$summary(style = "font-weight:bold; text-decoration:underline; cursor:pointer;",
+                     "Show/Hide Data Preview"),
+        DT::dataTableOutput("preview_table")
+      ),
+      div(
+        style = "color: #888; font-size: 13px; margin-top: 12px; margin-bottom: 10px;",
+        "Please Note: Data generated is preliminary and has not been reviewed by the C-Lock Team."
+      )
     )
   })
 
@@ -234,7 +240,7 @@ server <- function(input, output, session) {
         if (is.null(animal_col)) return(NULL)
 
         p1 <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
-          geom_boxplot(fill = "#43a047", alpha = 0.87) +
+          geom_boxplot(fill = "#A1D99B", alpha = 0.70) +
           labs(
             title = "Visits Per Animal",
             x = "",
@@ -243,7 +249,7 @@ server <- function(input, output, session) {
           theme_minimal(base_size = 12) +
           theme(
             plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
-            axis.text.x = element_text(angle = 45, hjust = 1, size = 6),
+            axis.text.x = element_text(angle = 90, hjust = 1, size = 6),
             axis.title.y = element_text(size = 10, face = "bold"),
             axis.title.x = element_text(size = 10, face = "bold"),
             panel.grid.major.x = element_blank(),
@@ -275,10 +281,19 @@ server <- function(input, output, session) {
           dplyr::group_by(.data[[date_col]], .data[[unit_col]]) %>%
           dplyr::summarise(visits = dplyr::n(), .groups = "drop")
 
-        # If only one unit, don't use fill
-        p2 <- ggplot(agg_df, aes(x = .data[[date_col]], y = visits, fill = factor(.data[[unit_col]]))) +
+        # Define the palette of colours (increase if needed)
+        palette <- c("#A1D99B", "#31A354", "#238B45", "#006D2C", "#00441B")
+        # Define the barplot with labels and colors per unit
+        p2 <- ggplot(
+          agg_df,
+          aes(x = .data[[date_col]], y = visits, fill = factor(.data[[unit_col]]),
+            text = paste0(
+              "Date: ", .data[[date_col]],"\n",
+              "Unit: ", .data[[unit_col]],"\n",
+              "Visits: ", visits)
+          )) +
           geom_col(position = position_dodge(width = 0.8), width = 0.7) +
-          scale_fill_brewer(palette = "Greens", direction = -5) +
+          scale_fill_manual(values = palette) +
           labs(
             title = "Visits Per Day (by Unit)",
             x = "",
@@ -300,7 +315,7 @@ server <- function(input, output, session) {
             legend.position = "none"
           )
 
-        ggplotly(p2)
+        ggplotly(p2, tooltip = "text")
       })
 
       # Handle error messages
@@ -320,7 +335,6 @@ server <- function(input, output, session) {
     })
    })
   })
-
 
   # Run code to calculate intakes ('pellin' function)
   observeEvent(input$run_pellin, {
@@ -484,7 +498,7 @@ server <- function(input, output, session) {
         df <- df %>%
           dplyr::filter(RFID != "unknown") %>%
           dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-          { if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
+          #{ if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
           dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
           dplyr::mutate(
             GoodDataDuration = round(
@@ -534,15 +548,33 @@ server <- function(input, output, session) {
     animal_col <- "RFID"
     n_days <- dplyr::n_distinct(as.Date(df$StartTime))
     n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
+
+    # Calculate records per animal per day
+    records_animal_day <- df %>%
+      dplyr::mutate(day = lubridate::day(StartTime)) %>%
+      dplyr::group_by(RFID, day) %>%
+      dplyr::summarise(n = dplyr::n(), .groups = "drop")
+
+    # Calculate min, median, and max
+    min_records <- min(records_animal_day$n)
+    median_records <- median(records_animal_day$n)
+    max_records <- max(records_animal_day$n)
+
     div(
       class = "summary-card",
       style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
       icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
       strong("GreenFeed Report Summary"),
       tags$ul(
-        tags$li(strong("Animals: "), n_animals),
+        tags$li(strong("IDs: "), n_animals),
         tags$li(strong("Days: "), n_days),
         tags$li(strong("Total Records: "), nrow(df)),
+        tags$li(strong("Records per Animal-Day:")),
+        tags$ul(
+          tags$li(strong("Min: "), min_records),
+          tags$li(strong("Median: "), median_records),
+          tags$li(strong("Max: "), max_records)
+        )
       )
     )
   })
@@ -731,6 +763,7 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = "text")
   })
 
+  # Plot 3: Gas production across the day
   # Plot 3: Gas Production Across the Day (user selects gases to plot, default = ch4)
   output$plot_3 <- renderPlotly({
     df <- rv$report_data
@@ -846,6 +879,273 @@ server <- function(input, output, session) {
     ggplotly(p)
   })
 
+
+    # output$plot_3 <- renderPlotly({
+  #   tryCatch({
+  #     df <- rv$report_data
+  #     if (is.null(df) || nrow(df) == 0) {
+  #       return(plot_ly() %>%
+  #                add_trace(type="scatter", mode="markers", x=c(), y=c()) %>%
+  #                layout(title = "No data available for Gas Production Across The Day"))
+  #     }
+  #
+  #     # Input gases, mode, etc.
+  #     plot_opt <- input$plot3_gas
+  #     if (is.null(plot_opt) || length(plot_opt) == 0) plot_opt <- "ch4"
+  #     plot_mode <- input$plot3_mode
+  #     if (is.null(plot_mode)) plot_mode <- "per_rfid"
+  #     plot_opt <- tolower(plot_opt)
+  #     if ("all" %in% plot_opt) {
+  #       options_selected <- c("ch4", "o2", "co2", "h2")
+  #     } else {
+  #       options_selected <- plot_opt
+  #     }
+  #
+  #     # Consistent dot/line colors and styles
+  #     gas_colors <- c("ch4" = "#388e3c", "co2" = "#1976d2", "o2" = "#8B5742", "h2" = "#8B4789")
+  #     gas_names <- c("ch4" = "CH₄", "co2" = "CO₂", "o2" = "O₂", "h2" = "H₂")
+  #     dot_color <- "#CDC5BF"
+  #     dot_opacity <- 0.5
+  #     dot_size <- 1.5
+  #
+  #     df <- df[df$HourOfDay <= 23, ]
+  #     normalize_df <- function(df) {
+  #       df %>%
+  #         dplyr::mutate(
+  #           Normalized_CH4 = as.numeric(scale(CH4GramsPerDay)),
+  #           Normalized_CO2 = as.numeric(scale(CO2GramsPerDay)),
+  #           Normalized_O2 = as.numeric(scale(O2GramsPerDay)),
+  #           Normalized_H2 = as.numeric(scale(H2GramsPerDay))
+  #         )
+  #     }
+  #
+  #     if (plot_mode == "general") {
+  #       # General plot: ggplotly, style consistent with panels
+  #       df_normalized <- normalize_df(df)
+  #       p <- ggplot(df_normalized, aes(x = HourOfDay)) +
+  #         labs(
+  #           x = "",
+  #           y = "Normalized Gas Value",
+  #           color = "Gas type"
+  #         ) +
+  #         theme_minimal(base_size = 12) +
+  #         theme(
+  #           plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = gas_colors["ch4"]),
+  #           axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+  #           axis.title.y = element_text(size = 10, face = "bold"),
+  #           legend.position = "none",
+  #           plot.background = element_rect(fill = "white", color = NA),
+  #           panel.background = element_rect(fill = "white", color = NA),
+  #           panel.grid.major = element_blank(),
+  #           panel.grid.minor = element_blank()
+  #         ) +
+  #         scale_x_continuous(
+  #           breaks = seq(0, 23, 4),
+  #           labels = c("12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM")
+  #         )
+  #
+  #       # Add points and smooth lines for selected gases
+  #       for (gas in options_selected) {
+  #         norm_col <- paste0("Normalized_", toupper(gas))
+  #         gas_label <- gas_names[gas]
+  #         gas_col <- gas_colors[gas]
+  #         # Points
+  #         p <- p + geom_point(aes_string(y = norm_col), color = dot_color, alpha = dot_opacity, size = dot_size)
+  #         # Smooth line
+  #         p <- p + geom_smooth(aes_string(y = norm_col, color = shQuote(gas_label)), method = "loess", se = FALSE, size = 1.5)
+  #       }
+  #
+  #       p <- p + scale_color_manual(values = setNames(unname(gas_colors), gas_names[options_selected]))
+  #
+  #       # ggplotly, set background
+  #       gp <- ggplotly(p) %>%
+  #         layout(
+  #           plot_bgcolor = "#ffffff",
+  #           paper_bgcolor = "#ffffff",
+  #           legend = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.1)
+  #         )
+  #       return(gp)
+  #
+  #     } else {
+  #       # Per RFID facet plot (panels) - MATCH GENERAL STYLE, NO LEGEND
+  #       facet_rows <- input$plot3_facet_rows
+  #       facet_cols <- input$plot3_facet_cols
+  #       if (is.null(facet_rows) || facet_rows < 1) facet_rows <- 2
+  #       if (is.null(facet_cols) || facet_cols < 1) facet_cols <- 2
+  #       max_panels <- facet_rows * facet_cols
+  #
+  #       if (!"RFID" %in% colnames(df)) {
+  #         return(plot_ly() %>%
+  #                  add_trace(type="scatter", mode="markers", x=c(), y=c()) %>%
+  #                  layout(title = "Data missing RFID column required for faceting"))
+  #       }
+  #
+  #       all_rfids <- unique(df$RFID)
+  #       total_rfids <- length(all_rfids)
+  #       if (total_rfids > max_panels) {
+  #         selected_rfids <- all_rfids[1:max_panels]
+  #         df_filtered <- df[df$RFID %in% selected_rfids, ]
+  #       } else {
+  #         df_filtered <- df
+  #         selected_rfids <- all_rfids
+  #       }
+  #
+  #       df_normalized <- df_filtered %>%
+  #         dplyr::group_by(RFID) %>%
+  #         dplyr::mutate(
+  #           Normalized_CH4 = as.numeric(scale(CH4GramsPerDay)),
+  #           Normalized_CO2 = as.numeric(scale(CO2GramsPerDay)),
+  #           Normalized_O2 = as.numeric(scale(O2GramsPerDay)),
+  #           Normalized_H2 = as.numeric(scale(H2GramsPerDay))
+  #         ) %>%
+  #         dplyr::ungroup()
+  #
+  #       plot_list <- list()
+  #
+  #       for (rfid_idx in seq_along(selected_rfids)) {
+  #         rfid <- selected_rfids[rfid_idx]
+  #         rfid_data <- df_normalized[df_normalized$RFID == rfid, ]
+  #         rfid_data <- rfid_data[order(rfid_data$HourOfDay), ]
+  #         rfid_plot <- plot_ly() %>%
+  #           layout(
+  #             xaxis = list(
+  #               title = "",
+  #               tickvals = seq(0, 23, 4),
+  #               ticktext = c("12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"),
+  #               tickangle = 45,
+  #               gridcolor = "#f8f9fa",
+  #               zerolinecolor = "#e9ecef",
+  #               showgrid = FALSE
+  #             ),
+  #             yaxis = list(
+  #               title = "",
+  #               gridcolor = "#f8f9fa",
+  #               zerolinecolor = "#e9ecef",
+  #               showgrid = FALSE
+  #             ),
+  #             plot_bgcolor = "#ffffff",
+  #             paper_bgcolor = "#ffffff",
+  #             showlegend = FALSE
+  #           )
+  #
+  #         for (gas in options_selected) {
+  #           norm_col <- paste0("Normalized_", toupper(gas))
+  #           gas_label <- gas_names[gas]
+  #           gas_col <- gas_colors[gas]
+  #           # Points (raw data)
+  #           rfid_plot <- rfid_plot %>%
+  #             add_trace(
+  #               data = rfid_data,
+  #               x = ~HourOfDay,
+  #               y = rfid_data[[norm_col]],
+  #               type = 'scatter',
+  #               mode = 'markers',
+  #               name = paste0(gas_label, " raw"),
+  #               marker = list(color = dot_color, size = 5, opacity = dot_opacity),
+  #               showlegend = FALSE,
+  #               hoverinfo = "x+y"
+  #             )
+  #           # Smooth line
+  #           if (length(unique(rfid_data$HourOfDay)) > 5) {
+  #             loess_formula <- as.formula(paste(norm_col, "~ HourOfDay"))
+  #             loess_fit <- loess(loess_formula, data = rfid_data, span = 0.75)
+  #             smooth_data <- data.frame(
+  #               HourOfDay = seq(min(rfid_data$HourOfDay), max(rfid_data$HourOfDay), length.out = 100)
+  #             )
+  #             smooth_data[[norm_col]] <- predict(loess_fit, newdata = smooth_data)
+  #             rfid_plot <- rfid_plot %>%
+  #               add_trace(
+  #                 data = smooth_data,
+  #                 x = ~HourOfDay,
+  #                 y = smooth_data[[norm_col]],
+  #                 type = 'scatter',
+  #                 mode = 'lines',
+  #                 name = gas_label,
+  #                 line = list(color = gas_col, width = 2, shape='spline'),
+  #                 showlegend = FALSE
+  #               )
+  #           } else {
+  #             rfid_plot <- rfid_plot %>%
+  #               add_trace(
+  #                 data = rfid_data,
+  #                 x = ~HourOfDay,
+  #                 y = rfid_data[[norm_col]],
+  #                 type = 'scatter',
+  #                 mode = 'lines',
+  #                 name = gas_label,
+  #                 line = list(color = gas_col, width = 2),
+  #                 showlegend = FALSE
+  #               )
+  #           }
+  #         }
+  #         plot_list[[as.character(rfid)]] <- rfid_plot
+  #       }
+  #
+  #       subplot_p <- subplot(
+  #         plot_list,
+  #         nrows = facet_rows,
+  #         shareX = TRUE,
+  #         shareY = TRUE,
+  #         titleX = FALSE,
+  #         titleY = TRUE
+  #       )
+  #
+  #       # Set only the leftmost y-axis to have the title (like "General" plot)
+  #       final_plot <- subplot_p %>%
+  #         layout(
+  #           yaxis = list(
+  #             title = "",  # Remove axis title
+  #             tickfont = list(size = 11),
+  #             standoff = 30,
+  #             automargin = TRUE,
+  #             gridcolor = "#f8f9fa",
+  #             zerolinecolor = "#e9ecef",
+  #             showgrid = FALSE
+  #           ),
+  #           annotations = list(
+  #             list(
+  #               text = "<b>Normalized Gas Value</b>",
+  #               x = -0.07,
+  #               y = 0.5,
+  #               xref = "paper",
+  #               yref = "paper",
+  #               showarrow = FALSE,
+  #               xanchor = "center",
+  #               yanchor = "middle",
+  #               font = list(
+  #                 size = 13,
+  #                 family = "Montserrat, Arial, sans-serif",
+  #                 color = "#222222"
+  #               ),
+  #               textangle = -90
+  #             )
+  #           ),
+  #           margin = list(t = 50, l = 85, r = 10, b = 50),
+  #           plot_bgcolor = "#ffffff",
+  #           paper_bgcolor = "#ffffff",
+  #           showlegend = FALSE
+  #         )
+  #       return(final_plot)
+  #     }
+  #   }, error = function(e) {
+  #     message("Error in plot_3: ", e$message)
+  #     return(
+  #       plot_ly() %>%
+  #         add_trace(type = "scatter", mode = "markers", x = c(0), y = c(0)) %>%
+  #         layout(
+  #           title = "Error generating plot",
+  #           annotations = list(
+  #             x = 0,
+  #             y = 0,
+  #             text = e$message,
+  #             showarrow = FALSE
+  #           ),
+  #           plot_bgcolor = "#ffffff",
+  #           paper_bgcolor = "#ffffff"
+  #         )
+  #     )
+  #   })
+  # })
 
   ## TAB 4: Processing Data ####
 
@@ -1189,4 +1489,3 @@ server <- function(input, output, session) {
 
 }
 
-shinyApp(ui, server)

@@ -9,14 +9,15 @@ ui <- fluidPage(
     tags$style(HTML("
       body, .main-panel, .form-group label, .control-label {
         font-family: 'Montserrat', Arial, sans-serif;
+        font-size: 12px;
         color: #006400;
       }
       .top-bar {
-        ont-family: 'Merriweather', serif;
+        font-family: 'Merriweather', serif;
         background-color: #124B12;
         color: white;
         padding: 10px 20px;
-        font-size: 24px;
+        font-size: 23px;
         font-weight: bold;
         text-align: center;
         letter-spacing: 2px;
@@ -27,15 +28,16 @@ ui <- fluidPage(
         background: #f7fff7;
         border-radius: 15px;
         box-shadow: 0 6px 24px rgba(18,75,18,0.08), 0 1.5px 5px rgba(18,75,18,0.04);
-        padding: 24px;
-        margin-bottom: 24px;
+        padding: 10px;
+        margin-bottom: 10px;
       }
       .btn, .action-button, .download-button {
         background: linear-gradient(90deg, #198754 0%, #124B12 100%);
         border: none;
         color: white !important;
         font-weight: bold;
-        border-radius: 8px !important;
+        border-radius: 5px !important;
+        font-size: 12px !important;
         transition: background 0.2s;
       }
       .btn:hover, .action-button:hover, .download-button:hover {
@@ -45,6 +47,7 @@ ui <- fluidPage(
       .nav-tabs > li > a, .nav-tabs > li.active > a {
         color: #006400 !important;
         font-weight: bold;
+        font-size: 12px !important;
       }
       .tab-content > .tab-pane {
         opacity: 0;
@@ -60,7 +63,6 @@ ui <- fluidPage(
         from { box-shadow: 0 0 0 0 rgba(24, 135, 84, 0.7); }
         to   { box-shadow: 0 0 12px 6px rgba(24, 135, 84, 0.15); }
       }
-
       .form-group .btn-default,
       .form-group .btn-default:focus,
       .form-group .btn-default:active,
@@ -70,6 +72,7 @@ ui <- fluidPage(
         border: none;
         border-radius: 8px !important;
         font-weight: bold;
+        font-size: 12px !important;
         box-shadow: none !important;
         transition: background 0.2s;
       }
@@ -82,11 +85,18 @@ ui <- fluidPage(
         background: linear-gradient(90deg, #198754 0%, #124B12 100%) !important;
         color: white !important;
       }
+      /* Reduce font size inside input boxes, select boxes, date pickers */
+      .form-control,
+      .selectize-input,
+      input[type='text'],
+      input[type='password'],
+      input[type='number'],
+      input[type='date'] {
+        font-size: 11px !important;
+      }
     "))
   ),
   div(class = "top-bar", "greenfeedr app"),
-
-
   # Main UI layout with tabs
   tabsetPanel(
 
@@ -203,8 +213,8 @@ ui <- fluidPage(
                    "which_plot", "Show Plot:",
                    choices = c(
                      "Records Per Day" = "plot_1",
-                     "Gas Production Across The Day" = "plot_3",
-                     "Records Per Animal" = "plot_2"
+                     "Records Per Animal" = "plot_2",
+                     "Gas Production Across The Day" = "plot_3"
                    ),
                    selected = "plot_1"
                  ),
@@ -212,7 +222,7 @@ ui <- fluidPage(
                    condition = "input.which_plot == 'plot_3'",
                    checkboxGroupInput(
                      "plot3_gas",
-                     label = "Select gases to plot (multiple allowed):",
+                     label = "Select gases to plot:",
                      choices = list("CH4" = "ch4", "CO2" = "co2", "O2" = "o2", "H2" = "h2"),
                      selected = "ch4"
                    )
