@@ -106,7 +106,6 @@ viseat <- function(user = NA, pass = NA, unit,
 
   }
 
-
   # Process the rfid data
   rfid_file <- process_rfid_data(rfid_file)
 

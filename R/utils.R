@@ -470,7 +470,7 @@ transform_gases <- function(data){
 #'
 #' @export
 #' @keywords internal
-eval_gfparam <- function(data, start_date, end_date) {
+eval_gfparam <- function(data, start_date, end_date, gas = "CH4") {
   # Parameter space
   param_combinations <- expand.grid(
     param1 = seq(1, 5),
@@ -493,6 +493,16 @@ eval_gfparam <- function(data, start_date, end_date) {
     c(mean = round(mean_x, 1), sd = round(sd_x, 1), CV = round(CV_x, 2))
   }
 
+  # Set the gas column name
+  gas_col <- switch(
+    gas,
+    "CH4" = "CH4GramsPerDay",
+    "CO2" = "CO2GramsPerDay",
+    "O2"  = "O2GramsPerDay",
+    "H2"  = "H2GramsPerDay",
+    stop("Invalid gas type. Use 'CH4', 'CO2', 'O2', or 'H2'.")
+  )
+
   # Main loop over parameter combinations
   results <- purrr::pmap_dfr(
     .l = param_combinations,
@@ -509,7 +519,13 @@ eval_gfparam <- function(data, start_date, end_date) {
           )
         )
         weekly <- res$weekly_data
-        metrics <- compute_metrics(weekly$CH4GramsPerDay)
+
+        # Check if gas_col exists
+        if (!gas_col %in% colnames(weekly)) {
+          stop(paste0("Column '", gas_col, "' not found in weekly data."))
+        }
+
+        metrics <- compute_metrics(weekly[[gas_col]])
         data.frame(
           param1 = param1,
           param2 = param2,

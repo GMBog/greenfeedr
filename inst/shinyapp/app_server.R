@@ -3,49 +3,48 @@
 
 server <- function(input, output, session) {
 
-  ## TAB 1: Downloading Data ####
+#### ---------------------- TAB 1: DOWNLOADING DATA ----------------------- ####
 
   # Define reactive values
   rv <- reactiveValues(
     data = NULL,
     df_preview = NULL,
-    error_message1 = NULL
+    error_message_download = NULL
   )
 
-  # Run code for download data
+  # Run code for download data from C-Lock server
   observeEvent(input$load_data, {
     req(input$user, input$pass, input$unit, input$dates)
-
-    # Check 'GreenFeed' unit format
     unit <- convert_unit(input$unit, 1)
 
-    # Show a progress bar (start downloading)
     withProgress(message = "Loading data...", value = 0, {
-      tryCatch({
-        incProgress(0.1, detail = "Connecting to GreenFeed server...")
+      df <- tryCatch({
+        incProgress(0.1, detail = "Connecting to C-Lock server...")
+        # Download function defined in utils.R
+        download_data(input$user,
+                      input$pass,
+                      input$d,
+                      type = 2,
+                      unit,
+                      input$dates[1],
+                      input$dates[2])
+      }, error = function(e) {
+        NULL
+      })
 
-        # Show a progress bar (continuation)
-        incProgress(0.3, detail = "This could take a while...")
-        df <- download_data(input$user, input$pass, input$d, type = 2, unit, input$dates[1], input$dates[2])
+      incProgress(0.2, detail = "Done!")
 
-        # Store preview for UI and download
+      # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
+      if (is.null(df) || !is.data.frame(df) || nrow(df) <= 1) {
+        rv$error_message_download <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$data <- NULL
+        rv$df_preview <- NULL
+        return()
+      } else {
         rv$data <- df
         rv$df_preview <- head(df, 100)
-
-        incProgress(0.2, detail = "Done!")
-
-        # Handle error messages
-        rv$error_message1 = NULL
-
-      }, error = function(e) {
-        msg <- as.character(e$message)
-        if (grepl("names.*must be the same length as the vector", msg)) {
-          rv$error_message1 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-        } else {
-          rv$error_message1 <- paste("Unexpected error:", msg)
-        }
-        rv$df_preview = NULL
-      })
+        rv$error_message_download <- NULL
+      }
     })
   })
 
@@ -75,8 +74,8 @@ server <- function(input, output, session) {
     }
   )
 
-  # Status card
-  output$summary_card1 <- renderUI({
+  # Summary card display format
+  output$summary_card_download <- renderUI({
     req(input$load_data)
     df <- rv$data
 
@@ -108,15 +107,6 @@ server <- function(input, output, session) {
     }
   })
 
-  # Show error messages
-  output$error_message1 <- renderUI({
-    req(rv$error_message1)
-    div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message1)
-    )
-  })
-
   # Data preview (hidden in a link)
   output$preview <- renderUI({
     req(rv$df_preview)
@@ -140,106 +130,131 @@ server <- function(input, output, session) {
     DT::datatable(head(rv$df_preview, 100), options = list(scrollX = TRUE, pageLength = 5))
   })
 
+  # Error message display format
+  output$error_message_download <- renderUI({
+    print(rv$error_message_download)
+    req(rv$error_message_download)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message_download)
+    )
+  })
 
 
-  ## TAB 2: Checking Data ####
+#### ---------------------- TAB 2: CHECKING DATA -------------------------- ####
 
   # Define reactive values
   rv <- reactiveValues(
-    results = NULL,
-    error_message2 = NULL
+    viseat_result = NULL,
+    pellin_result = NULL,
+    error_message_viseat = NULL,
+    error_message_pellin = NULL
   )
-
-  # Reactive expression to get the path
-  rfid_path <- reactive({
-    if (!is.null(input$rfid_file1)) input$rfid_file1$datapath else NULL
-  })
 
   # Run code to check visitation ('viseat' function)
   observeEvent(input$run_viseat, {
     req(input$dates, input$unit)
-
-    # Check inputs
     unit <- convert_unit(input$unit, 1)
+    rv$error_message_viseat <- NULL
 
     withProgress(message = 'Running Viseat...', value = 0, {
+      result <- NULL
       tryCatch({
-        rv$results <- greenfeedr::viseat(
+        result <- greenfeedr::viseat(
           user = input$user,
           pass = input$pass,
           unit = unit,
           start_date = input$dates[1],
           end_date = input$dates[2],
-          rfid_file = rfid_path()
+          rfid_file = NULL
         )
-
-      # Status card
-      output$summary_card2_1 <- renderUI({
-        req(input$run_viseat > 0)
-        df <- rv$results$feedtimes
-        unit_col <- "FID"
-
-        # Check if data exist
-        if (is.null(df) || !is.data.frame(df) || nrow(df) == 0 || !unit_col %in% names(df)) return(NULL)
-
-        # Get visits per unit
-        visits_by_unit <- table(df[[unit_col]])
-
-        # Get number of animals using units
-        animal_col <- "CowTag"
-        visits_by_animal <- if (animal_col %in% names(df)) table(df[[animal_col]]) else NULL
-        n_animals <- if (!is.null(visits_by_animal)) length(visits_by_animal) else "Unknown"
-
-        # Calculate mean visits per animal per day
-        visits_per_day_df <- rv$results$visits_per_day
-        if (!is.null(visits_per_day_df) && is.data.frame(visits_per_day_df) && nrow(visits_per_day_df) > 0) {
-          animal_col <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
-          if (!is.null(animal_col) && "visits" %in% names(visits_per_day_df)) {
-            mean_visits_animal_per_day <- median(as.numeric(visits_per_day_df$visits), na.rm = T)
-          } else {
-            mean_visits_animal_per_day <- "Unknown"
-          }
-        } else {
-          mean_visits_animal_per_day <- "Unknown"
-        }
-
-        # Get number of days with visits
-        date_col <- "FeedTime"
-        visits_by_day <- if (date_col %in% names(df)) table(as.Date(df[[date_col]])) else NULL
-        n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
-
-        # Create summary card
-        div(
-          class = "summary-card",
-          style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
-          icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
-          strong("Visitation Report Summary"),
-          tags$ul(
-            tags$li(strong("IDs: "), n_animals),
-            tags$li(strong("Days: "), n_days),
-            tags$li(
-              strong("Total Visits: "),
-              tags$ul(
-                lapply(seq_along(visits_by_unit), function(i) {
-                  tags$li(
-                    tags$b("Unit ",names(visits_by_unit)[i]), ": ", visits_by_unit[i]
-                  )
-                })
-              )
-            ),
-            tags$li(strong("Median Visits per Animal-Day: "), mean_visits_animal_per_day)
-          )
-        )
+      }, error = function(e) {
+        rv$error_message_viseat <- paste0("Unexpected error: ", e$message)
+        result <<- NULL
       })
 
-      # Plot 2.1: Visits per Animal
-      output$plot2_1 <- renderPlotly({
-        df <- rv$results$visits_per_day
-        # Dynamically choose the animal ID column
-        animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
-        if (is.null(animal_col)) return(NULL)
+      # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
+      if (is.null(result) || !is.data.frame(result$feedtimes) || nrow(result$feedtimes) <= 1) {
+        rv$error_message_viseat <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$viseat_result <- NULL
+        return()
+      } else {
+        rv$viseat_result <- result
+        rv$error_message_viseat <- NULL
+      }
 
-        p1 <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
+    })
+  })
+
+  # Summary card display format
+  output$summary_card_viseat <- renderUI({
+    req(input$run_viseat > 0)
+
+    df <- rv$viseat_result$feedtimes
+    unit_col <- "FID"
+
+    # Check if data exist
+    if (is.null(df) || !is.data.frame(df) || nrow(df) == 0 || !unit_col %in% names(df)) return(NULL)
+
+    # Get visits per unit
+    visits_by_unit <- table(df[[unit_col]])
+
+    # Get number of animals using units
+    animal_col <- "CowTag"
+    visits_by_animal <- if (animal_col %in% names(df)) table(df[[animal_col]]) else NULL
+    n_animals <- if (!is.null(visits_by_animal)) length(visits_by_animal) else "Unknown"
+
+    # Calculate mean visits per animal per day
+    visits_per_day_df <- rv$results$visits_per_day
+    if (!is.null(visits_per_day_df) && is.data.frame(visits_per_day_df) && nrow(visits_per_day_df) > 0) {
+      animal_col <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
+    if (!is.null(animal_col) && "visits" %in% names(visits_per_day_df)) {
+      mean_visits_animal_per_day <- median(as.numeric(visits_per_day_df$visits), na.rm = T)
+    } else {
+      mean_visits_animal_per_day <- "Unknown"
+    }
+    } else {
+      mean_visits_animal_per_day <- "Unknown"
+    }
+
+    # Get number of days with visits
+    date_col <- "FeedTime"
+    visits_by_day <- if (date_col %in% names(df)) table(as.Date(df[[date_col]])) else NULL
+    n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
+
+    # Create summary card
+    div(
+      class = "summary-card",
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+      icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+      strong("Visitation Report Summary"),
+      tags$ul(
+        tags$li(strong("IDs: "), n_animals),
+        tags$li(strong("Days: "), n_days),
+        tags$li(
+          strong("Total Visits: "),
+          tags$ul(
+            lapply(seq_along(visits_by_unit), function(i) {
+              tags$li(
+                tags$b("Unit ",names(visits_by_unit)[i]), ": ", visits_by_unit[i]
+              )
+            })
+          )
+        ),
+        tags$li(strong("Median Visits per Animal-Day: "), mean_visits_animal_per_day)
+      )
+     )
+   })
+
+  # Plot 2.1: Visits per Animal
+  output$plot2_1 <- renderPlotly({
+    df <- rv$viseat_result$visits_per_day
+
+    # Dynamically choose the animal ID column
+    animal_col <- if ("RFID" %in% names(df)) "RFID" else if ("FarmName" %in% names(df)) "FarmName" else NULL
+    if (is.null(animal_col)) return(NULL)
+
+    p1 <- ggplot(df, aes(x = factor(.data[[animal_col]]), y = visits)) +
           geom_boxplot(fill = "#A1D99B", alpha = 0.70) +
           labs(
             title = "Visits Per Animal",
@@ -264,14 +279,14 @@ server <- function(input, output, session) {
         ggplotly(p1)
       })
 
-      # Plot 2.2: Visits per Day-Unit
-      output$plot2_2 <- renderPlotly({
-        df <- rv$results$feedtimes
+  # Plot 2.2: Visits per Day-Unit
+  output$plot2_2 <- renderPlotly({
+    df <- rv$viseat_result$feedtimes
 
-        # Safely get columns
-        date_col <- "FeedTime"
-        unit_col <- "FID"
-        if (!all(c(date_col, unit_col) %in% names(df))) return(NULL)
+    # Safely get columns
+    date_col <- "FeedTime"
+    unit_col <- "FID"
+    if (!all(c(date_col, unit_col) %in% names(df))) return(NULL)
 
         # Parse dates if not already
         df[[date_col]] <- as.Date(df[[date_col]])
@@ -305,7 +320,6 @@ server <- function(input, output, session) {
             plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
             axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
             axis.title.y = element_text(size = 10, face = "bold"),
-            axis.title.x = element_text(size = 10, face = "bold"),
             panel.grid.major.x = element_blank(),
             plot.background = element_rect(fill = "transparent", color = NA),
             panel.background = element_rect(fill = "transparent", color = NA),
@@ -318,137 +332,138 @@ server <- function(input, output, session) {
         ggplotly(p2, tooltip = "text")
       })
 
-      # Handle error messages
-      rv$error_message2 = NULL
-
-    }, error = function(e) {
-      msg <- as.character(e$message)
-      if (grepl("names.*must be the same length as the vector", msg)) {
-        rv$error_message2 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-      } else if (grepl("Cannot open file for writing", msg)) {
-        rv$error_message2 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
-      } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
-        rv$error_message2 <- "Error: Mismatch between number of units and gcup."
-      } else {
-        rv$error_message2 <- paste("Unexpected error:", msg)
-      }
-    })
-   })
+  # Error message display format
+  output$error_message_viseat <- renderUI({
+    req(rv$error_message_viseat)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message_viseat)
+    )
   })
+
 
   # Run code to calculate intakes ('pellin' function)
   observeEvent(input$run_pellin, {
     req(input$gcup, input$unit)
 
-    # Check inputs
+    # Check inputs format
     gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
     unit <- convert_unit(input$unit, 2)
 
+    rv$error_message_pellin <- NULL
+
     withProgress(message = 'Running Pellin...', value = 0, {
+      result <- NULL
       tryCatch({
-        df <- greenfeedr::pellin(
+        result <- greenfeedr::pellin(
           user = input$user,
           pass = input$pass,
           unit = unit,
           gcup = gcup,
           start_date = input$dates[1],
           end_date = input$dates[2],
-          rfid_file = rfid_path(),
-          save_dir = NULL #this argument avoid function to save files directly
+          save_dir = NULL
         )
-
-      # Summary Card
-      output$summary_card2_2 <- renderUI({
-        if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
-
-        # Calculate summary statistics
-        n_animals <- dplyr::n_distinct(df$RFID[!is.na(df$FoodType)])
-        n_days <- dplyr::n_distinct(df$Date)
-        total_intake <- round(sum(df$PIntake_kg, na.rm = TRUE), 2)
-        mean_intake <- round(mean(df$PIntake_kg, na.rm = TRUE), 2)
-
-        div(
-          class = "summary-card",
-          style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
-          icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
-          strong("Intakes Report Summary"),
-          tags$ul(
-            tags$li(strong("IDs: "), n_animals),
-            tags$li(strong("Days: "), n_days),
-            tags$li(strong("Mean Pellet Intake per Animal-Day (g): "), mean_intake*1000)
-          )
-        )
-      })
-
-      # Process 'feedtimes' data
-      summary_df <- df %>%
-        dplyr::filter(!is.na(FoodType)) %>%
-        dplyr::group_by(FoodType) %>%
-        dplyr::summarise(
-          Animals = dplyr::n_distinct(RFID),
-          Days = dplyr::n_distinct(Date),
-          Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
-          Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
-          .groups = "drop"
-        )
-
-      # Create summary table
-      output$pellin_table <- renderUI({
-        table_html <- knitr::kable(summary_df, format = "html") %>%
-          kableExtra::kable_styling("striped", full_width = FALSE)
-        HTML(table_html)
-      })
-
-      # Downloads
-      output$download_pellin <- downloadHandler(
-        filename = function()
-          paste0("PelletIntakes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv"),
-        content = function(file) {
-          write.csv(df, file, row.names = FALSE)
+      }, error = function(e) {
+        if (grepl("Mismatch.*unit-foodtype", e$message)) {
+          rv$error_message_pellin <<- "Error: Mismatch between number of units and gcup. Please check your inputs."
+        } else {
+          rv$error_message_pellin <<- paste("Unexpected error:", e$message)
         }
-      )
+        result <<- NULL
+      })
 
-      # Handle error messages
-      rv$error_message2 = NULL
-
-    }, error = function(e) {
-      msg <- as.character(e$message)
-      if (grepl("names.*must be the same length as the vector", msg)) {
-        rv$error_message2 <- "Error: No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-      } else if (grepl("Cannot open file for writing", msg)) {
-        rv$error_message2 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
-      } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)){
-        rv$error_message2 <- "Error: Mismatch between number of units and gcup."
-      } else {
-        rv$error_message2 <- paste("Unexpected error:", msg)
+      if (is.null(result) || !is.data.frame(result) || nrow(result) == 0) {
+        if (is.null(rv$error_message_pellin)) {
+          rv$error_message_pellin <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        }
+        rv$pellin_result <- NULL
+        return()
       }
+
+      rv$pellin_result <- result
+      rv$error_message_pellin <- NULL
     })
-   })
   })
 
-  # Show error messages
-  output$error_message2 <- renderUI({
-    req(rv$error_message2)
+  # Summary card display format
+  output$summary_card_pellin <- renderUI({
+    df <- rv$pellin_result
+    if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
+
+    # Calculate summary statistics
+    n_animals <- dplyr::n_distinct(df$RFID[!is.na(df$FoodType)])
+    n_days <- dplyr::n_distinct(df$Date)
+    total_intake <- round(sum(df$PIntake_kg, na.rm = TRUE), 2)
+    mean_intake <- round(mean(df$PIntake_kg, na.rm = TRUE), 2)
+
+    div(
+      class = "summary-card",
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+      icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+      strong("Intakes Report Summary"),
+      tags$ul(
+        tags$li(strong("IDs: "), n_animals),
+        tags$li(strong("Days: "), n_days),
+        tags$li(strong("Mean Pellet Intake per Animal-Day (g): "), mean_intake*1000)
+      )
+    )
+  })
+
+  # Summary table for pellin results
+  output$pellin_table <- renderUI({
+    df <- rv$pellin_result
+    if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
+
+    summary_df <- df %>%
+      dplyr::filter(!is.na(FoodType)) %>%
+      dplyr::group_by(FoodType) %>%
+      dplyr::summarise(
+        Animals = dplyr::n_distinct(RFID),
+        Days = dplyr::n_distinct(Date),
+        Total_Intake_kg = round(sum(PIntake_kg, na.rm = TRUE), 2),
+        Mean_Intake_kg = round(mean(PIntake_kg, na.rm = TRUE), 2),
+        .groups = "drop"
+      )
+    table_html <- knitr::kable(summary_df, format = "html") %>%
+      kableExtra::kable_styling("striped", full_width = FALSE)
+    HTML(table_html)
+  })
+
+  # Download handler
+  output$download_pellin <- downloadHandler(
+    filename = function() {
+      unit <- gsub("[,\\s]+", "_", input$unit)
+      paste0("PelletIntakes_", unit, "_", input$dates[1], "_", input$dates[2], ".csv")
+    },
+    content = function(file) {
+      write.csv(rv$pellin_result, file, row.names = FALSE)
+    }
+  )
+
+  # Error message display format
+  output$error_message_pellin <- renderUI({
+    req(rv$error_message_pellin)
     div(
       style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message2)
+      HTML(rv$error_message_pellin)
     )
   })
 
 
-  ## TAB 3: Reporting Data ####
+#### ---------------------- TAB 3: REPORTING DATA ------------------------- ####
 
   # Define reactive values
   rv <- reactiveValues(
     report_data = NULL,
-    error_message3 = NULL
+    error_message_report = NULL
   )
 
   # Run code to report data ('report_gfdata' function)
   observeEvent(input$run_report, {
     req(input$unit, input$user, input$pass, input$dates)
 
-    # Check inputs
+    # Check unit input
     unit <- convert_unit(input$unit, 1)
 
     # Reactive expression to get the path
@@ -457,44 +472,37 @@ server <- function(input, output, session) {
     })
 
     withProgress(message = "Downloading and processing data...", value = 0, {
-      tryCatch({
-        # Step 1: Authentication
-        req(input$user, input$pass)
-        login_req <- httr::POST(
-          "https://portal.c-lockinc.com/api/login",
-          body = list(user = input$user, pass = input$pass)
-        )
-        httr::stop_for_status(login_req)
-        token <- trimws(httr::content(login_req, as = "text"))
-        incProgress(0.2, detail = "Authenticated...")
 
-        # Step 2: Data download
-        url <- paste0(
-          "https://portal.c-lockinc.com/api/getemissions?d=visits&fids=", unit,
-          "&st=", input$dates[1], "&et=", input$dates[2], "%2012:00:00&type=2"
-        )
-        message(url)
-        data_req <- httr::POST(url, body = list(token = token))
-        httr::stop_for_status(data_req)
-        raw_txt <- httr::content(data_req, as = "text")
-        incProgress(0.3, detail = "Data downloaded...")
+        df <- tryCatch({
+          incProgress(0.1, detail = "Connecting to C-Lock server...")
+          # Download function defined in utils.R
+          download_data(input$user,
+                        input$pass,
+                        d = "visits",
+                        type = 2,
+                        unit,
+                        input$dates[1],
+                        input$dates[2])
+        }, error = function(e) {
+          NULL
+        })
 
-        # Step 3: Convert to dataframe
-        lines <- stringr::str_split(raw_txt, "\n")[[1]]
-        df <- do.call("rbind", stringr::str_split(lines[3:length(lines)], ","))
-        df <- as.data.frame(df)
-        colnames(df) <- c(
-          "FeederID", "AnimalName", "RFID", "StartTime", "EndTime", "GoodDataDuration",
-          "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay", "H2SGramsPerDay",
-          "AirflowLitersPerSec", "AirflowCf", "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
-          "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius", "IsPreliminary", "RunTime"
-        )
-        incProgress(0.2, detail = "Data parsed...")
+        incProgress(0.2, detail = "Done!")
 
-        # Step 4: Process RFID file
+        # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
+        if (is.null(df) || !is.data.frame(df) || nrow(df) <= 1) {
+          rv$error_message_report <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+          rv$report_data <- NULL
+          return()
+        } else {
+          rv$report_data <- df
+          rv$error_message_report <- NULL
+        }
+
+        # Process RFID file
         rfid_df <- if (!is.null(rfid_path)) process_rfid_data(rfid_path) else NULL
 
-        # Step 5: Clean and process data
+        # Clean and process data
         df <- df %>%
           dplyr::filter(RFID != "unknown") %>%
           dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
@@ -521,26 +529,11 @@ server <- function(input, output, session) {
 
         rv$report_data <- df
 
-        # Handle error messages
-        rv$error_message3 = NULL
-
-      }, error = function(e) {
-        msg <- as.character(e$message)
-        if (grepl("names.*must be the same length as the vector", msg)) {
-          rv$error_message3 <- "No data for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-        } else if (grepl("Cannot open file for writing", msg)) {
-          rv$error_message3 <- "Error: Cannot write file.<br>Please check and re-enter a valid save directory."
-        } else if (grepl("Unexpected error: Mismatch *unit-foodtype combinations", msg)) {
-          rv$error_message3 <- "Error: Mismatch between number of units and gcup."
-        } else {
-          rv$error_message3 <- paste("Unexpected error:", msg)
-        }
-      })
     })
   })
 
-  # Summary Card
-  output$report_summary <- renderUI({
+  # Summary card display format
+  output$summary_card_report <- renderUI({
     df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
 
@@ -579,12 +572,12 @@ server <- function(input, output, session) {
     )
   })
 
-  # Show error messages
-  output$error_message3 <- renderUI({
-    req(rv$error_message3)
+  # Error message display format
+  output$error_message_report <- renderUI({
+    req(rv$error_message_report)
     div(
       style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message3)
+      HTML(rv$error_message_report)
     )
   })
 
@@ -631,26 +624,22 @@ server <- function(input, output, session) {
       geom_col(fill = "#43a047", width = 0.7, alpha = 0.87) +
       labs(
         title = "Records Per Day",
-        subtitle = paste0("From ", min(df_count$Date), " to ", max(df_count$Date)),
         x = "",
         y = "Number of Records"
       ) +
-      scale_x_date(date_breaks = "1 day", date_labels = "%d-%b") +
       theme_minimal(base_size = 12) +
       theme(
         plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = "#388e3c"),
-        plot.subtitle = element_text(size = 11, color = "#424242", hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
         axis.title.y = element_text(size = 10, face = "bold"),
         panel.grid.major.x = element_blank(),
-        # Make ggplot backgrounds transparent
         plot.background = element_rect(fill = "transparent", color = NA),
         panel.background = element_rect(fill = "transparent", color = NA),
         legend.background = element_rect(fill = "transparent", color = NA),
-        # Remove grid lines
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()
       )
+
     ggplotly(p, tooltip = c("x", "y"))
   })
 
@@ -763,8 +752,7 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = "text")
   })
 
-  # Plot 3: Gas production across the day
-  # Plot 3: Gas Production Across the Day (user selects gases to plot, default = ch4)
+  # Plot 3: Gas Production Across the Day
   output$plot_3 <- renderPlotly({
     df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) {
@@ -880,286 +868,21 @@ server <- function(input, output, session) {
   })
 
 
-    # output$plot_3 <- renderPlotly({
-  #   tryCatch({
-  #     df <- rv$report_data
-  #     if (is.null(df) || nrow(df) == 0) {
-  #       return(plot_ly() %>%
-  #                add_trace(type="scatter", mode="markers", x=c(), y=c()) %>%
-  #                layout(title = "No data available for Gas Production Across The Day"))
-  #     }
-  #
-  #     # Input gases, mode, etc.
-  #     plot_opt <- input$plot3_gas
-  #     if (is.null(plot_opt) || length(plot_opt) == 0) plot_opt <- "ch4"
-  #     plot_mode <- input$plot3_mode
-  #     if (is.null(plot_mode)) plot_mode <- "per_rfid"
-  #     plot_opt <- tolower(plot_opt)
-  #     if ("all" %in% plot_opt) {
-  #       options_selected <- c("ch4", "o2", "co2", "h2")
-  #     } else {
-  #       options_selected <- plot_opt
-  #     }
-  #
-  #     # Consistent dot/line colors and styles
-  #     gas_colors <- c("ch4" = "#388e3c", "co2" = "#1976d2", "o2" = "#8B5742", "h2" = "#8B4789")
-  #     gas_names <- c("ch4" = "CH₄", "co2" = "CO₂", "o2" = "O₂", "h2" = "H₂")
-  #     dot_color <- "#CDC5BF"
-  #     dot_opacity <- 0.5
-  #     dot_size <- 1.5
-  #
-  #     df <- df[df$HourOfDay <= 23, ]
-  #     normalize_df <- function(df) {
-  #       df %>%
-  #         dplyr::mutate(
-  #           Normalized_CH4 = as.numeric(scale(CH4GramsPerDay)),
-  #           Normalized_CO2 = as.numeric(scale(CO2GramsPerDay)),
-  #           Normalized_O2 = as.numeric(scale(O2GramsPerDay)),
-  #           Normalized_H2 = as.numeric(scale(H2GramsPerDay))
-  #         )
-  #     }
-  #
-  #     if (plot_mode == "general") {
-  #       # General plot: ggplotly, style consistent with panels
-  #       df_normalized <- normalize_df(df)
-  #       p <- ggplot(df_normalized, aes(x = HourOfDay)) +
-  #         labs(
-  #           x = "",
-  #           y = "Normalized Gas Value",
-  #           color = "Gas type"
-  #         ) +
-  #         theme_minimal(base_size = 12) +
-  #         theme(
-  #           plot.title = element_text(size = 13, face = "bold", hjust = 0.5, color = gas_colors["ch4"]),
-  #           axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-  #           axis.title.y = element_text(size = 10, face = "bold"),
-  #           legend.position = "none",
-  #           plot.background = element_rect(fill = "white", color = NA),
-  #           panel.background = element_rect(fill = "white", color = NA),
-  #           panel.grid.major = element_blank(),
-  #           panel.grid.minor = element_blank()
-  #         ) +
-  #         scale_x_continuous(
-  #           breaks = seq(0, 23, 4),
-  #           labels = c("12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM")
-  #         )
-  #
-  #       # Add points and smooth lines for selected gases
-  #       for (gas in options_selected) {
-  #         norm_col <- paste0("Normalized_", toupper(gas))
-  #         gas_label <- gas_names[gas]
-  #         gas_col <- gas_colors[gas]
-  #         # Points
-  #         p <- p + geom_point(aes_string(y = norm_col), color = dot_color, alpha = dot_opacity, size = dot_size)
-  #         # Smooth line
-  #         p <- p + geom_smooth(aes_string(y = norm_col, color = shQuote(gas_label)), method = "loess", se = FALSE, size = 1.5)
-  #       }
-  #
-  #       p <- p + scale_color_manual(values = setNames(unname(gas_colors), gas_names[options_selected]))
-  #
-  #       # ggplotly, set background
-  #       gp <- ggplotly(p) %>%
-  #         layout(
-  #           plot_bgcolor = "#ffffff",
-  #           paper_bgcolor = "#ffffff",
-  #           legend = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.1)
-  #         )
-  #       return(gp)
-  #
-  #     } else {
-  #       # Per RFID facet plot (panels) - MATCH GENERAL STYLE, NO LEGEND
-  #       facet_rows <- input$plot3_facet_rows
-  #       facet_cols <- input$plot3_facet_cols
-  #       if (is.null(facet_rows) || facet_rows < 1) facet_rows <- 2
-  #       if (is.null(facet_cols) || facet_cols < 1) facet_cols <- 2
-  #       max_panels <- facet_rows * facet_cols
-  #
-  #       if (!"RFID" %in% colnames(df)) {
-  #         return(plot_ly() %>%
-  #                  add_trace(type="scatter", mode="markers", x=c(), y=c()) %>%
-  #                  layout(title = "Data missing RFID column required for faceting"))
-  #       }
-  #
-  #       all_rfids <- unique(df$RFID)
-  #       total_rfids <- length(all_rfids)
-  #       if (total_rfids > max_panels) {
-  #         selected_rfids <- all_rfids[1:max_panels]
-  #         df_filtered <- df[df$RFID %in% selected_rfids, ]
-  #       } else {
-  #         df_filtered <- df
-  #         selected_rfids <- all_rfids
-  #       }
-  #
-  #       df_normalized <- df_filtered %>%
-  #         dplyr::group_by(RFID) %>%
-  #         dplyr::mutate(
-  #           Normalized_CH4 = as.numeric(scale(CH4GramsPerDay)),
-  #           Normalized_CO2 = as.numeric(scale(CO2GramsPerDay)),
-  #           Normalized_O2 = as.numeric(scale(O2GramsPerDay)),
-  #           Normalized_H2 = as.numeric(scale(H2GramsPerDay))
-  #         ) %>%
-  #         dplyr::ungroup()
-  #
-  #       plot_list <- list()
-  #
-  #       for (rfid_idx in seq_along(selected_rfids)) {
-  #         rfid <- selected_rfids[rfid_idx]
-  #         rfid_data <- df_normalized[df_normalized$RFID == rfid, ]
-  #         rfid_data <- rfid_data[order(rfid_data$HourOfDay), ]
-  #         rfid_plot <- plot_ly() %>%
-  #           layout(
-  #             xaxis = list(
-  #               title = "",
-  #               tickvals = seq(0, 23, 4),
-  #               ticktext = c("12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"),
-  #               tickangle = 45,
-  #               gridcolor = "#f8f9fa",
-  #               zerolinecolor = "#e9ecef",
-  #               showgrid = FALSE
-  #             ),
-  #             yaxis = list(
-  #               title = "",
-  #               gridcolor = "#f8f9fa",
-  #               zerolinecolor = "#e9ecef",
-  #               showgrid = FALSE
-  #             ),
-  #             plot_bgcolor = "#ffffff",
-  #             paper_bgcolor = "#ffffff",
-  #             showlegend = FALSE
-  #           )
-  #
-  #         for (gas in options_selected) {
-  #           norm_col <- paste0("Normalized_", toupper(gas))
-  #           gas_label <- gas_names[gas]
-  #           gas_col <- gas_colors[gas]
-  #           # Points (raw data)
-  #           rfid_plot <- rfid_plot %>%
-  #             add_trace(
-  #               data = rfid_data,
-  #               x = ~HourOfDay,
-  #               y = rfid_data[[norm_col]],
-  #               type = 'scatter',
-  #               mode = 'markers',
-  #               name = paste0(gas_label, " raw"),
-  #               marker = list(color = dot_color, size = 5, opacity = dot_opacity),
-  #               showlegend = FALSE,
-  #               hoverinfo = "x+y"
-  #             )
-  #           # Smooth line
-  #           if (length(unique(rfid_data$HourOfDay)) > 5) {
-  #             loess_formula <- as.formula(paste(norm_col, "~ HourOfDay"))
-  #             loess_fit <- loess(loess_formula, data = rfid_data, span = 0.75)
-  #             smooth_data <- data.frame(
-  #               HourOfDay = seq(min(rfid_data$HourOfDay), max(rfid_data$HourOfDay), length.out = 100)
-  #             )
-  #             smooth_data[[norm_col]] <- predict(loess_fit, newdata = smooth_data)
-  #             rfid_plot <- rfid_plot %>%
-  #               add_trace(
-  #                 data = smooth_data,
-  #                 x = ~HourOfDay,
-  #                 y = smooth_data[[norm_col]],
-  #                 type = 'scatter',
-  #                 mode = 'lines',
-  #                 name = gas_label,
-  #                 line = list(color = gas_col, width = 2, shape='spline'),
-  #                 showlegend = FALSE
-  #               )
-  #           } else {
-  #             rfid_plot <- rfid_plot %>%
-  #               add_trace(
-  #                 data = rfid_data,
-  #                 x = ~HourOfDay,
-  #                 y = rfid_data[[norm_col]],
-  #                 type = 'scatter',
-  #                 mode = 'lines',
-  #                 name = gas_label,
-  #                 line = list(color = gas_col, width = 2),
-  #                 showlegend = FALSE
-  #               )
-  #           }
-  #         }
-  #         plot_list[[as.character(rfid)]] <- rfid_plot
-  #       }
-  #
-  #       subplot_p <- subplot(
-  #         plot_list,
-  #         nrows = facet_rows,
-  #         shareX = TRUE,
-  #         shareY = TRUE,
-  #         titleX = FALSE,
-  #         titleY = TRUE
-  #       )
-  #
-  #       # Set only the leftmost y-axis to have the title (like "General" plot)
-  #       final_plot <- subplot_p %>%
-  #         layout(
-  #           yaxis = list(
-  #             title = "",  # Remove axis title
-  #             tickfont = list(size = 11),
-  #             standoff = 30,
-  #             automargin = TRUE,
-  #             gridcolor = "#f8f9fa",
-  #             zerolinecolor = "#e9ecef",
-  #             showgrid = FALSE
-  #           ),
-  #           annotations = list(
-  #             list(
-  #               text = "<b>Normalized Gas Value</b>",
-  #               x = -0.07,
-  #               y = 0.5,
-  #               xref = "paper",
-  #               yref = "paper",
-  #               showarrow = FALSE,
-  #               xanchor = "center",
-  #               yanchor = "middle",
-  #               font = list(
-  #                 size = 13,
-  #                 family = "Montserrat, Arial, sans-serif",
-  #                 color = "#222222"
-  #               ),
-  #               textangle = -90
-  #             )
-  #           ),
-  #           margin = list(t = 50, l = 85, r = 10, b = 50),
-  #           plot_bgcolor = "#ffffff",
-  #           paper_bgcolor = "#ffffff",
-  #           showlegend = FALSE
-  #         )
-  #       return(final_plot)
-  #     }
-  #   }, error = function(e) {
-  #     message("Error in plot_3: ", e$message)
-  #     return(
-  #       plot_ly() %>%
-  #         add_trace(type = "scatter", mode = "markers", x = c(0), y = c(0)) %>%
-  #         layout(
-  #           title = "Error generating plot",
-  #           annotations = list(
-  #             x = 0,
-  #             y = 0,
-  #             text = e$message,
-  #             showarrow = FALSE
-  #           ),
-  #           plot_bgcolor = "#ffffff",
-  #           paper_bgcolor = "#ffffff"
-  #         )
-  #     )
-  #   })
-  # })
 
-  ## TAB 4: Processing Data ####
+#### ---------------------- TAB 4: PROCESSING DATA ------------------------ ####
 
   # Define reactive values
   rv <- reactiveValues(
+    uploaded_data = NULL,
     eval_param_result = NULL,
     processed_result = NULL,
-    error_message4 = NULL
+    error_message_eval = NULL,
+    error_message_process = NULL
   )
 
-  observeEvent(input$run_eval_param, {
-    req(input$gf_file1)  # Ensure the file is uploaded
+  # Read and store uploaded 'GreenFeed' data
+  observeEvent(input$gf_file1, {
     ext <- tools::file_ext(input$gf_file1$name)
-    print(paste("Reading file at:", input$gf_file1$datapath))
     data <- tryCatch({
       if (tolower(ext) %in% c("xls", "xlsx")) {
         readxl::read_excel(input$gf_file1$datapath)
@@ -1169,60 +892,93 @@ server <- function(input, output, session) {
         stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
       }
     }, error = function(e) {
-      print(paste("Error reading file:", e$message))
-      rv$error_message4 <- paste0("Error: ", e$message)
+      rv$error_message_eval <- paste0("Error: ", e$message)
       NULL
     })
-    print("After file read, data is:")
-    print(str(data))
+    rv$uploaded_data <- data
+  })
 
-    if (is.null(data)) {
-      rv$eval_param_result <- NULL
-      return()
-    }
-    req(input$dates)
+  # Evaluate parameters
+  observeEvent(input$run_eval_param, {
+    req(rv$uploaded_data, input$dates, input$gas)
 
-    # Run code to evaluate parameters
-    withProgress(message = "⏳ Evaluating all parameters...", value = 0, {
+    df <- rv$uploaded_data
+    df <- df[!is.na(df$RFID) & df$RFID != "unknown", ]
+
+    withProgress(message = "⏳ Evaluating parameters...", value = 0.1, {
       result <- tryCatch({
+        incProgress(0.1, detail = "It could take a while...")
         greenfeedr::eval_gfparam(
-          data = data,
+          data = df,
           start_date = input$dates[1],
-          end_date = input$dates[2]
+          end_date = input$dates[2],
+          gas = input$gas
         )
       }, error = function(e) {
-        print(paste("Error in eval_gfparam:", e$message))
-        rv$error_message4 <- paste0("Error: ", e$message)
+        rv$error_message_eval <- paste0("Error: ", e$message)
         NULL
       })
-      print("Result from eval_gfparam:")
-      print(str(result))
 
       rv$eval_param_result <- result
 
-      # Custom error: check for all zeros in column 4 and 5
-      if (!is.null(rv$eval_param_result)) {
+      # Check for all zeros in column 4 and 5
+      if (!is.null(rv$eval_param_result) && ncol(rv$eval_param_result) >= 5) {
         df_check <- rv$eval_param_result
         zero_col4 <- all(df_check[[4]] == 0)
         zero_col5 <- all(df_check[[5]] == 0)
         if (zero_col4 && zero_col5) {
-          rv$error_message4 <- "Error: No records found in the selected date range. Please check your file and date selection."
+          rv$error_message_eval <- "Error: No records found in the selected date range.<br> Please check your file and date selection."
           rv$eval_param_result <- NULL
-          print("All zeros in column 4 and 5!")
         }
       }
     })
   })
 
+  # Summary card display format
+  output$summary_card_eval <- renderUI({
+    df <- rv$uploaded_data
+    df <- df[!is.na(df$RFID) & df$RFID != "unknown", ]
 
+    if (is.null(df) || nrow(df) == 0) return(NULL)
+
+    date_col <- "StartTime"
+    animal_col <- "RFID"
+    n_days <- dplyr::n_distinct(as.Date(df$StartTime))
+    n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
+
+    # Calculate records per animal per day
+    records_animal_day <- df %>%
+      dplyr::mutate(day = lubridate::day(StartTime)) %>%
+      dplyr::group_by(RFID, day) %>%
+      dplyr::summarise(n = dplyr::n(), .groups = "drop")
+
+    # Calculate min, median, and max
+    min_records <- min(records_animal_day$n)
+    median_records <- median(records_animal_day$n)
+    max_records <- max(records_animal_day$n)
+
+    div(
+      class = "summary-card",
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+      icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+      strong("GreenFeed Data Summary"),
+      tags$ul(
+        tags$li(strong("IDs: "), n_animals),
+        tags$li(strong("Days: "), n_days),
+        tags$li(strong("Total Records: "), nrow(df))
+      )
+    )
+  })
+
+  # Render parameter evaluation table
   output$eval_param_table <- DT::renderDataTable({
     req(rv$eval_param_result)
     df <- rv$eval_param_result
-    df$param1 <- as.character(df$param1)
-    df$param2 <- as.character(df$param2)
-    df$min_time <- as.character(df$min_time)
+    if ("param1" %in% names(df)) df$param1 <- as.character(df$param1)
+    if ("param2" %in% names(df)) df$param2 <- as.character(df$param2)
+    if ("min_time" %in% names(df)) df$min_time <- as.character(df$min_time)
     names(df) <- c("Param1", "Param2", "Min_time", "N Records", "N Animals",
-                   "Mean CH4", "SD CH4", "CV CH4")
+                   "Mean", "SD", "CV")[seq_len(ncol(df))]
     DT::datatable(
       df,
       options = list(
@@ -1239,14 +995,23 @@ server <- function(input, output, session) {
       )
   })
 
+  # Error message display format
+  output$error_message_eval <- renderUI({
+    req(rv$error_message_eval)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message_eval)
+    )
+  })
 
+  # Process data
   observeEvent(input$run_process, {
-    req(df(), input$dates, input$param1, input$param2)
+    req(rv$uploaded_data, input$dates, input$param1, input$param2, input$min_time, input$cutoff)
 
-    # Process data using the parameters chosen
+    withProgress(message = "⏳ Processing data...", value = 0,{
     result <- tryCatch({
       greenfeedr::process_gfdata(
-        data = df(),
+        data = rv$uploaded_data,
         start_date = input$dates[1],
         end_date = input$dates[2],
         param1 = input$param1,
@@ -1256,236 +1021,262 @@ server <- function(input, output, session) {
         cutoff = input$cutoff
       )
     }, error = function(e) {
-      output$error_message4 <- renderText(paste("❌ Processing error:", e$message))
+      output$error_message_process <- renderText(paste("❌ Processing error:", e$message))
       return(NULL)
     })
     rv$processed_result <- result
   })
+})
 
-    # Render table of processed results
-    output$proc_summary_table <- renderTable({
-      req(rv$processed_result)
-      weekly <- rv$processed_result$weekly_data
+  # Render processed summary table
+  output$summary_card_process <- renderUI({
+    req(rv$processed_result)
+    if (is.null(rv$processed_result$weekly_data)) return()
+    weekly <- rv$processed_result$weekly_data
 
-      gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
-      gas_stats <- vapply(gas_names, function(gas) {
-        vals <- weekly[[gas]]
-        mean_val <- mean(vals, na.rm = TRUE)
-        sd_val <- sd(vals, na.rm = TRUE)
-        cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val * 100 else NA
-        c(mean = mean_val, sd = sd_val, cv = cv_val)
-      }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
+    gas_names <- names(weekly)[grepl("CH4|CO2|O2|H2", names(weekly))]
+    gas_stats <- vapply(gas_names, function(gas) {
+      vals <- weekly[[gas]]
+      mean_val <- mean(vals, na.rm = TRUE)
+      sd_val <- sd(vals, na.rm = TRUE)
+      cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val * 100 else NA
+      c(mean = mean_val, sd = sd_val, cv = cv_val)
+    }, FUN.VALUE = c(mean = 0, sd = 0, cv = 0))
 
-      gas_display_name <- function(names_vec) {
-        names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
-        names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
-        names_vec
-      }
+    gas_display_name <- function(names_vec) {
+      names_vec <- gsub("GramsPerDay", " (g/d)", names_vec)
+      names_vec <- gsub("LitersPerDay", " (L/d)", names_vec)
+      names_vec
+    }
 
-      gas_df <- data.frame(
-        Gas = gas_display_name(gas_names),
-        Mean = round(gas_stats["mean", ], 2),
-        SD = round(gas_stats["sd", ], 2),
-        CV = round(gas_stats["cv", ], 1),
-        stringsAsFactors = FALSE
+    tags$div(
+      class = "summary-card",
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+      icon("flask", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+      strong("Processed Gas Data Summary"),
+      tags$table(
+        style = "width:100%; margin-top:12px; background: #e8f5e9; border-radius: 5px; border-collapse: collapse;",
+        tags$thead(
+          tags$tr(
+            tags$th("Gas"),
+            tags$th("Mean"),
+            tags$th("SD"),
+            tags$th("CV (%)")
+          )
+        ),
+        tags$tbody(
+          lapply(seq_along(gas_names), function(i) {
+            tags$tr(
+              tags$td(gas_display_name(gas_names[i])),
+              tags$td(round(gas_stats["mean", i], 2)),
+              tags$td(round(gas_stats["sd", i], 2)),
+              tags$td(round(gas_stats["cv", i], 1))
+            )
+          })
+        )
       )
-      gas_df
-    }, digits = 2)
-
-
-    # Download files
-    #1. Filtered data
-    output$download_filtered <- downloadHandler(
-      filename = function() { "filtered_data.csv" },
-      content = function(file) {
-        write.csv(rv$processed_result$filtered_data, file, row.names = FALSE)
-      }
     )
+  })
 
-    #2. Daily data
-    output$download_daily <- downloadHandler(
-      filename = function() { "daily_data.csv" },
-      content = function(file) {
-        write.csv(rv$processed_result$daily_data, file, row.names = FALSE)
-      }
+  # Download handlers
+  output$download_filtered <- downloadHandler(
+    filename = function() { "filtered_data.csv" },
+    content = function(file) {
+      write.csv(rv$processed_result$filtered_data, file, row.names = FALSE)
+    }
+  )
+  output$download_daily <- downloadHandler(
+    filename = function() { "daily_data.csv" },
+    content = function(file) {
+      write.csv(rv$processed_result$daily_data, file, row.names = FALSE)
+    }
+  )
+  output$download_weekly <- downloadHandler(
+    filename = function() { "weekly_data.csv" },
+    content = function(file) {
+      write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
+    }
+  )
+
+  # Error message display format
+  output$error_message_process <- renderUI({
+    req(rv$error_message_process)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message_process)
     )
-
-    #3. Weekly data
-    output$download_weekly <- downloadHandler(
-      filename = function() { "weekly_data.csv" },
-      content = function(file) {
-        write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
-      }
-    )
-
-
-    # Show error messages
-    output$error_message4 <- renderUI({
-      req(rv$error_message4)
-      div(
-        style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-        HTML(rv$error_message4)
-      )
   })
 
 
 
-  ## TAB 5: Analyzing Data ####
+#### ---------------------- TAB 5: ANALYZING DATA ------------------------- ####
 
-    # Define reactive values
-    rv <- reactiveValues(
-      processed_df = NULL,
-      group_summary = NULL,
-      tukey_sig_df = NULL,
-      error_message5 = NULL
-    )
+  # Define reactive values
+  rv <- reactiveValues(
+    uploaded_df = NULL,
+    processed_df = NULL,
+    tukey_sig_df = NULL,
+    error_message_analysis = NULL
+  )
 
-    # Read GreenFeed data file (preliminary or finalized)
-    df <- reactive({
-      req(input$gf_file2)
-      ext <- tools::file_ext(input$gf_file2$name)
-      tryCatch({
-        if (tolower(ext) %in% c("xls", "xlsx")) {
-          readxl::read_excel(input$gf_file2$datapath)
-        } else if (tolower(ext) == "csv") {
-          readr::read_csv(input$gf_file2$datapath, show_col_types = FALSE)
-        } else {
-          stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
-        }
-      }, error = function(e) {
-        rv$error_message5 <- paste0("Error: ", e$message)
-        NULL
-      })
+  # Read and store uploaded 'GreenFeed' data
+  observeEvent(input$gf_file2, {
+    ext <- tools::file_ext(input$gf_file2$name)
+    data <- tryCatch({
+      if (tolower(ext) %in% c("xls", "xlsx")) {
+        readxl::read_excel(input$gf_file2$datapath)
+      } else if (tolower(ext) == "csv") {
+        readr::read_csv(input$gf_file2$datapath, show_col_types = FALSE)
+      } else {
+        stop("Unsupported file type. Please upload a .csv, .xls, or .xlsx file.")
+      }
+    }, error = function(e) {
+      rv$error_message_analysis <- paste0("Error: ", e$message)
+      NULL
+    })
+    rv$uploaded_df <- data
+  })
+
+  # Read RFID/Groups data
+  rfid_df <- reactive({
+    req(input$rfid_file3)
+    process_rfid_data(input$rfid_file3$datapath)
+  })
+
+  observeEvent(input$run_analysis, {
+    req(rv$uploaded_df, input$dates, input$param1, input$param2, input$min_time, input$cutoff)
+
+    df <- rv$uploaded_df
+    df <- df[!is.na(df$RFID) & df$RFID != "unknown", ]
+
+    # Process GreenFeed data using the set of parameters defined by the user
+    withProgress(message = "⏳ Analyzing data...", value = 0.1, {
+    result <- tryCatch({
+      greenfeedr::process_gfdata(
+        data = df,
+        start_date = input$dates[1],
+        end_date = input$dates[2],
+        param1 = input$param1,
+        param2 = input$param2,
+        min_time = input$min_time,
+        cutoff = input$cutoff
+      )
+    }, error = function(e) {
+      rv$error_message_analysis <- paste0("Error: ", e$message)
+      NULL
     })
 
-    # Read RFID/Groups data
-    rfid_df <- reactive({
-      req(input$rfid_file3)
-      process_rfid_data(input$rfid_file3$datapath)
-    })
+    # Get daily data
+    if (!is.null(result) && !is.null(rfid_df()) && !is.null(result$daily_data)) {
+    daily_df <- result$daily_data
 
-    observeEvent(input$run_analysis, {
-      req(df(), input$dates, input$param1, input$param2, input$min_time, input$cutoff)
+    # Join daily GreenFeed data and Group info
+    joined_df <- dplyr::left_join(rfid_df(), daily_df, by = "RFID")
+    rv$processed_df <- joined_df
 
-      # Process GreenFeed data using the set of parameters defined by the user
-      result <- tryCatch({
-        greenfeedr::process_gfdata(
-          data = df(),
-          start_date = input$dates[1],
-          end_date = input$dates[2],
-          param1 = input$param1,
-          param2 = input$param2,
-          min_time = input$min_time,
-          cutoff = input$cutoff
-        )
-      }, error = function(e) {
-        rv$error_message5 <- paste0("Error: ", e$message)
-        NULL
-      })
+    # Compute a Tukey HSD Post-hoc test between groups
+    gases <- c("CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
+    tukey_sig_df <- NULL
 
-      if (!is.null(result) && !is.null(rfid_df()) && !is.null(result$daily_data)) {
-        # Get daily data
-        daily_df <- result$daily_data
-
-        # Join daily GreenFeed data and group info
-        joined_df <- dplyr::left_join(rfid_df(), daily_df, by = "RFID")
-        rv$processed_df <- joined_df
-
-        # Summary records and gases per group/treatment
-        group_summary <- joined_df %>%
-          dplyr::group_by(Group) %>%
-          dplyr::summarise(
-            N_Records = sum(n, na.rm = TRUE),
-            Animals = n_distinct(RFID),
-            Avg_CO2 = mean(CO2GramsPerDay, na.rm = TRUE),
-            Avg_CH4 = mean(CH4GramsPerDay, na.rm = TRUE),
-            Avg_O2 = mean(O2GramsPerDay, na.rm = TRUE),
-            Avg_H2 = mean(H2GramsPerDay, na.rm = TRUE),
-            .groups = "drop"
-          )
-        rv$group_summary <- group_summary
-
-        # Compute a Tukey HSD Post-hoc test between groups
-        gases <- c("CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
-        tukey_sig_df <- NULL
-
-        for (gas in gases) {
-          df_test <- joined_df[!is.na(joined_df[[gas]]) & !is.na(joined_df$Group), ]
-          if (length(unique(df_test$Group)) > 1) {
-            aov_res <- aov(df_test[[gas]] ~ df_test$Group)
-            tukey_res <- TukeyHSD(aov_res)
-            sig <- as.data.frame(tukey_res$`df_test$Group`)
-            sig$Comparison <- rownames(sig)
-            sig$Gas <- gas
-            sig <- sig[sig$`p adj` < 0.05, c("Gas", "Comparison", "p adj")]
-            if (nrow(sig) > 0) {
-              tukey_sig_df <- bind_rows(tukey_sig_df, sig)
-            }
+    for (gas in gases) {
+      df_test <- joined_df[!is.na(joined_df[[gas]]) & !is.na(joined_df$Group), ]
+      if (length(unique(df_test$Group)) > 1) {
+        aov_res <- aov(df_test[[gas]] ~ df_test$Group)
+        tukey_res <- TukeyHSD(aov_res)
+        sig <- as.data.frame(tukey_res$`df_test$Group`)
+        sig$Comparison <- rownames(sig)
+        sig$Gas <- gas
+        sig <- sig[sig$`p adj` < 0.05, c("Gas", "Comparison", "p adj")]
+        if (nrow(sig) > 0) {
+          tukey_sig_df <- bind_rows(tukey_sig_df, sig)
           }
         }
-        rv$tukey_sig_df <- tukey_sig_df
+      }
+    rv$tukey_sig_df <- tukey_sig_df
 
-      } else {
-        rv$group_summary <- NULL
-        rv$tukey_sig_df <- NULL
-        print("Either result, rfid_df, or result$daily_data is NULL")
+    } else {
+      rv$tukey_sig_df <- NULL
+      print("Either result, rfid_df, or result$daily_data is NULL")
       }
     })
+  })
 
-    # Show error messages
-    output$error_message5 <- renderUI({
-      req(rv$error_message5)
-      div(
-        style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-        HTML(rv$error_message5)
+  # Summary card display format
+  output$summary_card_analysis <- renderUI({
+    req(rv$processed_df)
+
+    # Calculate number of groups and animals
+    n_groups <- rv$processed_df %>% dplyr::pull(Group) %>% unique() %>% length()
+    n_animals <- rv$processed_df %>% dplyr::pull(RFID) %>% unique() %>% length()
+
+    div(
+      style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
+      icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
+      strong("Group Analysis Summary"),
+      tags$ul(
+        tags$li(strong("IDs: "), n_animals),
+        tags$li(strong("Groups: "), n_groups)
       )
-    })
+    )
+  })
 
-    output$summary_card <- renderUI({
-      req(rv$processed_df)
-      n_groups <- rv$group_summary %>% dplyr::pull(Group) %>% unique() %>% length()
-      n_animals <- rv$processed_df %>% dplyr::pull(RFID) %>% unique() %>% length()
+  # Render group summary table
+  output$group_summary_table <- renderTable({
+    req(rv$processed_df)
 
-      div(
-        style = "background: #e8f5e9; border-radius: 7px; padding: 18px; margin-bottom: 10px; box-shadow: 0 2px 6px #eee;",
-        icon("chart-bar", style = "color:#388e3c; font-size:22px; margin-right:6px;"),
-        strong("Group Analysis Summary"),
-        tags$ul(
-          tags$li(strong("Animals: "), n_animals),
-          tags$li(strong("Groups: "), n_groups)
-        )
+    # Summary records and gases per group/treatment
+    group_summary <- rv$processed_df %>%
+      dplyr::group_by(Group) %>%
+      dplyr::summarise(
+        N_Records = sum(n, na.rm = TRUE),
+        Animals = n_distinct(RFID),
+        Avg_CO2 = mean(CO2GramsPerDay, na.rm = TRUE),
+        SD_CO2 = sd(CO2GramsPerDay, na.rm = TRUE),
+        Avg_CH4 = mean(CH4GramsPerDay, na.rm = TRUE),
+        SD_CH4 = sd(CH4GramsPerDay, na.rm = TRUE),
+        Avg_O2 = mean(O2GramsPerDay, na.rm = TRUE),
+        SD_O2 = sd(O2GramsPerDay, na.rm = TRUE),
+        Avg_H2 = mean(H2GramsPerDay, na.rm = TRUE),
+        SD_H2 = sd(H2GramsPerDay, na.rm = TRUE),
+        .groups = "drop"
       )
-    })
+  })
 
-    # Render group summary table
-    output$group_summary_table <- renderTable({
-      req(rv$group_summary)
-      rv$group_summary
-    })
+  # Update choices for selectInput based on available gases
+  observe({
+    req(rv$tukey_sig_df)
+    updateRadioButtons(
+      session,
+      "selected_gas",
+      choices = gsub("GramsPerDay", "", unique(rv$tukey_sig_df$Gas))
+    )
+  })
 
-    # Update choices for selectInput based on available gases
-    observe({
-      req(rv$tukey_sig_df)
-      updateSelectInput(
-        session,
-        "selected_gas",
-        choices = gsub("GramsPerDay", "", unique(rv$tukey_sig_df$Gas))
-      )
-    })
+  # Render filtered Tukey table
+  output$tukey_table <- renderTable({
+    req(rv$tukey_sig_df)
+    df <- rv$tukey_sig_df
 
-    # Render filtered Tukey table
-    output$tukey_table <- renderTable({
-      req(rv$tukey_sig_df)
-      df <- rv$tukey_sig_df
-      df$Gas <- gsub("GramsPerDay", "", df$Gas)
-      df$p_value <- signif(df$`p adj`, 4)
-      df <- df[, c("Gas", "Comparison", "p_value")]
-      names(df) <- c("Gas", "Group Comparison", "Adjusted p-value")
-      # Filter by selected gas
-      req(input$selected_gas)
-      df <- df[df$Gas == input$selected_gas, ]
-      df
-    })
+    df$Gas <- gsub("GramsPerDay", "", df$Gas)
+    df$p_value <- signif(df$`p adj`, 4)
+
+    df <- df[, c("Gas", "Comparison", "p_value")]
+    names(df) <- c("Gas", "Group Comparison", "Adjusted p-value")
+
+    # Filter by selected gas
+    req(input$selected_gas)
+    df <- df[df$Gas == input$selected_gas, ]
+    df
+  })
+
+  # Error message display format
+  output$error_message_analysis <- renderUI({
+    req(rv$error_message_analysis)
+    div(
+      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      HTML(rv$error_message_analysis)
+    )
+  })
+
 
 }
-

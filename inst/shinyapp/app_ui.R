@@ -158,8 +158,8 @@ ui <- fluidPage(
                  )
                ),
                mainPanel(
-                 uiOutput("summary_card1"),
-                 uiOutput("error_message1"),
+                 uiOutput("error_message_download"),
+                 uiOutput("summary_card_download"),
                  div(style = "margin-bottom: 15px;"),
                  uiOutput("preview")
                )
@@ -176,20 +176,21 @@ ui <- fluidPage(
                  actionButton("run_viseat", "Run Viseat", icon = icon("running")),
                  div(style = "margin-bottom: 25px;"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
-                 fileInput("rfid_file1", "Upload RFID file (optional):"),
                  actionButton("run_pellin", "Run Pellin", icon = icon("running"))
                ),
                mainPanel(
                  textOutput("viseat_status"),
-                 uiOutput("summary_card2_1"),
-                 uiOutput("error_message2"),
+                 uiOutput("summary_card_viseat"),
+                 uiOutput("error_message_viseat"),
                  div(style = "margin-bottom: 15px;"),
                  plotlyOutput("plot2_1"),
                  plotlyOutput("plot2_2"),
                  div(style = "margin-bottom: 15px;"),
                  hr(),
+
                  verbatimTextOutput("pellin_status"),
-                 uiOutput("summary_card2_2"),
+                 uiOutput("summary_card_pellin"),
+                 uiOutput("error_message_pellin"),
                  uiOutput("pellin_table"),
                  conditionalPanel(
                    condition = "input.run_pellin > 0",
@@ -221,7 +222,7 @@ ui <- fluidPage(
                  conditionalPanel(
                    condition = "input.which_plot == 'plot_3'",
                    checkboxGroupInput(
-                     "plot3_gas",
+                     inputId = "plot3_gas",
                      label = "Select gases to plot:",
                      choices = list("CH4" = "ch4", "CO2" = "co2", "O2" = "o2", "H2" = "h2"),
                      selected = "ch4"
@@ -229,8 +230,8 @@ ui <- fluidPage(
                  )
                ),
                mainPanel(
-                 uiOutput("error_message3"),
-                 uiOutput("report_summary"),
+                 uiOutput("error_message_report"),
+                 uiOutput("summary_card_report"),
                  uiOutput("report_preview"),
                  uiOutput("chosen_plot")
                )
@@ -241,6 +242,13 @@ ui <- fluidPage(
              sidebarLayout(
                sidebarPanel(
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
+                 radioButtons(
+                   inputId = "gas",
+                   label = "Gas to evaluate:",
+                   choices = c("CH4", "CO2", "O2", "H2"),
+                   selected = "CH4",
+                   inline = TRUE
+                 ),
                  fileInput("gf_file1", "Upload GreenFeed Data:"),
                  actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
                  div(style = "margin-bottom: 15px;"), hr(),
@@ -253,15 +261,22 @@ ui <- fluidPage(
                ),
                mainPanel(
                  conditionalPanel(
+                   condition = "input.run_eval_param > 0 || input.run_process > 0",
+                   uiOutput("summary_card_eval"),
+                   div(style = "margin-bottom: 15px;")
+                 ),
+                 conditionalPanel(
                    condition = "input.run_eval_param > 0",
-                   uiOutput("error_message4"),
-                   DTOutput("eval_param_table")
+                   DTOutput("eval_param_table"),
+                   uiOutput("error_message_eval")
                  ),
                  conditionalPanel(
                    condition = "input.run_process > 0",
                    div(style = "margin-bottom: 15px;"),
-                   tableOutput("proc_summary_table"),
-                   div(style = "margin-bottom: 15px;"),
+                   hr(),
+                   uiOutput("summary_card_process"),
+                   uiOutput("error_message_process"),
+                   div(style = "margin-bottom: 25px;"),
                    fluidRow(
                      column(4, downloadButton("download_filtered", "Download Filtered Data")),
                      column(4, downloadButton("download_daily", "Download Daily Data")),
@@ -287,15 +302,19 @@ ui <- fluidPage(
              mainPanel(
                conditionalPanel(
                  condition = "input.run_analysis > 0",
-                 uiOutput("summary_card"),
+                 uiOutput("summary_card_analysis"),
+                 uiOutput("error_message_analysis"),
+                 div(style = "margin-bottom: 15px;"),
                  tableOutput("group_summary_table"),
-                 div(style = "margin-bottom: 15px;"), hr(),
-                 selectInput("selected_gas", "Choose gas to plot:",
+                 div(style = "margin-bottom: 15px;"),
+                 hr(),
+                 radioButtons("selected_gas", "Select Gas:",
                              choices = c("CO2" = "CO2GramsPerDay",
                                          "CH4" = "CH4GramsPerDay",
                                          "O2" = "O2GramsPerDay",
                                          "H2" = "H2GramsPerDay"),
-                             selected = "CH4GramsPerDay"
+                             selected = "CH4GramsPerDay",
+                             inline = TRUE
                  ),
                  tableOutput("tukey_table")
                )
