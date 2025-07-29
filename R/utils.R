@@ -458,6 +458,7 @@ transform_gases <- function(data){
 #' @param data a data frame with preliminary or finalized 'GreenFeed' data
 #' @param start_date a character string representing the start date of the study (format: "dd/mm/yyyy")
 #' @param end_date a character string representing the end date of the study (format: "dd/mm/yyyy")
+#' @param gas a character with the type of gas to evaluate the parameters
 #'
 #' @return A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
 #'
@@ -465,7 +466,8 @@ transform_gases <- function(data){
 #' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
 #' eval <- eval_gfparam(data = file,
 #'                      start_date = "2024-05-13",
-#'                      end_date = "2024-05-20"
+#'                      end_date = "2024-05-20",
+#'                      gas = "CH4"
 #'                     )
 #'
 #' @export

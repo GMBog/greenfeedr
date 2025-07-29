@@ -4,7 +4,7 @@
 \alias{eval_gfparam}
 \title{Evaluate all combination of parameters}
 \usage{
-eval_gfparam(data, start_date, end_date)
+eval_gfparam(data, start_date, end_date, gas = "CH4")
 }
 \arguments{
 \item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
@@ -12,6 +12,8 @@ eval_gfparam(data, start_date, end_date)
 \item{start_date}{a character string representing the start date of the study (format: "dd/mm/yyyy")}
 
 \item{end_date}{a character string representing the end date of the study (format: "dd/mm/yyyy")}
+
+\item{gas}{a character with the type of gas to evaluate the parameters}
 }
 \value{
 A data frame with the mean, SD, and CV for gas production using all possible combination of parameters
@@ -23,7 +25,8 @@ Evaluate parameters that best fit your 'GreenFeed' data
 file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
 eval <- eval_gfparam(data = file,
                      start_date = "2024-05-13",
-                     end_date = "2024-05-20"
+                     end_date = "2024-05-20",
+                     gas = "CH4"
                     )
 
 }
