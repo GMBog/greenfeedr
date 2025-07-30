@@ -233,6 +233,7 @@ ui <- fluidPage(
                  uiOutput("error_message_report"),
                  uiOutput("summary_card_report"),
                  uiOutput("report_preview"),
+                 div(style = "margin-bottom: 15px;"),
                  uiOutput("chosen_plot")
                )
              )

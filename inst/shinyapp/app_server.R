@@ -191,36 +191,24 @@ server <- function(input, output, session) {
     req(input$run_viseat > 0)
 
     df <- rv$viseat_result$feedtimes
+    if (is.null(df) || nrow(df) == 0) return(NULL)
+
+    # Number of animals visiting the units
+    animal_col <- "CowTag"
+    n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
+
+    # Number of days with visits in the units
+    date_col <- "FeedTime"
+    n_days <- dplyr::n_distinct(as.Date(df[[date_col]]))
+
+    # Number of visits per unit
     unit_col <- "FID"
-
-    # Check if data exist
-    if (is.null(df) || !is.data.frame(df) || nrow(df) == 0 || !unit_col %in% names(df)) return(NULL)
-
-    # Get visits per unit
     visits_by_unit <- table(df[[unit_col]])
 
-    # Get number of animals using units
-    animal_col <- "CowTag"
-    visits_by_animal <- if (animal_col %in% names(df)) table(df[[animal_col]]) else NULL
-    n_animals <- if (!is.null(visits_by_animal)) length(visits_by_animal) else "Unknown"
-
-    # Calculate mean visits per animal per day
-    visits_per_day_df <- rv$results$visits_per_day
-    if (!is.null(visits_per_day_df) && is.data.frame(visits_per_day_df) && nrow(visits_per_day_df) > 0) {
-      animal_col <- if ("RFID" %in% names(visits_per_day_df)) "RFID" else if ("FarmName" %in% names(visits_per_day_df)) "FarmName" else NULL
-    if (!is.null(animal_col) && "visits" %in% names(visits_per_day_df)) {
-      mean_visits_animal_per_day <- median(as.numeric(visits_per_day_df$visits), na.rm = T)
-    } else {
-      mean_visits_animal_per_day <- "Unknown"
-    }
-    } else {
-      mean_visits_animal_per_day <- "Unknown"
-    }
-
-    # Get number of days with visits
-    date_col <- "FeedTime"
-    visits_by_day <- if (date_col %in% names(df)) table(as.Date(df[[date_col]])) else NULL
-    n_days <- if (!is.null(visits_by_day)) length(visits_by_day) else "Unknown"
+    # Number of visits per animal per day
+    min_visits <- min(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
+    median_visits <- median(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
+    max_visits <- max(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
 
     # Create summary card
     div(
@@ -241,7 +229,12 @@ server <- function(input, output, session) {
             })
           )
         ),
-        tags$li(strong("Median Visits per Animal-Day: "), mean_visits_animal_per_day)
+        tags$li(strong("Visits per Animal-Day: ")),
+        tags$ul(
+          tags$li(strong("Min: "), min_visits),
+          tags$li(strong("Median: "), median_visits),
+          tags$li(strong("Max: "), max_visits)
+        )
       )
      )
    })
@@ -405,7 +398,7 @@ server <- function(input, output, session) {
       tags$ul(
         tags$li(strong("IDs: "), n_animals),
         tags$li(strong("Days: "), n_days),
-        tags$li(strong("Mean Pellet Intake per Animal-Day (g): "), mean_intake*1000)
+        tags$li(strong("Average Pellet Intake per Animal-Day (g): "), mean_intake*1000)
       )
     )
   })
