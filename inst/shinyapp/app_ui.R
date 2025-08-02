@@ -105,42 +105,66 @@ ui <- fluidPage(
       "Welcome",
       div(
         class = "welcome-container",
-        style = "max-width: 1000px; margin: auto; padding: 20px;",
-        tags$img(src = "GFSticker.png", width = "120px", style = "display: block; margin: 0 auto 20px auto;"),
-        tags$h2("Welcome to the greenfeedr App"),
-        tags$p(
-          "This Shiny application empowers you to download, check, report, and process GreenFeed data
-          for research or monitoring purposes."
+        style = "
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px 32px 36px 32px;
+      background: #f7fafc;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    ",
+        tags$img(
+          src = "GFSticker.png",
+          width = "120px",
+          style = "display: block; margin: 0 auto 24px auto;"
         ),
-        tags$ul(
-          style = "margin-bottom: 20px;",
-          tags$li(tags$b("Downloading Data:"), " Easily retrieve all types of GreenFeed data (emissions, visits, feed, and commands)"),
-          tags$li(tags$b("Checking Data:"), " Quickly inspect visits and calculate intakes from your GreenFeed units"),
-          tags$li(tags$b("Reporting Data:"), " Generate interactive reports for all your GreenFeed units"),
-          tags$li(tags$b("Processing Data:"), " Process your GreenFeed records using different filters and parameters"),
-          tags$li(tags$b("Analayzing Data:"), " Analyze your GreenFeed records based on groups or treatments"),
+        tags$h2(
+          "Welcome to the GreenFeedr App",
+          style = "text-align: center; margin-bottom: 18px; color: #2e7d32;"
+        ),
+        tags$p(
+          style = "font-size: 1.15em; text-align: center; margin-bottom: 24px;",
+          "This Shiny application helps you download, visualize, process, and analyze GreenFeed data for your research."
         ),
         tags$div(
-          style = "margin-bottom: 20px;",
-          tags$b("How to use the app:"),
-          tags$ol(
-            tags$li("Download data directly from the API"),
-            tags$li("Check visitation and calculate intakes for your ongoing trials"),
-            tags$li("Generate data reports by day and by animal"),
-            tags$li("Process and filter gas measurements using your own criteria"),
-            tags$li("Analyze gas measurements per group or treatments"),
+          style = "margin-bottom: 28px;",
+          tags$b("What you can do:"),
+          tags$ul(
+            style = "margin-bottom: 10px;",
+            tags$li(tags$b("Downloading Data:"), " Retrieve GreenFeed data (visits or emissions, feed, rfids, commands) efficiently"),
+            tags$li(tags$b("Checking Data:"), " Quickly review visits and calculate intakes for your GreenFeed units"),
+            tags$li(tags$b("Reporting Data:"), " Create interactive visualization of records for your GreenFeed units"),
+            tags$li(tags$b("Processing Data:"), " Evaluate parameters and process GreenFeed data"),
+            tags$li(tags$b("Analyzing Data:"), " Compare groups and perform Tukey tests for gases production"),
           )
         ),
+        tags$div(
+          style = "margin-bottom: 24px;",
+          tags$b("How to use:"),
+          tags$ol(
+            tags$li("Download preliminary data (emissions, intakes, commands) directly from the C-Lock server"),
+            tags$li("Monitor visits to your GreenFeed units and calculate animal feed intake during trials"),
+            tags$li("Visualize GreenFeed records by day and animal, track gas production, and make informed decisions"),
+            tags$li("Evaluate and apply optimal parameters to process gas production data"),
+            tags$li("Analyze and compare group/treatment means, including Tukey tests for each gas"),
+          )
+        ),
+        tags$hr(style = "margin: 28px 0;"),
         tags$p(
-          "The ", tags$b("greenfeedr"), " package is an open-source R package developed by ",
-          tags$a(href = "https://github.com/GMBog", "Guillermo Martinez-Boggio")
+          style = "margin-bottom: 10px;",
+          "The ",
+          tags$b("greenfeedr"),
+          " package is open-source and developed by ",
+          tags$a(href = "https://github.com/GMBog", "Guillermo Martinez-Boggio"),
+          "."
         ),
         tags$p(
-          "All the functions and documentation for processing GreenFeed data are available both
-          in this ", tags$a(href = "https://gmbog.shinyapps.io/shinyapp/", "shinyapps.io"), "and
-          for direct use in ", tags$a(href = "https://cran.r-project.org/package=greenfeedr", "R")
-        ),
-        tags$hr()
+          "All functions and documentation for GreenFeed data processing are available both ",
+          tags$a(href = "https://gmbog.shinyapps.io/shinyapp/", "online via shinyapps.io"),
+          " and for direct use in ",
+          tags$a(href = "https://cran.r-project.org/package=greenfeedr", "R"),
+          "."
+        )
       )
     ),
 
