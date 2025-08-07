@@ -12,14 +12,14 @@ server <- function(input, output, session) {
     error_message_download = NULL
   )
 
-  # Run code for download data from C-Lock server
+  # Run code for download data from the C-Lock server
   observeEvent(input$load_data, {
     req(input$user, input$pass, input$unit, input$dates)
     unit <- convert_unit(input$unit, 1)
 
-    withProgress(message = "Loading data...", value = 0, {
+    withProgress(message = "🕐 Loading Data", value = 0, {
       df <- tryCatch({
-        incProgress(0.1, detail = "Connecting to C-Lock server...")
+        incProgress(0.1, detail = "Connecting to the C-Lock server...")
         # Download function defined in utils.R
         download_data(input$user,
                       input$pass,
@@ -36,7 +36,12 @@ server <- function(input, output, session) {
 
       # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
       if (is.null(df) || !is.data.frame(df) || nrow(df) <= 1) {
-        rv$error_message_download <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$error_message_download <- "<b>Please check your inputs</b>
+                                <br>
+                                <br>We couldn't retrieve valid data for the following reasons:
+                                <br>- User/Password
+                                <br>- Unit(s)
+                                <br>- Period (should not exceed 6 months)"
         rv$data <- NULL
         rv$df_preview <- NULL
         return()
@@ -74,7 +79,7 @@ server <- function(input, output, session) {
     }
   )
 
-  # Summary card display format
+  # Summary card
   output$summary_card_download <- renderUI({
     req(input$load_data)
     df <- rv$data
@@ -130,12 +135,17 @@ server <- function(input, output, session) {
     DT::datatable(head(rv$df_preview, 100), options = list(scrollX = TRUE, pageLength = 5))
   })
 
-  # Error message display format
+  # Error message format
   output$error_message_download <- renderUI({
     print(rv$error_message_download)
     req(rv$error_message_download)
     div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
       HTML(rv$error_message_download)
     )
   })
@@ -157,8 +167,9 @@ server <- function(input, output, session) {
     unit <- convert_unit(input$unit, 1)
     rv$error_message_viseat <- NULL
 
-    withProgress(message = 'Running Viseat...', value = 0, {
+    withProgress(message = '🏃🏻‍♂️ Running Viseat', value = 0, {
       result <- NULL
+      incProgress(0.1, detail = "Connecting to the C-Lock server...")
       tryCatch({
         result <- greenfeedr::viseat(
           user = input$user,
@@ -173,9 +184,16 @@ server <- function(input, output, session) {
         result <<- NULL
       })
 
+      incProgress(0.2, detail = "Done!")
+
       # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
       if (is.null(result) || !is.data.frame(result$feedtimes) || nrow(result$feedtimes) <= 1) {
-        rv$error_message_viseat <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+        rv$error_message_viseat <- "<b>Please check your inputs</b>
+                                  <br>
+                                  <br>We couldn't retrieve valid data for the following reasons:
+                                  <br>- User/Password
+                                  <br>- Unit(s)
+                                  <br>- Period (should not exceed 6 months)"
         rv$viseat_result <- NULL
         return()
       } else {
@@ -186,7 +204,7 @@ server <- function(input, output, session) {
     })
   })
 
-  # Summary card display format
+  # Summary card
   output$summary_card_viseat <- renderUI({
     req(input$run_viseat > 0)
 
@@ -325,11 +343,16 @@ server <- function(input, output, session) {
         ggplotly(p2, tooltip = "text")
       })
 
-  # Error message display format
+  # Error message format
   output$error_message_viseat <- renderUI({
     req(rv$error_message_viseat)
     div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
       HTML(rv$error_message_viseat)
     )
   })
@@ -345,8 +368,9 @@ server <- function(input, output, session) {
 
     rv$error_message_pellin <- NULL
 
-    withProgress(message = 'Running Pellin...', value = 0, {
+    withProgress(message = '🏃‍♀️ Running Pellin', value = 0, {
       result <- NULL
+      incProgress(0.1, detail = "Connecting to the C-Lock server...")
       tryCatch({
         result <- greenfeedr::pellin(
           user = input$user,
@@ -359,27 +383,35 @@ server <- function(input, output, session) {
         )
       }, error = function(e) {
         if (grepl("Mismatch.*unit-foodtype", e$message)) {
-          rv$error_message_pellin <<- "Error: Mismatch between number of units and gcup. Please check your inputs."
+          rv$error_message_pellin <<- "<b>Please check your input</b>
+                                      <br>
+                                      <br>There is a mismatch between number of units and gcup"
         } else {
           rv$error_message_pellin <<- paste("Unexpected error:", e$message)
         }
         result <<- NULL
       })
 
-      if (is.null(result) || !is.data.frame(result) || nrow(result) == 0) {
-        if (is.null(rv$error_message_pellin)) {
-          rv$error_message_pellin <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
-        }
+      # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
+      if (!is.data.frame(result) || nrow(result) <= 1) {
+        rv$error_message_pellin <- "<b>Please check your inputs.</b>
+                                 <br>
+                                 <br>We couldn't retrieve valid data for the following reasons:
+                                 <br>- User/Password
+                                 <br>- Unit(s)
+                                 <br>- Period (should not exceed 6 months)"
         rv$pellin_result <- NULL
         return()
+      } else {
+        rv$pellin_result <- result
+        rv$error_message_pellin <- NULL
       }
 
-      rv$pellin_result <- result
-      rv$error_message_pellin <- NULL
+      incProgress(0.2, detail = "Done!")
     })
   })
 
-  # Summary card display format
+  # Summary card
   output$summary_card_pellin <- renderUI({
     df <- rv$pellin_result
     if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
@@ -424,6 +456,13 @@ server <- function(input, output, session) {
   })
 
   # Download handler
+  output$download_pellin_ui <- renderUI({
+    if (is.null(rv$error_message_pellin)) {
+      downloadButton("download_pellin", "Download Pellin Result")
+    }
+    # If there's an error, nothing is returned so the button is hidden
+  })
+
   output$download_pellin <- downloadHandler(
     filename = function() {
       unit <- gsub("[,\\s]+", "_", input$unit)
@@ -434,11 +473,16 @@ server <- function(input, output, session) {
     }
   )
 
-  # Error message display format
+  # Error message format
   output$error_message_pellin <- renderUI({
     req(rv$error_message_pellin)
     div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
       HTML(rv$error_message_pellin)
     )
   })
@@ -464,10 +508,10 @@ server <- function(input, output, session) {
       if (!is.null(input$rfid_file2)) input$rfid_file2$datapath else NULL
     })
 
-    withProgress(message = "Downloading and processing data...", value = 0, {
 
-        df <- tryCatch({
-          incProgress(0.1, detail = "Connecting to C-Lock server...")
+    withProgress(message = "🕐 Processing Data", value = 0, {
+      df <- tryCatch({
+        incProgress(0.1, detail = "Connecting to the C-Lock server...")
           # Download function defined in utils.R
           download_data(input$user,
                         input$pass,
@@ -480,11 +524,14 @@ server <- function(input, output, session) {
           NULL
         })
 
-        incProgress(0.2, detail = "Done!")
-
         # Show error ONLY for "no valid data retrieved" (i.e., NULL or only 1 row)
         if (is.null(df) || !is.data.frame(df) || nrow(df) <= 1) {
-          rv$error_message_report <- "No valid data retrieved for the requested:<br>- User<br>- Unit<br>- Period<br>Please check your inputs."
+          rv$error_message_report <- "<b>Please check your inputs</b>
+                                      <br>
+                                      <br>We couldn't retrieve valid data for the following reasons:
+                                      <br>- User/Password
+                                      <br>- Unit(s)
+                                      <br>- Period (should not exceed 6 months)"
           rv$report_data <- NULL
           return()
         } else {
@@ -496,6 +543,7 @@ server <- function(input, output, session) {
         rfid_df <- if (!is.null(rfid_path)) process_rfid_data(rfid_path) else NULL
 
         # Clean and process data
+        incProgress(0.3, detail = "Data cleaning")
         df <- df %>%
           dplyr::filter(RFID != "unknown") %>%
           dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
@@ -518,14 +566,14 @@ server <- function(input, output, session) {
 
         cols_to_convert <- c("CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay")
         df[cols_to_convert] <- lapply(df[cols_to_convert], as.numeric)
-        incProgress(0.3, detail = "Data cleaned...")
 
+        incProgress(0.4, detail = "Done!")
         rv$report_data <- df
 
     })
   })
 
-  # Summary card display format
+  # Summary card
   output$summary_card_report <- renderUI({
     df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) return(NULL)
@@ -562,15 +610,6 @@ server <- function(input, output, session) {
           tags$li(strong("Max: "), max_records)
         )
       )
-    )
-  })
-
-  # Error message display format
-  output$error_message_report <- renderUI({
-    req(rv$error_message_report)
-    div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
-      HTML(rv$error_message_report)
     )
   })
 
@@ -640,7 +679,8 @@ server <- function(input, output, session) {
   output$plot_2 <- renderPlotly({
     df <- rv$report_data
     if (is.null(df) || nrow(df) == 0) {
-      return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No data for Total Records Per Animal/Farm"))
+      return(plotly_empty(type="scatter", mode="markers") %>%
+               layout(title="No data for Total Records Per Animal/Farm"))
     }
 
     # Try to read the RFID file
@@ -667,7 +707,8 @@ server <- function(input, output, session) {
       dplyr::filter(!is.na(CH4GramsPerDay), !is.na(GoodDataDuration))
 
     if(nrow(df) == 0) {
-      return(plotly_empty(type="scatter", mode="markers") %>% layout(title="No valid data for Animals"))
+      return(plotly_empty(type="scatter", mode="markers") %>%
+               layout(title="No valid data for Animals"))
     }
 
     farmname_order <- df %>%
@@ -695,12 +736,14 @@ server <- function(input, output, session) {
       dplyr::summarise(
         n = dplyr::n(),
         daily_CH4 = weighted.mean(CH4GramsPerDay, GoodDataDuration, na.rm = TRUE),
+        daily_CO2 = weighted.mean(CO2GramsPerDay, GoodDataDuration, na.rm = TRUE),
         .groups = "drop"
       ) %>%
       dplyr::group_by(label) %>%
       dplyr::summarise(
         n = sum(n),
         daily_CH4 = mean(daily_CH4, na.rm = TRUE),
+        daily_CO2 = mean(daily_CO2, na.rm = TRUE),
         .groups = "drop"
       )
 
@@ -715,16 +758,16 @@ server <- function(input, output, session) {
         fill = daily_CH4,
         text = paste(
           "ID: ", label,
-          "<br>Total Records: ", n,
-          "<br>Mean CH₄: ", signif(daily_CH4, 3)
+          "<br>Records: ", n,
+          "<br>Ratio CO2:CH4: ", signif(daily_CO2/daily_CH4, 3)
         )
       )) +
       geom_bar(stat = "identity", position = position_dodge(), color = "white", width = 0.7) +
       scale_fill_gradient(low = "#43a047", high = "#388e3c", name = "Mean CH₄") +
       labs(
-        title = "Total Records Per Animal",
+        title = "Records Per Animal",
         x = "",
-        y = "Total Records"
+        y = "Number of Records"
       ) +
       theme_minimal(base_size = 12) +
       theme(
@@ -760,24 +803,51 @@ server <- function(input, output, session) {
     generate_combined_plot <- function(df, plot_opt) {
       # Convert to lowercase to avoid case sensitivity issues
       plot_opt <- tolower(plot_opt)
-
       if ("all" %in% plot_opt) {
         options_selected <- c("ch4", "o2", "co2", "h2")
       } else {
         options_selected <- plot_opt
       }
 
-      # Normalize the data
-      df_normalized <- df %>%
+      # Normalize the data and reshape to long format for easier plotting
+      df_long <- df %>%
         dplyr::mutate(
-          Normalized_CH4 = scale(CH4GramsPerDay),
-          Normalized_CO2 = scale(CO2GramsPerDay),
-          Normalized_O2 = scale(O2GramsPerDay),
-          Normalized_H2 = scale(H2GramsPerDay)
+          Norm_CH4 = as.numeric(scale(CH4GramsPerDay)),
+          Norm_CO2 = as.numeric(scale(CO2GramsPerDay)),
+          Norm_O2 = as.numeric(scale(O2GramsPerDay)),
+          Norm_H2 = as.numeric(scale(H2GramsPerDay))
+        ) %>%
+        dplyr::select(HourOfDay, Norm_CH4, Norm_CO2, Norm_O2, Norm_H2) %>%
+        tidyr::pivot_longer(
+          cols = starts_with("Norm_"),
+          names_to = "gas",
+          values_to = "norm_value"
+        ) %>%
+        dplyr::mutate(
+          gas = dplyr::recode(gas,
+                              "Norm_CH4" = "ch4",
+                              "Norm_CO2" = "co2",
+                              "Norm_O2"  = "o2",
+                              "Norm_H2"  = "h2"
+          )
+        ) %>%
+        dplyr::filter(gas %in% options_selected, HourOfDay <= 23) %>%
+        dplyr::mutate(
+          text = paste0("Hour: ", round(HourOfDay,1),
+                        "<br>Norm ", toupper(gas), ": ", round(norm_value, 2))
         )
 
-      # Create a base plot
-      combined_plot <- ggplot(df_normalized[df_normalized$HourOfDay <= 23, ], aes(x = HourOfDay)) +
+      color_map <- c(
+        "ch4" = "#388e3c",
+        "co2" = "#1976d2",
+        "o2"  = "#8B5742",
+        "h2"  = "#8B4789"
+      )
+
+      p <- ggplot(df_long, aes(x = HourOfDay, y = norm_value, group = gas)) +
+        geom_point(aes(text = text), color = "#E0E0E0") +
+        geom_smooth(aes(color = gas), se = FALSE) +
+        scale_color_manual(values = color_map) +
         labs(
           title = "Gas Production Across The Day",
           x = "",
@@ -791,11 +861,9 @@ server <- function(input, output, session) {
           axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
           axis.title.y = element_text(size = 10, face = "bold"),
           legend.position = "none",
-          # Make ggplot backgrounds transparent
           plot.background = element_rect(fill = "transparent", color = NA),
           panel.background = element_rect(fill = "transparent", color = NA),
           legend.background = element_rect(fill = "transparent", color = NA),
-          # Remove grid lines
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank()
         ) +
@@ -807,59 +875,32 @@ server <- function(input, output, session) {
           )
         )
 
-      # Initialize empty lists for points and smooth lines
-      points_list <- list()
-      smooth_list <- list()
 
-      # Loop through selected options to add points and smooth lines
-      for (gas in options_selected) {
-        if (gas == "ch4") {
-          points_list <- c(points_list, list(geom_point(aes(y = Normalized_CH4), color = "#E0E0E0")))
-          smooth_list <- c(smooth_list, list(geom_smooth(aes(y = Normalized_CH4, color = "ch4"), se = FALSE)))
-        }
-        if (gas == "co2") {
-          points_list <- c(points_list, list(geom_point(aes(y = Normalized_CO2), color = "#E0E0E0")))
-          smooth_list <- c(smooth_list, list(geom_smooth(aes(y = Normalized_CO2, color = "co2"), se = FALSE)))
-        }
-        if (gas == "o2") {
-          points_list <- c(points_list, list(geom_point(aes(y = Normalized_O2), color = "#E0E0E0")))
-          smooth_list <- c(smooth_list, list(geom_smooth(aes(y = Normalized_O2, color = "o2"), se = FALSE)))
-        }
-        if (gas == "h2") {
-          points_list <- c(points_list, list(geom_point(aes(y = Normalized_H2), color = "#E0E0E0")))
-          smooth_list <- c(smooth_list, list(geom_smooth(aes(y = Normalized_H2, color = "h2"), se = FALSE)))
-        }
-      }
-
-      # Add points and smooth lines to the combined plot
-      combined_plot <- combined_plot + do.call("list", points_list)
-      combined_plot <- combined_plot + do.call("list", smooth_list)
-
-      # Add a manual color scale with gas names
-      combined_plot <- combined_plot +
-        scale_color_manual(
-          values = c(
-            "ch4" = "#388e3c",
-            "co2" = "#1976d2",
-            "o2"  = "#8B5742",
-            "h2"  = "#8B4789"
-          )
-        )
-
-      # Check for valid options
       valid_options <- c("all", "ch4", "co2", "o2", "h2")
       if (!all(options_selected %in% valid_options)) {
         stop("Invalid plot option selected.")
       }
 
-      return(combined_plot)
+      return(p)
     }
-    p <- generate_combined_plot(df, plot_opt)
 
-    # Convert to plotly for interactivity
-    ggplotly(p)
+    p <- generate_combined_plot(df, plot_opt)
+    ggplotly(p, tooltip = "text")
   })
 
+  # Error message format
+  output$error_message_report <- renderUI({
+    req(rv$error_message_report)
+    div(
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
+      HTML(rv$error_message_report)
+    )
+  })
 
 
 #### ---------------------- TAB 4: PROCESSING DATA ------------------------ ####
@@ -898,7 +939,7 @@ server <- function(input, output, session) {
     df <- rv$uploaded_data
     df <- df[!is.na(df$RFID) & df$RFID != "unknown", ]
 
-    withProgress(message = "⏳ Evaluating parameters...", value = 0.1, {
+    withProgress(message = "⏳ Evaluating parameters", value = 0.1, {
       result <- tryCatch({
         incProgress(0.1, detail = "It could take a while...")
         greenfeedr::eval_gfparam(
@@ -920,7 +961,8 @@ server <- function(input, output, session) {
         zero_col4 <- all(df_check[[4]] == 0)
         zero_col5 <- all(df_check[[5]] == 0)
         if (zero_col4 && zero_col5) {
-          rv$error_message_eval <- "Error: No records found in the selected date range.<br> Please check your file and date selection."
+          rv$error_message_eval <- "Error: No records found in the selected date range.
+                                    <br> Please check your file and date selection."
           rv$eval_param_result <- NULL
         }
       }
@@ -988,11 +1030,16 @@ server <- function(input, output, session) {
       )
   })
 
-  # Error message display format
+  # Error message format
   output$error_message_eval <- renderUI({
     req(rv$error_message_eval)
     div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
       HTML(rv$error_message_eval)
     )
   })
@@ -1091,11 +1138,16 @@ server <- function(input, output, session) {
     }
   )
 
-  # Error message display format
+  # Error message format
   output$error_message_process <- renderUI({
     req(rv$error_message_process)
     div(
-      style = "background-color: #fff6f6; border: 2px solid #e74c3c; color: #c0392b; padding: 15px; margin-bottom: 15px; border-radius: 6px;",
+      style = "background-color: #fff6f6;
+               border: 2px solid #e74c3c;
+               color: #c0392b;
+               padding: 15px;
+               margin-bottom: 15px;
+               border-radius: 6px;",
       HTML(rv$error_message_process)
     )
   })

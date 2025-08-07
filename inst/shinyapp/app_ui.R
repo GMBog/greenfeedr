@@ -218,7 +218,7 @@ ui <- fluidPage(
                  uiOutput("pellin_table"),
                  conditionalPanel(
                    condition = "input.run_pellin > 0",
-                   downloadButton("download_pellin", "Download Intakes")
+                   uiOutput("download_pellin_ui")
                  )
              )
           )
