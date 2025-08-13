@@ -164,8 +164,12 @@ server <- function(input, output, session) {
   # Run code to check visitation ('viseat' function)
   observeEvent(input$run_viseat, {
     req(input$dates, input$unit)
+
+    # Check unit input
     unit <- convert_unit(input$unit, 1)
-    rv$error_message_viseat <- NULL
+
+    # Get RFID file path
+    rfid_path <- if (!is.null(input$rfid_file1)) input$rfid_file1$datapath else NULL
 
     withProgress(message = '🏃🏻‍♂️ Running Viseat', value = 0, {
       result <- NULL
@@ -177,7 +181,7 @@ server <- function(input, output, session) {
           unit = unit,
           start_date = input$dates[1],
           end_date = input$dates[2],
-          rfid_file = NULL
+          rfid_file = rfid_path
         )
       }, error = function(e) {
         rv$error_message_viseat <- paste0("Unexpected error: ", e$message)
@@ -200,7 +204,6 @@ server <- function(input, output, session) {
         rv$viseat_result <- result
         rv$error_message_viseat <- NULL
       }
-
     })
   })
 
@@ -224,9 +227,12 @@ server <- function(input, output, session) {
     visits_by_unit <- table(df[[unit_col]])
 
     # Number of visits per animal per day
-    min_visits <- min(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
-    median_visits <- median(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
-    max_visits <- max(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = T)
+    min_visits <- min(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = TRUE)
+    median_visits <- median(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = TRUE)
+    max_visits <- max(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = TRUE)
+
+    # Get the vector of IDs from the result
+    animals_wout_visits <- rv$viseat_result$animals_wout_visits
 
     # Create summary card
     div(
@@ -237,12 +243,19 @@ server <- function(input, output, session) {
       tags$ul(
         tags$li(strong("IDs: "), n_animals),
         tags$li(strong("Days: "), n_days),
+        # Only include this if there are missing IDs
+        if (!is.null(animals_wout_visits) && length(animals_wout_visits) > 0) {
+          tags$li(
+            strong("IDs not visiting GreenFeed unit(s): "),
+            paste(animals_wout_visits, collapse = ", ")
+          )
+        },
         tags$li(
           strong("Total Visits: "),
           tags$ul(
             lapply(seq_along(visits_by_unit), function(i) {
               tags$li(
-                tags$b("Unit ",names(visits_by_unit)[i]), ": ", visits_by_unit[i]
+                tags$b("Unit ", names(visits_by_unit)[i]), ": ", visits_by_unit[i]
               )
             })
           )
@@ -254,8 +267,8 @@ server <- function(input, output, session) {
           tags$li(strong("Max: "), max_visits)
         )
       )
-     )
-   })
+    )
+  })
 
   # Plot 2.1: Visits per Animal
   output$plot2_1 <- renderPlotly({
@@ -362,11 +375,12 @@ server <- function(input, output, session) {
   observeEvent(input$run_pellin, {
     req(input$gcup, input$unit)
 
-    # Check inputs format
+    # Check gcup and unit inputs
     gcup <- as.numeric(strsplit(input$gcup, ",")[[1]])
     unit <- convert_unit(input$unit, 2)
 
-    rv$error_message_pellin <- NULL
+    # Get RFID file path
+    rfid_path <- if (!is.null(input$rfid_file1)) input$rfid_file1$datapath else NULL
 
     withProgress(message = '🏃‍♀️ Running Pellin', value = 0, {
       result <- NULL
@@ -379,7 +393,8 @@ server <- function(input, output, session) {
           gcup = gcup,
           start_date = input$dates[1],
           end_date = input$dates[2],
-          save_dir = NULL
+          save_dir = NULL,
+          rfid_file = rfid_path
         )
       }, error = function(e) {
         if (grepl("Mismatch.*unit-foodtype", e$message)) {
@@ -503,11 +518,8 @@ server <- function(input, output, session) {
     # Check unit input
     unit <- convert_unit(input$unit, 1)
 
-    # Reactive expression to get the path
-    rfid_path <- reactive({
-      if (!is.null(input$rfid_file2)) input$rfid_file2$datapath else NULL
-    })
-
+    # Get RFID file path
+    rfid_path <- if (!is.null(input$rfid_file2)) input$rfid_file2$datapath else NULL
 
     withProgress(message = "🕐 Processing Data", value = 0, {
       df <- tryCatch({
@@ -539,7 +551,7 @@ server <- function(input, output, session) {
           rv$error_message_report <- NULL
         }
 
-        # Process RFID file
+        # Read and process RFID file
         rfid_df <- if (!is.null(rfid_path)) process_rfid_data(rfid_path) else NULL
 
         # Clean and process data
@@ -547,7 +559,7 @@ server <- function(input, output, session) {
         df <- df %>%
           dplyr::filter(RFID != "unknown") %>%
           dplyr::mutate(RFID = gsub("^0+", "", RFID)) %>%
-          #{ if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
+          { if (!is.null(rfid_df) && nrow(rfid_df) > 0) inner_join(., rfid_df, by = "RFID") else . } %>%
           dplyr::distinct_at(dplyr::vars(1:5), .keep_all = TRUE) %>%
           dplyr::mutate(
             GoodDataDuration = round(
@@ -976,14 +988,24 @@ server <- function(input, output, session) {
 
     if (is.null(df) || nrow(df) == 0) return(NULL)
 
-    date_col <- "StartTime"
+    # Check number of days
+    date_col <- if ("StartTime" %in% names(df)) {
+      "StartTime"
+    } else if ("Start Time" %in% names(df)) {
+      "Start Time"
+    } else {
+      NULL
+    }
+    n_days <- dplyr::n_distinct(as.Date(df[[date_col]]))
+
+    # Check number of IDs
     animal_col <- "RFID"
-    n_days <- dplyr::n_distinct(as.Date(df$StartTime))
     n_animals <- if (animal_col %in% names(df)) length(unique(df[[animal_col]])) else "Unknown"
 
     # Calculate records per animal per day
+    df$day <- lubridate::day(df[[date_col]])
     records_animal_day <- df %>%
-      dplyr::mutate(day = lubridate::day(StartTime)) %>%
+      #dplyr::mutate(day = lubridate::day(df[[date_col]])) %>%
       dplyr::group_by(RFID, day) %>%
       dplyr::summarise(n = dplyr::n(), .groups = "drop")
 

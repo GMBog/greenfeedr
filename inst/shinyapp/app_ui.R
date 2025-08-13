@@ -94,6 +94,22 @@ ui <- fluidPage(
       input[type='date'] {
         font-size: 11px !important;
       }
+      /* Pull help text closer to file input */
+     .rfid-help,
+     .gf-help {
+      margin-top: -20px !important;
+      margin-bottom: 15px;
+      font-size: 10px;
+      color: #666;
+     }
+    .form-group:has(#rfid_file1),
+    .form-group:has(#rfid_file2),
+    .form-group:has(#rfid_file3),
+    .form-group:has(#gf_file1),
+    .form-group:has(#gf_file2) {
+      margin-bottom: 0px !important;
+      padding-bottom: 0px !important;
+     }
     "))
   ),
   div(class = "top-bar", "greenfeedr app"),
@@ -197,6 +213,11 @@ ui <- fluidPage(
                  passwordInput("pass", "Password:", placeholder = "Enter your password"),
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date()),
+                 fileInput("rfid_file1", "Upload RFID file (optional):"),
+                 tags$div(
+                   class = "rfid-help",
+                   "Expected format: Column 1: VisualID & Column 2: RFID"
+                 ),
                  actionButton("run_viseat", "Run Viseat", icon = icon("running")),
                  div(style = "margin-bottom: 25px;"),
                  textInput("gcup", "Grams per Cup:", placeholder = "e.g. 34 or 34,35"),
@@ -232,6 +253,7 @@ ui <- fluidPage(
                  textInput("unit", "GreenFeed Unit(s):", placeholder = "e.g. 55 or 100,101"),
                  dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
                  fileInput("rfid_file2", "Upload RFID file (optional):"),
+                 tags$div(class = "rfid-help","Expected format: Column 1: VisualID & Column 2: RFID"),
                  actionButton("run_report", "Report Data", icon = icon("file-alt")),
                  div(style = "margin-bottom: 15px;"),
                  selectInput(
@@ -275,6 +297,7 @@ ui <- fluidPage(
                    inline = TRUE
                  ),
                  fileInput("gf_file1", "Upload GreenFeed Data:"),
+                 tags$div(class = "gf-help","Expected GreenFeed Data: Preliminary or Finalized"),
                  actionButton("run_eval_param", "Evaluate Parameters", icon = icon("search")),
                  div(style = "margin-bottom: 15px;"), hr(),
                  numericInput("param1", "N Records-Day (Param1):", value = 2, min = 1),
@@ -317,7 +340,9 @@ ui <- fluidPage(
              sidebarPanel(
                dateRangeInput("dates", "Date Range:", start = Sys.Date() - 30, end = Sys.Date() - 1),
                fileInput("gf_file2", "Upload GreenFeed Data:"),
+               tags$div(class = "gf-help","Expected GreenFeed Data: Preliminary or Finalized"),
                fileInput("rfid_file3", "Upload Groups File:"),
+               tags$div(class = "rfid-help","Expected Format: Column 1: VisualID, Column 2: RFID, Column 3: Groups"),
                numericInput("param1", "N Records-Day (Param1):", value = 2, min = 1),
                numericInput("param2", "N Days-Week (Param2):", value = 3, min = 1),
                numericInput("min_time", "Min. minutes per record (Min_time):", value = 2),
@@ -333,7 +358,7 @@ ui <- fluidPage(
                  tableOutput("group_summary_table"),
                  div(style = "margin-bottom: 15px;"),
                  hr(),
-                 radioButtons("selected_gas", "Select Gas:",
+                 radioButtons("selected_gas", "Select Gas for Tukey Test:",
                              choices = c("CO2" = "CO2GramsPerDay",
                                          "CH4" = "CH4GramsPerDay",
                                          "O2" = "O2GramsPerDay",
