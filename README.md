@@ -55,10 +55,17 @@ remotes::install_github("GMBog/greenfeedr")
 library(greenfeedr)
 ```
 
-## Launch the Shiny App
+## ShinyApp
 
-Access the live greenfeedr Shiny App here:
+The greenfeedr ShinyApp is hosted on shinyapps.io here:
 <https://gmbog.shinyapps.io/shinyapp/>
+
+When using RStudio you can also run the **greenfeedr** app directly on
+your computer with:
+
+``` r
+greenfeedr::run_gfapp()
+```
 
 ## Tutorials
 

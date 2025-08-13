@@ -1,4 +1,4 @@
-#' Run the GreenFeed Shiny App
+#' Run the GreenFeed Shiny App on your computer
 #'
 #' @export
 run_gfapp <- function() {

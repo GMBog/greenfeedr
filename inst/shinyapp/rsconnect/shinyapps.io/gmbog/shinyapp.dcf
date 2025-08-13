@@ -5,6 +5,6 @@ account: gmbog
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15042805
-bundleId: 10740261
+bundleId: 10745317
 url: https://gmbog.shinyapps.io/shinyapp/
 version: 1

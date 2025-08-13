@@ -2,10 +2,10 @@
 % Please edit documentation in R/run_gfapp.R
 \name{run_gfapp}
 \alias{run_gfapp}
-\title{Run the GreenFeed Shiny App}
+\title{Run the GreenFeed Shiny App on your computer}
 \usage{
 run_gfapp()
 }
 \description{
-Run the GreenFeed Shiny App
+Run the GreenFeed Shiny App on your computer
 }

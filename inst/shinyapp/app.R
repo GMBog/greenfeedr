@@ -24,3 +24,4 @@ source("app_server.R")
 
 # Launch the app
 shinyApp(ui, server)
+
