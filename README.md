@@ -58,10 +58,11 @@ library(greenfeedr)
 ## ShinyApp
 
 The greenfeedr ShinyApp is hosted on shinyapps.io here:
-<https://gmbog.shinyapps.io/shinyapp/>
 
-When using RStudio you can also run the **greenfeedr** app directly on
-your computer with:
+- [gmbog.shinyapps.io/shinyapp/](https://gmbog.shinyapps.io/shinyapp/)
+
+Or if using RStudio you can also run the ShinyApp directly on your
+computer with:
 
 ``` r
 greenfeedr::run_gfapp()
