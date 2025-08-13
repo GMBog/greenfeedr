@@ -2,10 +2,20 @@
 % Please edit documentation in R/run_gfapp.R
 \name{run_gfapp}
 \alias{run_gfapp}
-\title{Run the GreenFeed Shiny App on your computer}
+\title{Run the 'greenfeedr' Shiny App locally}
 \usage{
 run_gfapp()
 }
+\value{
+This function launches the Shiny app in your default web browser; it does not return a value.
+}
 \description{
-Run the GreenFeed Shiny App on your computer
+Launches the 'greenfeedr' Shiny application on your computer.
+The app provides an interactive interface for 'GreenFeed' data analysis, visualization, and reporting.
+}
+\examples{
+\dontrun{
+  greenfeedr::run_gfapp()
+}
+
 }
