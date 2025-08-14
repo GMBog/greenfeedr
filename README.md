@@ -73,19 +73,19 @@ greenfeedr::run_gfapp()
 Learn how to use greenfeedr in different workflows:
 
 - [1. Downloading
-  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/DownloadData.md)
+  Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/DownloadData.md)
 
 - [2. Reporting
-  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/ReportData.md)
+  Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/ReportData.md)
 
 - [3. Processing
-  Data](https://github.com/GMBog/greenfeedr/tree/main/inst/md/ProcessData.md)
+  Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/ProcessData.md)
 
 - [4. Calculating Pellet
-  Intakes](https://github.com/GMBog/greenfeedr/tree/main/inst/md/PelletIntakes.md)
+  Intakes](https://github.com/GMBog/greenfeedr/blob/main/inst/md/PelletIntakes.md)
 
 - [5. Checking
-  Visitation](https://github.com/GMBog/greenfeedr/tree/main/inst/md/Visitation.md)
+  Visitation](https://github.com/GMBog/greenfeedr/blob/main/inst/md/Visitation.md)
 
 ## Cheat Sheet
 
