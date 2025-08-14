@@ -1,4 +1,3 @@
-
 # app_server.R
 
 server <- function(input, output, session) {
@@ -981,7 +980,7 @@ server <- function(input, output, session) {
     })
   })
 
-  # Summary card display format
+  # Summary card
   output$summary_card_eval <- renderUI({
     df <- rv$uploaded_data
     df <- df[!is.na(df$RFID) & df$RFID != "unknown", ]
@@ -1052,7 +1051,7 @@ server <- function(input, output, session) {
       )
   })
 
-  # Error message format
+  # Error message
   output$error_message_eval <- renderUI({
     req(rv$error_message_eval)
     div(
@@ -1128,10 +1127,11 @@ server <- function(input, output, session) {
         ),
         tags$tbody(
           lapply(seq_along(gas_names), function(i) {
+            round_digits <- if (grepl("H2", gas_names[i])) 3 else 1
             tags$tr(
               tags$td(gas_display_name(gas_names[i])),
-              tags$td(round(gas_stats["mean", i], 2)),
-              tags$td(round(gas_stats["sd", i], 2)),
+              tags$td(round(gas_stats["mean", i], round_digits)),
+              tags$td(round(gas_stats["sd", i], round_digits)),
               tags$td(round(gas_stats["cv", i], 1))
             )
           })
@@ -1142,19 +1142,19 @@ server <- function(input, output, session) {
 
   # Download handlers
   output$download_filtered <- downloadHandler(
-    filename = function() { "filtered_data.csv" },
+    filename = function() { "GreenFeed_Filtered_Data.csv" },
     content = function(file) {
       write.csv(rv$processed_result$filtered_data, file, row.names = FALSE)
     }
   )
   output$download_daily <- downloadHandler(
-    filename = function() { "daily_data.csv" },
+    filename = function() { "GreenFeed_Daily_Data.csv" },
     content = function(file) {
       write.csv(rv$processed_result$daily_data, file, row.names = FALSE)
     }
   )
   output$download_weekly <- downloadHandler(
-    filename = function() { "weekly_data.csv" },
+    filename = function() { "GreenFeed_Weekly_Data.csv" },
     content = function(file) {
       write.csv(rv$processed_result$weekly_data, file, row.names = FALSE)
     }
@@ -1344,6 +1344,7 @@ server <- function(input, output, session) {
       HTML(rv$error_message_analysis)
     )
   })
+
 
 
 }
