@@ -199,6 +199,14 @@ viseat <- function(user = NA, pass = NA, unit,
     )
   print(plotFID)
 
+  # Ensure noGFvisits exists, even if nothing sets it earlier
+  if (!exists("noGFvisits")) noGFvisits <- NULL
+
+  if (is.null(noGFvisits) || length(noGFvisits) == 0) {
+    noGFvisits <- data.frame(animal_id = character(0), stringsAsFactors = FALSE)
+  } else {
+    noGFvisits <- data.frame(animal_id = noGFvisits, stringsAsFactors = FALSE)
+  }
 
   # Return a list of data frames
   return(list(

@@ -231,7 +231,7 @@ server <- function(input, output, session) {
     max_visits <- max(as.numeric(rv$viseat_result$visits_per_day$visits), na.rm = TRUE)
 
     # Get the vector of IDs from the result
-    animals_wout_visits <- rv$viseat_result$animals_wout_visits
+    animals_wout_visits <- rv$viseat_result$animals_wout_visits$animal_id
 
     # Create summary card
     div(
