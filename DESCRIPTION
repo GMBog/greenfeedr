@@ -26,6 +26,7 @@ Imports:
     ggplot2,
     httr,
     lubridate,
+    parallel,
     purrr,
     readr,
     readxl,
