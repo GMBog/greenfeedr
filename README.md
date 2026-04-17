@@ -32,7 +32,7 @@ and report GreenFeed data.
 
 If you use **greenfeedr** in your research, please cite:
 
-> Martínez-Boggio G, Harrison M, Lutz P (2024). greenfeedr: An R package
+> Martinez-Boggio G, Harrison M, Lutz P (2024). greenfeedr: An R package
 > for processing and reporting GreenFeed data. *Journal of Dairy Science
 > Communications*. <https://doi.org/10.3168/jdsc.2024-0662>
 
@@ -104,12 +104,6 @@ processed <- process_gfdata(
   param2     = 3,   # use value suggested by eval_gfparam()
   min_time   = 2
 )
-```
-
-**3. Report results:**
-
-``` r
-report_gfdata(data = processed)
 ```
 
 ## ShinyApp
