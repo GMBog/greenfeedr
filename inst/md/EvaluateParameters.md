@@ -104,8 +104,8 @@ When you run `eval_gfparam()`, it automatically prints a ready-to-use methods se
 ```
 -- Suggested methods text (copy/paste into your paper) --
 GreenFeed filtering parameters were selected using eval_gfparam from the
-greenfeedr R package (Martínez-Boggio et al., 2024, doi:10.3168/jdsc.2024-0662).
-Individual visit records were averaged into daily means requiring a minimum of
+greenfeedr R package (Martinez-Boggio et al., 2025, doi:10.3168/jdsc.2024-0662).
+Individual records were averaged into daily means requiring a minimum of
 2 record(s) per day (param1), and daily means were averaged into weekly estimates
 requiring a minimum of 3 day(s) with records per week (param2); visits shorter
 than 2 min were excluded (min_time). This combination maximized the repeatability

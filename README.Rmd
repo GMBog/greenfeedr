@@ -38,7 +38,7 @@ knitr::opts_chunk$set(
 
 If you use **greenfeedr** in your research, please cite:
 
-> Martinez-Boggio G, Harrison M, Lutz P (2024). greenfeedr: An R package for processing and reporting GreenFeed data. *Journal of Dairy Science Communications*. <https://doi.org/10.3168/jdsc.2024-0662>
+> Martinez-Boggio et al. (2025). greenfeedr: An R package for processing and reporting GreenFeed data. *JDS Communications*. <https://doi.org/10.3168/jdsc.2024-0662>
 
 In R, run `citation("greenfeedr")` to get the formatted reference.
 
