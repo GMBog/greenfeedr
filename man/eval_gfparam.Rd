@@ -9,7 +9,7 @@ eval_gfparam(
   start_date,
   end_date,
   gas = "CH4",
-  min_retention = 0.95,
+  min_retention = 0.9,
   icc_tol = 0.01,
   suggest = TRUE,
   quick = FALSE,
@@ -17,7 +17,9 @@ eval_gfparam(
 )
 }
 \arguments{
-\item{data}{a data frame with preliminary or finalized 'GreenFeed' data.}
+\item{data}{a data frame with preliminary or finalized 'GreenFeed' data,
+containing at minimum the columns \code{RFID}, \code{StartTime},
+\code{GoodDataDuration}, and the gas column(s).}
 
 \item{start_date}{a character string representing the start date of the
 study (format: \code{"dd/mm/yyyy"} or \code{"yyyy-mm-dd"}).}
@@ -29,46 +31,56 @@ study (format: \code{"dd/mm/yyyy"} or \code{"yyyy-mm-dd"}).}
 One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, or \code{"H2"}.
 Default is \code{"CH4"}.}
 
-\item{min_retention}{numeric (0 to 1). Minimum proportion of the maximum
-number of animals retained that a parameter combination must achieve to
-be considered. Default is \code{0.80} (80\%).}
+\item{min_retention}{numeric (0 to 1). Minimum proportion of total study
+animals that a parameter combination must retain to be considered.
+For example, \code{min_retention = 0.70} excludes any combination
+that retains fewer than 70\% of all animals in the dataset.
+Lower values allow stricter filtering parameters to be considered at
+the cost of losing more animals; higher values prioritise animal
+coverage at the cost of potentially noisier emission estimates.
+Default is \code{0.70} (70\%).}
 
 \item{icc_tol}{numeric. Tolerance for ICC comparison. Combinations with
 ICC within \code{icc_tol} of the maximum are considered equivalent, and
 the most lenient among them is selected. Default is \code{0.01}.}
 
-\item{suggest}{logical. If \code{TRUE}, prints the suggested parameter
-combination, repeatability, animal retention, within-animal CV, and a
-ready-to-use methods sentence for reporting. Default is \code{TRUE}.}
+\item{suggest}{logical. If \code{TRUE}, prints the suggested parameters,
+repeatability, animal retention, and a ready-to-use methods sentence.
+Default is \code{TRUE}.}
 
 \item{quick}{logical. If \code{TRUE}, uses a reduced parameter grid
-(\code{param2} evaluated at 1, 3, 5, 7 instead of 1 through 7) for
-faster evaluation. Default is \code{FALSE}.}
+(\code{param2} at 1, 3, 5, 7 instead of 1 through 7). Default is
+\code{FALSE}.}
 
 \item{ncores}{integer. Number of CPU cores for parallel processing.
-Default is \code{1} (sequential). Parallelization via
-\code{parallel::mclapply} is supported on Unix/macOS only; on Windows
-the function always runs sequentially.}
+Default is \code{1}. Parallelization via \code{parallel::mclapply} is
+supported on Unix/macOS only; Windows always runs sequentially.}
 }
 \value{
-A data frame sorted from highest to lowest repeatability, with one
-  row per valid parameter combination and the following columns:
+A data frame sorted from highest to lowest repeatability (ICC),
+  with one row per valid parameter combination and the following columns:
   \describe{
     \item{param1}{Minimum number of records per day.}
     \item{param2}{Minimum number of days with records per week.}
     \item{min_time}{Minimum visit duration in minutes.}
-    \item{records}{Total number of weekly animal-records retained.}
-    \item{N}{Number of unique animals retained.}
+    \item{records}{Total weekly animal-records retained.}
+    \item{N}{Number of unique RFIDs retained.}
     \item{mean}{Mean gas production across animals (g/day).}
     \item{SD}{Mean within-animal standard deviation (g/day).}
-    \item{CV}{Mean within-animal coefficient of variation (\%) [informational].}
-    \item{repeatability}{Intraclass correlation coefficient (ICC) of weekly
-      gas estimates; the primary selection criterion.}
+    \item{CV}{Mean within-animal CV (\%) computed from weekly data
+      [informational].}
+    \item{repeatability_daily}{ICC of daily gas estimates; sensitive to
+      \code{param1}.}
+    \item{repeatability_weekly}{ICC of weekly gas estimates; sensitive to
+      \code{param2}.}
+    \item{composite_icc}{Mean of daily and weekly ICC; primary selection
+      criterion. The row with the highest \code{composite_icc} (subject to
+      the retention threshold) is the recommended parameter set.}
   }
 }
 \description{
 Evaluate filtering parameters that best fit your 'GreenFeed' data using a
-repeatability-based selection criterion.
+two-stage, data-driven approach.
 
 'GreenFeed' units record gas emissions during voluntary animal visits,
 producing an irregular series of individual measurements throughout the day.
@@ -78,28 +90,45 @@ day are averaged into a daily mean, requiring a minimum number of records
 per day (\code{param1}); and (2) daily means within a week are averaged
 into a weekly mean, requiring a minimum number of days with records per
 week (\code{param2}). A minimum visit duration (\code{min_time}) can
-additionally be applied to exclude incomplete measurements. The
-experimental emission estimate for each animal is then derived from its
-weekly means across the study period.
+additionally be applied to exclude incomplete measurements.
 
-Each aggregation step introduces potential measurement error: a daily
-average based on a single short visit may not represent the animal's true
-diurnal emission pattern, and a weekly average based on a single day may
-not represent the full week. The parameters \code{param1} and \code{param2}
-act as reliability thresholds at each level of this hierarchy, ensuring
-that only sufficiently sampled days and weeks contribute to the final
-animal estimate.
+The function first performs a \strong{diurnal analysis} on the raw visit
+records, quantifying how much gas emissions vary across hours of the day
+via the eta-squared statistic (proportion of total variance explained by
+hour of day). This directly informs the relevance of \code{param1}: when
+diurnal variation is high, a single record per day may capture only a peak
+or trough, producing a biased daily average; more records per day are
+needed to sample the diurnal cycle adequately. The diurnal result is
+reported as a recommendation but all parameter combinations are always
+evaluated.
 
-\code{eval_gfparam} identifies the parameter combination that maximizes the
-repeatability (intraclass correlation coefficient, ICC) of weekly emission
-estimates. ICC quantifies the proportion of total variance attributable to
-true between-animal differences, as opposed to within-animal week-to-week
-noise. A higher ICC indicates that the chosen parameters produce weekly
-estimates that reliably reflect each animal's true emission level.
-Parameter combinations retaining fewer than \code{min_retention} of the
-maximum possible animals are excluded before selection. When multiple
-combinations yield equivalent ICC values (within \code{icc_tol}), the most
-lenient set is preferred to maximise data retained for analysis.
+The \strong{parameter selection} uses repeatability (intraclass correlation
+coefficient, ICC) computed at two levels of the aggregation hierarchy,
+each sensitive to a different parameter:
+\itemize{
+  \item \strong{Daily ICC}: computed on daily emission estimates. Sensitive
+    to \code{param1} — more records per day produce more stable daily
+    averages, reducing within-animal day-to-day noise and increasing ICC.
+  \item \strong{Weekly ICC}: computed on weekly emission estimates. Sensitive
+    to \code{param2} — more days per week produce more representative weekly
+    averages, reducing within-animal week-to-week noise and increasing ICC.
+}
+Both ICCs are computed via one-way ANOVA decomposition with a
+harmonic-adjusted group size for unbalanced designs. Selection proceeds
+in three stages: (1) combinations retaining fewer than \code{min_retention}
+of all study animals are excluded; (2) among the remainder, the
+combination maximising the \strong{composite ICC} — the average of daily
+and weekly ICC — is identified; (3) any remaining ties are broken by
+preferring the most lenient parameter set (lowest
+\code{param1 + param2 + min_time}). Using a composite score avoids the
+failure mode of sequential optimisation, where locking onto the highest
+daily ICC first can force selection of an excessively lenient
+\code{param2} due to the retention constraint.
+
+\strong{Note on animal IDs:} \code{N} reflects the number of unique RFIDs
+in the processed data. If an animal received a new RFID tag mid-study, it
+will appear as two separate IDs. Pre-process your data to harmonise IDs
+before running this function.
 }
 \examples{
 \donttest{
@@ -107,7 +136,7 @@ file <- readr::read_csv(
   system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 )
 
-# Default: all 140 combinations, 80\% animal retention threshold
+# Default: all 140 combinations, 80\% retention threshold
 eval <- eval_gfparam(
   data       = file,
   start_date = "2024-05-13",
@@ -124,7 +153,7 @@ eval_quick <- eval_gfparam(
   quick      = TRUE
 )
 
-# Stricter retention requirement (keep at least 90\% of animals)
+# Stricter retention requirement
 eval_strict <- eval_gfparam(
   data          = file,
   start_date    = "2024-05-13",
