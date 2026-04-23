@@ -446,3 +446,134 @@ transform_gases <- function(data){
   return(data)
 }
 
+
+
+#' @name normalize_gfdata
+#' @title Normalize 'GreenFeed' data with different formats
+#'
+#' @description Normalize 'GreenFeed' data in their preliminary and finalized format
+#'
+#' @param data a data frame with preliminary or finalized 'GreenFeed' data
+#'
+#' @return A standardized data frame
+#'
+#' @examples
+#' file <- readr::read_csv(system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr"))
+#' data <- transform_gases(data = file)
+#'
+#' @export
+#' @keywords internal
+normalize_gfdata <- function(data) {
+  # -------------------------------------------------------------------------
+  # 1. Column name standardisation
+  #
+  # Three source formats are supported:
+  #   A) Excel export from C-Lock portal  → detected by Excel-style col names
+  #   B) CSV preliminary (>= 25 cols)     → rename first 14 cols by position
+  #   C) CSV finalized   (<= 21 cols)     → rename all cols by position
+  #
+  # After this block every column has its canonical CSV name.
+  # -------------------------------------------------------------------------
+  excel_map <- c(
+    "Start Time"                   = "StartTime",
+    "End Time"                     = "EndTime",
+    "Good Data Duration"           = "GoodDataDuration",
+    "CH4 Massflow (g/d)"           = "CH4GramsPerDay",
+    "CO2 Massflow (g/d)"           = "CO2GramsPerDay",
+    "O2 Massflow (g/d)"            = "O2GramsPerDay",
+    "H2 Massflow (g/d)"            = "H2GramsPerDay",
+    "H2S Massflow (g/d)"           = "H2SGramsPerDay",
+    "Average Airflow (L/s)"        = "AirflowLitersPerSec",
+    "Airflow CF"                   = "AirflowCf",
+    "Average Wind Speed (m/s)"     = "WindSpeedMetersPerSec",
+    "Average Wind Direction (deg)" = "WindDirDeg",
+    "Wind CF"                      = "WindCf",
+    "Was Interrupted"              = "WasInterrupted",
+    "Interrupting Tags"            = "InterruptingTags",
+    "Pipe Temperature (deg C)"     = "TempPipeDegreesCelsius",
+    "FID"                          = "FeederID"
+  )
+  preliminary_names <- c(
+    "RFID", "AnimalName", "FeederID", "StartTime", "EndTime",
+    "GoodDataDuration", "HourOfDay",
+    "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay",
+    "H2SGramsPerDay", "AirflowLitersPerSec", "AirflowCf"
+  )
+  finalized_names <- c(
+    "FeederID", "AnimalName", "RFID", "StartTime", "EndTime",
+    "GoodDataDuration",
+    "CO2GramsPerDay", "CH4GramsPerDay", "O2GramsPerDay", "H2GramsPerDay",
+    "H2SGramsPerDay", "AirflowLitersPerSec", "AirflowCf",
+    "WindSpeedMetersPerSec", "WindDirDeg", "WindCf",
+    "WasInterrupted", "InterruptingTags", "TempPipeDegreesCelsius",
+    "IsPreliminary", "RunTime"
+  )
+  excel_hits <- sum(names(excel_map) %in% colnames(data))
+  if (excel_hits >= 3) {
+    to_rename <- names(excel_map)[names(excel_map) %in% colnames(data)]
+    colnames(data)[match(to_rename, colnames(data))] <- excel_map[to_rename]
+    #message("Note: Excel column names detected and standardised.")
+  } else if (ncol(data) >= 25) {
+    names(data)[seq_along(preliminary_names)] <- preliminary_names
+  } else {
+    n <- min(ncol(data), length(finalized_names))
+    names(data)[seq_len(n)] <- finalized_names[seq_len(n)]
+  }
+  # -------------------------------------------------------------------------
+  # 2. GoodDataDuration → uniform "HH:MM:SS" character string
+  #
+  # readxl reads Excel time cells as POSIXct "1899-12-31 HH:MM:SS"; format()
+  # extracts only the time portion.  difftime objects are converted via secs.
+  # Some CSV/Excel combos produce character strings in datetime format
+  # (e.g. "1900-01-01 00:05:30") — these are caught by the third branch.
+  # Character strings already in "HH:MM:SS" are left unchanged.
+  # -------------------------------------------------------------------------
+  if ("GoodDataDuration" %in% colnames(data)) {
+    dur <- data$GoodDataDuration
+    if (inherits(dur, c("POSIXct", "POSIXlt"))) {
+      data$GoodDataDuration <- format(as.POSIXct(dur), "%H:%M:%S")
+    } else if (inherits(dur, "difftime")) {
+      secs <- as.integer(as.numeric(dur, units = "secs"))
+      data$GoodDataDuration <- sprintf("%02d:%02d:%02d",
+                                       secs %/% 3600L,
+                                       (secs %% 3600L) %/% 60L,
+                                       secs %% 60L)
+    } else if (is.character(dur)) {
+      # Catch datetime-style strings like "1900-01-01 00:05:30":
+      # extract only the time portion so downstream parsing works correctly.
+      sample_val <- dur[!is.na(dur)][1]
+      if (!is.na(sample_val) && grepl("^\\d{4}-\\d{2}-\\d{2}[T ]", sample_val)) {
+        parsed <- suppressWarnings(as.POSIXct(dur, tz = "UTC"))
+        valid  <- !is.na(parsed)
+        data$GoodDataDuration[valid] <- format(parsed[valid], "%H:%M:%S")
+        message("Note: datetime-style GoodDataDuration values reformatted to HH:MM:SS.")
+      }
+    }
+  }
+  # -------------------------------------------------------------------------
+  # 3. StartTime → uniform "YYYY-MM-DD HH:MM:SS" character string
+  #
+  # Preliminary CSV / Excel: already POSIXct → format() standardises.
+  # Finalized CSV: character in "m/d/y H:M" → parsed with lubridate and
+  # reformatted.  A single downstream code path then applies to all formats.
+  # -------------------------------------------------------------------------
+  if ("StartTime" %in% colnames(data)) {
+    st <- data$StartTime
+    if (inherits(st, c("POSIXct", "POSIXlt"))) {
+      data$StartTime <- format(st, "%Y-%m-%d %H:%M:%S")
+    } else if (is.character(st) && !grepl("^\\d{4}-\\d{2}-\\d{2}", st[!is.na(st)][1])) {
+      parsed <- lubridate::parse_date_time(
+        st,
+        orders = c("m/d/y H:M", "m/d/Y H:M:S", "Y-m-d H:M:S", "Y-m-d H:M")
+      )
+      data$StartTime <- format(parsed, "%Y-%m-%d %H:%M:%S")
+    }
+  }
+  # -------------------------------------------------------------------------
+  # 4. RFID → character (15-digit integers overflow R's integer type)
+  # -------------------------------------------------------------------------
+  if ("RFID" %in% colnames(data)) {
+    data$RFID <- as.character(data$RFID)
+  }
+  data
+}

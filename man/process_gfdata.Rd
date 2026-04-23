@@ -4,44 +4,89 @@
 \alias{process_gfdata}
 \title{Process Preliminary and Finalized 'GreenFeed' Data}
 \arguments{
-\item{data}{a data frame with preliminary or finalized 'GreenFeed' data}
+\item{data}{a data frame with preliminary or finalized 'GreenFeed' data.}
 
-\item{start_date}{a character string representing the start date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
+\item{start_date}{character. Start date (\code{"DD-MM-YY"} or
+\code{"YYYY-MM-DD"}).}
 
-\item{end_date}{a character string representing the end date of the study (format: "DD-MM-YY" or "YYYY-MM-DD")}
+\item{end_date}{character. End date (\code{"DD-MM-YY"} or
+\code{"YYYY-MM-DD"}).}
 
-\item{param1}{an integer representing the number of records per day to be consider for analysis}
+\item{param1}{integer. Minimum records per day. Omit for automatic
+selection (default: \code{NULL}).}
 
-\item{param2}{an integer representing the number of days with records per week to be consider for analysis}
+\item{param2}{integer. Minimum days with records per week. Omit for
+automatic selection (default: \code{NULL}).}
 
-\item{min_time}{an integer representing the minimum number of minutes for a records to be consider for analysis (default: 2 minutes)}
+\item{min_time}{numeric. Minimum visit duration in minutes. Omit for
+automatic selection (default: \code{NULL}).}
 
-\item{transform}{A logical representing whether to transform gas production to L/d. If TRUE, gas will be converted from grams/day to liters/day.}
+\item{gas}{character. Gas whose ICC is maximised in automatic mode.
+One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, \code{"H2"}.
+Default: \code{"CH4"}.}
 
-\item{cutoff}{an integer specifying the range for identifying outliers (default: 3 SD)}
+\item{min_retention}{numeric (0--1). Minimum proportion of study animals
+a combination must retain in automatic mode. Default: \code{0.80}.}
+
+\item{icc_tol}{numeric. Combinations within \code{icc_tol} of the maximum
+composite ICC are treated as tied; the most lenient is selected.
+Default: \code{0.01}.}
+
+\item{quick}{logical. Use a reduced parameter grid in automatic mode.
+Default: \code{FALSE}.}
+
+\item{peak_hour}{optional integer. Hour of peak emissions for bin-weighted
+daily means (manual mode only; auto-detected in automatic mode).}
+
+\item{trough_hour}{optional integer. Hour of trough emissions for
+bin-weighted daily means (manual mode only).}
+
+\item{min_bins}{integer (1 or 2). Minimum diurnal phases an animal-day
+must cover to be retained. Optimised automatically in auto mode;
+default \code{1} in manual mode.}
+
+\item{transform}{logical. Convert gas production from g/day to L/day.
+Default: \code{FALSE}.}
+
+\item{cutoff}{integer. SDs for outlier removal. Default: \code{3}.}
 }
 \value{
-A list of three data frames:
-  \item{filtered_data }{data frame with filtered 'GreenFeed' data}
-  \item{daily_data }{data frame with daily processed 'GreenFeed' data}
-  \item{weekly_data }{data frame with weekly processed 'GreenFeed' data}
+A named list with three data frames:
+  \item{filtered_data}{visit-level records after quality filtering.}
+  \item{daily_data}{daily emission estimates.}
+  \item{weekly_data}{weekly emission estimates.}
+  In automatic mode, the full optimisation table is accessible via
+  \code{attr(result, "optimization")} and the diurnal analysis via
+  \code{attr(result, "diurnal")}.
 }
 \description{
 Processes and calculates daily and weekly averages of 'GreenFeed' data.
-    Handles data filtering, aggregation, and summarization to facilitate further analysis.
+
+When \code{param1}, \code{param2}, and \code{min_time} are all omitted
+(the default), the function automatically selects the combination of
+filtering parameters that maximises the composite repeatability (ICC) of
+\code{gas} emission estimates while retaining at least
+\code{min_retention} of the study animals. Diurnal time bins are derived
+from the data and used in the optimisation. The selected parameters and
+repeatability statistics are printed to the console, and the full
+optimisation table is attached as \code{attr(result, "optimization")}.
+
+When all three of \code{param1}, \code{param2}, and \code{min_time} are
+supplied, the function runs in manual mode with those exact values.
 }
 \examples{
+\donttest{
 file <- system.file("extdata", "StudyName_GFdata.csv", package = "greenfeedr")
 datafile <- readr::read_csv(file)
 
-gf_data <- process_gfdata(
-  data = datafile,
-  start_date = "2024-05-13",
-  end_date = "2024-05-25",
-  param1 = 2,
-  param2 = 3,
-  min_time = 2
-)
-head(gf_data)
+# Automatic mode (recommended)
+gf <- process_gfdata(datafile, "2024-05-13", "2024-05-25")
+attr(gf, "optimization")   # full grid results
+attr(gf, "diurnal")$plot   # diurnal curve
+
+# Manual mode
+gf <- process_gfdata(datafile, "2024-05-13", "2024-05-25",
+                     param1 = 2, param2 = 3, min_time = 2)
+}
 
 }

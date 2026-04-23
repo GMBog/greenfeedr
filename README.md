@@ -15,14 +15,13 @@ Downloads](https://cranlogs.r-pkg.org/badges/last-month/greenfeedr)
 
 ## Overview
 
-**greenfeedr** is an R package to easily download, evaluate, process,
-and report GreenFeed data.
+**greenfeedr** is an R package to easily download, process, and report
+GreenFeed data.
 
 | Function | Description |
 |----|----|
 | `get_gfdata()` | Download GreenFeed data via the C-Lock API |
-| `eval_gfparam()` | Evaluate all parameter combinations and select the best filtering settings based on repeatability (ICC) |
-| `process_gfdata()` | Process and average GreenFeed records into daily and weekly estimates |
+| `process_gfdata()` | Process GreenFeed records into daily and weekly estimates, with automatic or manual parameter selection |
 | `report_gfdata()` | Generate summary reports of GreenFeed data |
 | `compare_gfdata()` | Compare preliminary and finalized GreenFeed data |
 | `pellin()` | Process pellet intakes from GreenFeed units |
@@ -37,11 +36,6 @@ If you use **greenfeedr** in your research, please cite:
 > <https://doi.org/10.3168/jdsc.2024-0662>
 
 In R, run `citation("greenfeedr")` to get the formatted reference.
-
-> **Note:** If you use `eval_gfparam()` to select filtering parameters,
-> the function automatically prints a ready-to-use methods sentence —
-> including the citation — that you can paste directly into your
-> manuscript.
 
 ## Installation
 
@@ -63,12 +57,18 @@ remotes::install_github("GMBog/greenfeedr")
 
 GreenFeed units record gas emissions during voluntary animal visits.
 Because visit frequency varies across animals and days, the reliability
-of emission estimates depends on filtering parameters that define the
-minimum number of records per day (`param1`) and the minimum number of
-days with records per week (`param2`). The recommended workflow is:
+of emission estimates depends on how records are aggregated —
+specifically, the minimum number of records per day (`param1`) and the
+minimum number of days per week (`param2`).
 
-**1. Evaluate parameters** — identify the combination that maximizes
-repeatability of weekly estimates while retaining enough animals:
+`process_gfdata()` handles this automatically. By default, it evaluates
+all parameter combinations, performs a diurnal analysis, and selects the
+combination that maximises the composite repeatability (ICC) of emission
+estimates while retaining at least 80% of study animals. The selected
+parameters, repeatability statistics, and a **ready-to-paste methods
+sentence** are printed to the console.
+
+**Automatic mode** (recommended):
 
 ``` r
 library(greenfeedr)
@@ -81,27 +81,31 @@ data <- get_gfdata(
   end_date   = "2024-05-20"
 )
 
-eval <- eval_gfparam(
+processed <- process_gfdata(
   data       = data,
   start_date = "2024-05-13",
-  end_date   = "2024-05-20",
-  gas        = "CH4"
+  end_date   = "2024-05-20"
 )
 ```
 
-The function prints the suggested parameters, their repeatability (ICC),
-animal retention, and a **ready-to-paste methods sentence** for your
-manuscript.
+The function prints the selected parameters and their repeatability, and
+attaches the full optimisation table and diurnal analysis to the output
+for inspection:
 
-**2. Process data** using the suggested parameters:
+``` r
+attr(processed, "optimization")   # full parameter grid results
+attr(processed, "diurnal")$plot   # diurnal emission curve
+```
+
+**Manual mode** — if you prefer to specify parameters directly:
 
 ``` r
 processed <- process_gfdata(
   data       = data,
   start_date = "2024-05-13",
   end_date   = "2024-05-20",
-  param1     = 2,   # use value suggested by eval_gfparam()
-  param2     = 3,   # use value suggested by eval_gfparam()
+  param1     = 2,
+  param2     = 3,
   min_time   = 2
 )
 ```
@@ -115,8 +119,8 @@ directly on your computer:
 greenfeedr::run_gfapp()
 ```
 
-The app covers the full workflow — downloading, evaluating parameters,
-processing, and reporting — without writing any code.
+The app covers the full workflow — downloading, processing, and
+reporting — without writing any code.
 
 ## Tutorials
 
@@ -124,15 +128,13 @@ Step-by-step guides for common workflows:
 
 - [1. Downloading
   Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/DownloadData.md)
-- [2. Evaluating
-  Parameters](https://github.com/GMBog/greenfeedr/blob/main/inst/md/EvaluateParameters.md)
-- [3. Processing
+- [2. Processing
   Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/ProcessData.md)
-- [4. Reporting
+- [3. Reporting
   Data](https://github.com/GMBog/greenfeedr/blob/main/inst/md/ReportData.md)
-- [5. Calculating Pellet
+- [4. Calculating Pellet
   Intakes](https://github.com/GMBog/greenfeedr/blob/main/inst/md/PelletIntakes.md)
-- [6. Checking
+- [5. Checking
   Visitation](https://github.com/GMBog/greenfeedr/blob/main/inst/md/Visitation.md)
 
 ## Cheat Sheet
