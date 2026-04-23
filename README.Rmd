@@ -30,7 +30,6 @@ knitr::opts_chunk$set(
 | `get_gfdata()` | Download GreenFeed data via the C-Lock API |
 | `process_gfdata()` | Process GreenFeed records into daily and weekly estimates, with automatic or manual parameter selection |
 | `report_gfdata()` | Generate summary reports of GreenFeed data |
-| `compare_gfdata()` | Compare preliminary and finalized GreenFeed data |
 | `pellin()` | Process pellet intakes from GreenFeed units |
 | `viseat()` | Process and summarize GreenFeed visit patterns |
 
