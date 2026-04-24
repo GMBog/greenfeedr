@@ -66,16 +66,10 @@ When \code{param1}, \code{param2}, and \code{min_time} are all omitted
 (the default), the function automatically selects the combination of
 filtering parameters that maximises the composite repeatability (ICC) of
 \code{gas} emission estimates while retaining at least
-\code{min_retention} of the study animals. Biological floors are applied
-before the search: the minimum \code{param1} is determined by the degree
-of diurnal variation (low -> 1, moderate -> 2, high -> 3); \code{param2}
-is bounded at a minimum of 2 days per week; and \code{min_bins = 2} is
-only included in the grid when the study median visits per animal per day
-is >= 2 (otherwise requiring both diurnal phases per day would incorrectly
-exclude animals with random once-daily visit timing). Diurnal time bins
-are derived from the data. The selected parameters and repeatability
-statistics are printed to the console, and the full optimisation table is
-attached as \code{attr(result, "optimization")}.
+\code{min_retention} of the study animals. Diurnal time bins are derived
+from the data and used in the optimisation. The selected parameters and
+repeatability statistics are printed to the console, and the full
+optimisation table is attached as \code{attr(result, "optimization")}.
 
 When all three of \code{param1}, \code{param2}, and \code{min_time} are
 supplied, the function runs in manual mode with those exact values.
