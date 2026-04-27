@@ -45,22 +45,31 @@ bin-weighted daily means (manual mode only).}
 must cover to be retained. Optimised automatically in auto mode;
 default \code{1} in manual mode.}
 
+\item{min_weeks_pct}{numeric (0--1). Minimum proportion of study weeks in
+which an animal must have valid weekly records to be included in the
+experimental averages (\code{exp_data}). Default: \code{0.50}.}
+
 \item{transform}{logical. Convert gas production from g/day to L/day.
 Default: \code{FALSE}.}
 
 \item{cutoff}{integer. SDs for outlier removal. Default: \code{3}.}
 }
 \value{
-A named list with three data frames:
+A named list with four data frames:
   \item{filtered_data}{visit-level records after quality filtering.}
   \item{daily_data}{daily emission estimates.}
   \item{weekly_data}{weekly emission estimates.}
+  \item{exp_data}{one row per animal: experimental mean across weeks,
+    with columns \code{RFID}, \code{weeks}, \code{days}, \code{totaln},
+    \code{minutes}, and one column per gas. Only animals present in at
+    least \code{min_weeks_pct} of study weeks are included.}
   In automatic mode, the full optimisation table is accessible via
   \code{attr(result, "optimization")} and the diurnal analysis via
   \code{attr(result, "diurnal")}.
 }
 \description{
-Processes and calculates daily and weekly averages of 'GreenFeed' data.
+Processes and calculates daily, weekly, and experimental averages of
+'GreenFeed' data.
 
 When \code{param1}, \code{param2}, and \code{min_time} are all omitted
 (the default), the function automatically selects the combination of
