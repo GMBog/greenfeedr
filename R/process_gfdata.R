@@ -7,12 +7,17 @@
 #'
 #' When \code{param1}, \code{param2}, and \code{min_time} are all omitted
 #' (the default), the function automatically selects the combination of
-#' filtering parameters that maximises the composite repeatability (ICC) of
-#' \code{gas} emission estimates while retaining at least
-#' \code{min_retention} of the study animals. Diurnal time bins are derived
-#' from the data and used in the optimisation. The selected parameters and
-#' repeatability statistics are printed to the console, and the full
-#' optimisation table is attached as \code{attr(result, "optimization")}.
+#' filtering parameters that minimises the \strong{median relative standard
+#' error} (RSE) of individual animal emission estimates while retaining at
+#' least \code{min_retention} of the study animals. For each animal, RSE
+#' equals \eqn{(SD_{weekly} / \bar{x}) / \sqrt{n_{weeks}} \times 100},
+#' directly measuring how precisely the repeated spot-sample means converge
+#' on the animal's true emission rate. Because RSE is computed entirely from
+#' the data, the optimal parameters are study-specific — no external
+#' thresholds are imposed. Diurnal time bins are derived from the data and
+#' used in the optimisation. The selected parameters are printed to the
+#' console, and the full optimisation table is attached as
+#' \code{attr(result, "optimization")}.
 #'
 #' When all three of \code{param1}, \code{param2}, and \code{min_time} are
 #' supplied, the function runs in manual mode with those exact values.
@@ -28,14 +33,14 @@
 #'   automatic selection (default: \code{NULL}).
 #' @param min_time numeric. Minimum visit duration in minutes. Omit for
 #'   automatic selection (default: \code{NULL}).
-#' @param gas character. Gas whose ICC is maximised in automatic mode.
-#'   One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, \code{"H2"}.
+#' @param gas character. Gas used for reliability optimisation in automatic
+#'   mode. One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, \code{"H2"}.
 #'   Default: \code{"CH4"}.
 #' @param min_retention numeric (0--1). Minimum proportion of study animals
 #'   a combination must retain in automatic mode. Default: \code{0.80}.
-#' @param icc_tol numeric. Combinations within \code{icc_tol} of the maximum
-#'   composite ICC are treated as tied; the most lenient is selected.
-#'   Default: \code{0.01}.
+#' @param tol numeric. Combinations within \code{tol} percentage points of
+#'   the minimum median RSE are treated as tied; the most lenient is
+#'   selected. Default: \code{0.5}.
 #' @param quick logical. Use a reduced parameter grid in automatic mode.
 #'   Default: \code{FALSE}.
 #' @param peak_hour optional integer. Hour of peak emissions for bin-weighted
@@ -60,7 +65,8 @@
 #'     with columns \code{RFID}, \code{weeks}, \code{days}, \code{totaln},
 #'     \code{minutes}, and one column per gas. Only animals present in at
 #'     least \code{min_weeks_pct} of study weeks are included.}
-#'   In automatic mode, the full optimisation table is accessible via
+#'   In automatic mode, the full optimisation table (column \code{med_rse}:
+#'   median relative SE in percent) is accessible via
 #'   \code{attr(result, "optimization")} and the diurnal analysis via
 #'   \code{attr(result, "diurnal")}.
 #'
@@ -84,12 +90,13 @@
 #' @import dplyr
 #' @importFrom dplyr %>%
 #' @import readxl
-#' @importFrom stats weighted.mean sd aggregate setNames
+#' @importFrom stats weighted.mean sd aggregate setNames median
 utils::globalVariables(c(
   "EndTime", "CH4GramsPerDay", "CO2GramsPerDay", "O2GramsPerDay", "H2GramsPerDay",
   "nDays", "nRecords", "TotalMin",
   "value", "phase",
-  "bin", "n_bin", "bin_minutes", "n_bins_covered"
+  "bin", "n_bin", "bin_minutes", "n_bins_covered",
+  "totaln"
 ))
 process_gfdata <- function(data, start_date, end_date,
                            param1        = NULL,
@@ -97,7 +104,7 @@ process_gfdata <- function(data, start_date, end_date,
                            min_time      = NULL,
                            gas           = "CH4",
                            min_retention = 0.80,
-                           icc_tol       = 0.01,
+                           tol           = 0.5,
                            quick         = FALSE,
                            peak_hour     = NULL,
                            trough_hour   = NULL,
@@ -112,6 +119,7 @@ process_gfdata <- function(data, start_date, end_date,
   if (!auto_mode && (is.null(param1) || is.null(param2) || is.null(min_time)))
     stop("Supply all three of param1, param2, and min_time together, ",
          "or omit all three for automatic selection.")
+
   # ---------------------------------------------------------------------------
   # Input validation
   # ---------------------------------------------------------------------------
@@ -131,15 +139,17 @@ process_gfdata <- function(data, start_date, end_date,
   }
   if (!is.numeric(min_retention) || min_retention <= 0 || min_retention > 1)
     stop("'min_retention' must be between 0 (exclusive) and 1.")
-  if (!is.numeric(icc_tol) || icc_tol < 0)
-    stop("'icc_tol' must be a non-negative number.")
+  if (!is.numeric(tol) || tol < 0)
+    stop("'tol' must be a non-negative number.")
   if (!is.numeric(min_weeks_pct) || min_weeks_pct <= 0 || min_weeks_pct > 1)
     stop("'min_weeks_pct' must be between 0 (exclusive) and 1.")
-  # Total study weeks (used later for exp_df threshold)
+
+  # Total study weeks (used for exp_data threshold)
   total_weeks <- as.integer(
     floor(as.numeric(difftime(as.Date(end_date), as.Date(start_date),
                               units = "weeks")))) + 1L
   min_weeks <- max(1L, ceiling(min_weeks_pct * total_weeks))
+
   # ---------------------------------------------------------------------------
   # Normalise, quality-filter, derive columns (common to both modes)
   # ---------------------------------------------------------------------------
@@ -159,8 +169,9 @@ process_gfdata <- function(data, start_date, end_date,
           as.numeric(substr(GoodDataDuration, 4, 5)) +
           as.numeric(substr(GoodDataDuration, 7, 8)) / 60, 2)
     )
-  # Base dataset: outlier-removed and date-filtered; min_time not yet applied
-  # so the grid search can explore different min_time thresholds.
+
+  # Base dataset: outlier-removed, date-filtered; min_time not yet applied
+  # so the grid search can explore all min_time thresholds without re-filtering.
   d_base <- df %>%
     dplyr::filter(
       dplyr::if_all(c(CH4GramsPerDay, CO2GramsPerDay),
@@ -170,16 +181,19 @@ process_gfdata <- function(data, start_date, end_date,
     )
   if (nrow(d_base) == 0)
     stop("No valid records found after date range and quality filters.")
+
   # ---------------------------------------------------------------------------
   # Optimisation output placeholders
   # ---------------------------------------------------------------------------
   opt_results <- NULL
   diurnal     <- NULL
+
   # ===========================================================================
-  # [AUTO MODE] Diurnal analysis + ICC grid search
+  # [AUTO MODE] Diurnal analysis + RSE grid search
   # ===========================================================================
   if (auto_mode) {
     message("\n[process_gfdata] No parameters supplied. Running automatic optimisation...\n")
+
     # ---- Diurnal analysis --------------------------------------------------
     diurnal <- tryCatch({
       df_d  <- d_base[!is.na(d_base$GoodDataDuration) & d_base$GoodDataDuration >= 2 &
@@ -200,6 +214,7 @@ process_gfdata <- function(data, start_date, end_date,
       trough_h     <- as.integer(names(which.min(hourly_means)))
       level        <- if (eta_sq < 0.03) "low" else
         if (eta_sq < 0.10) "moderate" else "high"
+
       # Plot
       diurnal_plot <- if (requireNamespace("ggplot2", quietly = TRUE)) {
         all_hours   <- 0:23
@@ -250,6 +265,7 @@ process_gfdata <- function(data, start_date, end_date,
       } else {
         message("Install ggplot2 for the diurnal curve plot."); NULL
       }
+
       message(sprintf(paste0(
         "-- Diurnal analysis (%s) --\n",
         "  eta-squared       : %.4f (%.1f%% of variance)  ->  Variation: %s\n",
@@ -260,6 +276,7 @@ process_gfdata <- function(data, start_date, end_date,
         gas, eta_sq, eta_sq * 100, toupper(level), diurnal_cv,
         peak_h, trough_h, trough_h, peak_h, peak_h, trough_h))
       if (!is.null(diurnal_plot)) print(diurnal_plot)
+
       list(eta_sq       = round(eta_sq, 4),
            diurnal_cv   = round(diurnal_cv, 2),
            peak_hour    = peak_h,
@@ -271,7 +288,8 @@ process_gfdata <- function(data, start_date, end_date,
       message("Note: Diurnal analysis could not be completed: ", conditionMessage(e))
       NULL
     })
-    # ---- Bin assignment function for the grid search -----------------------
+
+    # ---- Bin assignment function -------------------------------------------
     if (!is.null(diurnal) && diurnal$peak_hour != diurnal$trough_hour) {
       ph_g <- diurnal$peak_hour; th_g <- diurnal$trough_hour
       assign_bin_g <- if (ph_g > th_g) {
@@ -284,42 +302,45 @@ process_gfdata <- function(data, start_date, end_date,
       assign_bin_g    <- function(h) rep(1L, length(h))
       n_bins_possible <- 1L
     }
+
     # ---- Retention denominator & annotate d_base ---------------------------
     max_n       <- length(unique(d_base$RFID))
     d_base$bin  <- assign_bin_g(d_base$hour)
     d_base$week <- floor(as.numeric(
       difftime(d_base$day, as.Date(start_date), units = "weeks"))) + 1
-    # ---- ICC helper --------------------------------------------------------
-    compute_repeatability <- function(df_r, col) {
-      if (is.null(df_r) || nrow(df_r) == 0 || !col %in% colnames(df_r))
-        return(NA_real_)
-      counts <- table(df_r$RFID)
-      df_r   <- df_r[df_r$RFID %in% names(counts[counts > 1]), ]
-      vals   <- df_r[[col]]; groups <- as.character(df_r$RFID)
-      keep   <- !is.na(vals); vals <- vals[keep]; groups <- groups[keep]
-      n_tot  <- length(vals); n_an <- length(unique(groups))
-      if (n_an < 2 || n_tot < 3) return(NA_real_)
-      am  <- tapply(vals, groups, mean)
-      an  <- tapply(vals, groups, length)
-      gm  <- mean(vals)
-      n0  <- (n_tot - sum(an^2) / n_tot) / (n_an - 1)
-      MSb <- sum(an * (am - gm)^2) / (n_an - 1)
-      MSw <- sum(tapply(vals, groups,
-                        function(x) sum((x - mean(x))^2))) / (n_tot - n_an)
-      den <- MSb + (n0 - 1) * MSw
-      if (den == 0) return(NA_real_)
-      round(max((MSb - MSw) / den, 0), 4)
-    }
+
+    # ---- Study visit diagnostics (used for biological floors) --------------
+    vpd_tbl    <- aggregate(rep(1L, nrow(d_base)),
+                            by  = list(RFID = d_base$RFID, day = d_base$day),
+                            FUN = sum)
+    median_vpd <- median(vpd_tbl$x, na.rm = TRUE)
+
+    # ---- Biological floors -------------------------------------------------
+    p1_min_diurnal <- if (is.null(diurnal)) 1L else
+      switch(diurnal$level, low = 1L, moderate = 2L, high = 3L, 1L)
+    # Cap by observed visit rate so the floor never exceeds what the herd actually does
+    p1_min <- min(p1_min_diurnal, max(1L, as.integer(floor(median_vpd))))
+
+    # min_bins = 2 is only meaningful when most animals visit >= 2 times/day;
+    # otherwise it incorrectly excludes once-daily visitors.
+    mb_grid <- if (n_bins_possible > 1L && median_vpd >= 2) 1:2 else 1L
+
     # ---- Parameter grid ----------------------------------------------------
-    mb_grid    <- seq_len(n_bins_possible)
     param_grid <- if (quick) {
-      expand.grid(param1 = 1:4, param2 = seq(1, 7, by = 2),
-                  min_time = 2:4, min_bins = mb_grid, stringsAsFactors = FALSE)
+      expand.grid(param1   = p1_min:4,
+                  param2   = c(2L, 4L, 7L),
+                  min_time = 2:4,
+                  min_bins = mb_grid,
+                  stringsAsFactors = FALSE)
     } else {
-      expand.grid(param1 = 1:8, param2 = 1:7,
-                  min_time = 2:6, min_bins = mb_grid, stringsAsFactors = FALSE)
+      expand.grid(param1   = p1_min:8,
+                  param2   = 2:7,          # floor: >= 2 days makes a week
+                  min_time = 2:6,
+                  min_bins = mb_grid,
+                  stringsAsFactors = FALSE)
     }
     message(sprintf("Evaluating %d parameter combinations...", nrow(param_grid)))
+
     # ---- Precompute per min_time (avoids redundant filtering) --------------
     mt_vals <- sort(unique(param_grid$min_time))
     precomp <- lapply(setNames(mt_vals, as.character(mt_vals)), function(mt) {
@@ -348,7 +369,12 @@ process_gfdata <- function(data, start_date, end_date,
       daily_all <- merge(daily_all, n_bins_df,   by = c("RFID", "day"))
       list(daily_all = daily_all)
     })
-    # ---- Run grid ----------------------------------------------------------
+
+    # ---- Grid search: minimise median relative SE --------------------------
+    # RSE per animal = (SD_weekly / mean) / sqrt(n_weeks) * 100.
+    # This measures how precisely the spot-sample weekly means converge on
+    # the animal's true emission rate — the quantity users actually care about.
+    # Requires >= 2 qualifying weeks per animal to compute a within-animal SD.
     run_one <- function(combo) {
       p1 <- combo$param1; p2 <- combo$param2
       mt <- combo$min_time; mb <- combo$min_bins
@@ -371,101 +397,133 @@ process_gfdata <- function(data, start_date, end_date,
         weekly <- weekly[weekly$n_days >= p2, ]
         if (nrow(weekly) == 0 || length(unique(weekly$RFID)) < 2)
           stop("no weekly data")
+
+        n_ret <- length(unique(weekly$RFID))
+
+        rse_vals <- sapply(split(weekly[[gas_col]], weekly$RFID), function(x) {
+          if (length(x) < 2) return(NA_real_)
+          mn <- mean(x, na.rm = TRUE)
+          if (is.na(mn) || mn <= 0) return(NA_real_)
+          (stats::sd(x, na.rm = TRUE) / mn) / sqrt(length(x)) * 100
+        })
+        med_rse <- if (any(!is.na(rse_vals))) median(rse_vals, na.rm = TRUE) else NA_real_
+
+        # Fallback for short studies: if no animal has >= 2 qualifying weeks,
+        # compute RSE from daily means instead (same formula, finer granularity)
+        if (is.na(med_rse)) {
+          rse_d <- sapply(split(daily[[gas_col]], daily$RFID), function(x) {
+            if (length(x) < 2) return(NA_real_)
+            mn <- mean(x, na.rm = TRUE)
+            if (is.na(mn) || mn <= 0) return(NA_real_)
+            (stats::sd(x, na.rm = TRUE) / mn) / sqrt(length(x)) * 100
+          })
+          med_rse <- if (any(!is.na(rse_d))) median(rse_d, na.rm = TRUE) else NA_real_
+        }
+
         data.frame(
-          param1               = p1, param2 = p2,
-          min_time             = mt, min_bins = mb,
-          N                    = length(unique(weekly$RFID)),
-          repeatability_daily  = compute_repeatability(daily,  gas_col),
-          repeatability_weekly = compute_repeatability(weekly, gas_col),
-          stringsAsFactors     = FALSE)
+          param1   = p1, param2 = p2, min_time = mt, min_bins = mb,
+          N        = n_ret,
+          med_rse  = med_rse,
+          stringsAsFactors = FALSE)
       }, error = function(e)
         data.frame(param1 = p1, param2 = p2, min_time = mt, min_bins = mb,
-                   N = NA_integer_, repeatability_daily = NA_real_,
-                   repeatability_weekly = NA_real_, stringsAsFactors = FALSE))
+                   N = NA_integer_, med_rse = NA_real_,
+                   stringsAsFactors = FALSE))
     }
-    results      <- do.call(rbind, lapply(split(param_grid, seq(nrow(param_grid))), run_one))
+
+    results <- do.call(rbind, lapply(split(param_grid, seq(nrow(param_grid))), run_one))
     rownames(results) <- NULL
+
     # ---- Selection ---------------------------------------------------------
-    results_valid <- results[!is.na(results$repeatability_daily) & !is.na(results$N), ]
+    results_valid <- results[!is.na(results$med_rse) & !is.na(results$N), ]
     if (nrow(results_valid) == 0)
       stop("No valid parameter combinations found. Check your data and date range.")
+
     eligible <- results_valid[results_valid$N >= min_retention * max_n, ]
     if (nrow(eligible) == 0) {
       message("No combinations met the retention threshold of ",
               round(min_retention * 100), "%. Selecting from all valid combinations.")
       eligible <- results_valid
     }
-    eligible$composite_icc <- ifelse(
-      !is.na(eligible$repeatability_daily) & !is.na(eligible$repeatability_weekly),
-      (eligible$repeatability_daily + eligible$repeatability_weekly) / 2,
-      ifelse(!is.na(eligible$repeatability_daily),
-             eligible$repeatability_daily, eligible$repeatability_weekly))
-    best_icc  <- max(eligible$composite_icc, na.rm = TRUE)
-    near_best <- eligible[!is.na(eligible$composite_icc) &
-                            eligible$composite_icc >= best_icc - icc_tol, ]
+
+    best_rse  <- min(eligible$med_rse, na.rm = TRUE)
+    near_best <- eligible[!is.na(eligible$med_rse) &
+                            eligible$med_rse <= best_rse + tol, ]
     near_best$leniency <- near_best$param1 + near_best$param2 +
       near_best$min_time + (near_best$min_bins - 1)
-    if (!is.null(diurnal) && diurnal$level == "high") {
-      near_best <- near_best[order(-near_best$min_bins, near_best$leniency), ]
-      best <- near_best[1, ]
-    } else {
-      best <- near_best[which.min(near_best$leniency), ]
-    }
+    best <- near_best[which.min(near_best$leniency), ]
+
     # ---- Assign selected params to outer scope ----------------------------
-    param1      <- best$param1
-    param2      <- best$param2
-    min_time    <- best$min_time
-    min_bins    <- best$min_bins
+    param1   <- best$param1
+    param2   <- best$param2
+    min_time <- best$min_time
+    min_bins <- best$min_bins
     if (!is.null(diurnal)) {
       peak_hour   <- diurnal$peak_hour
       trough_hour <- diurnal$trough_hour
     }
+
     # ---- Sort and store full optimisation table ----------------------------
-    results_valid$composite_icc <- ifelse(
-      !is.na(results_valid$repeatability_daily) & !is.na(results_valid$repeatability_weekly),
-      (results_valid$repeatability_daily + results_valid$repeatability_weekly) / 2,
-      ifelse(!is.na(results_valid$repeatability_daily),
-             results_valid$repeatability_daily, results_valid$repeatability_weekly))
     results_valid$leniency <- results_valid$param1 + results_valid$param2 +
       results_valid$min_time + (results_valid$min_bins - 1)
-    results_valid <- results_valid[order(-results_valid$composite_icc,
+    results_valid <- results_valid[order(results_valid$med_rse,
                                          results_valid$leniency), ]
     results_valid$leniency <- NULL
     rownames(results_valid) <- NULL
     opt_results <- results_valid
+
     # ---- Print selection summary -------------------------------------------
     pct_retained <- round(best$N / max_n * 100)
     effective_p1 <- max(param1, min_bins)
     binding_note <- if (min_bins > 1 && min_bins > param1)
       sprintf("\n  Note: min_bins = %d is the binding constraint (effective records/day = %d).",
               min_bins, effective_p1) else ""
+
     message(sprintf(paste0(
       "\n--- Selected parameters ---\n",
-      "  param1   = %d  (min. records per day)\n",
+      "  param1   = %d  (min. records per animal per day)\n",
       "  param2   = %d  (min. days with records per week)\n",
       "  min_time = %d  (min. minutes per visit)\n",
       "  min_bins = %d  (min. diurnal phases per day)%s\n",
-      "  Repeatability daily  (ICC) : %.4f\n",
-      "  Repeatability weekly (ICC) : %.4f\n",
-      "  Composite ICC              : %.4f\n",
+      "  Median RSE                 : %.2f%%\n",
       "  Animals retained           : %d / %d (%d%%)\n",
+      "  RSE = within-animal SD / mean / sqrt(n_weeks) x 100\n",
       "  Full optimisation table    : attr(result, 'optimization')\n",
       "---------------------------"),
       param1, param2, min_time, min_bins, binding_note,
-      best$repeatability_daily, best$repeatability_weekly,
-      (best$repeatability_daily + best$repeatability_weekly) / 2,
-      best$N, max_n, pct_retained))
+      best$med_rse, best$N, max_n, pct_retained))
+
+    if (!is.null(peak_hour) && !is.null(trough_hour) &&
+        as.integer(peak_hour) != as.integer(trough_hour)) {
+      message(sprintf(paste0(
+        "  To reproduce in manual mode:\n",
+        "  process_gfdata(data, \"%s\", \"%s\",\n",
+        "    param1 = %d, param2 = %d, min_time = %d, min_bins = %d,\n",
+        "    peak_hour = %d, trough_hour = %d)"),
+        format(start_date), format(end_date),
+        param1, param2, min_time, min_bins,
+        as.integer(peak_hour), as.integer(trough_hour)))
+    } else {
+      message(sprintf(paste0(
+        "  To reproduce in manual mode:\n",
+        "  process_gfdata(data, \"%s\", \"%s\",\n",
+        "    param1 = %d, param2 = %d, min_time = %d)"),
+        format(start_date), format(end_date), param1, param2, min_time))
+    }
+
   } else {
     # Manual mode message
     message(paste("Using param1 =", param1, ", param2 =", param2,
                   ", min_time =", min_time, ", min_bins =", min_bins))
   }
+
   # ===========================================================================
   # Apply selected / supplied min_time -> final visit-level dataset
   # ===========================================================================
   df <- d_base %>% dplyr::filter(GoodDataDuration >= min_time)
+
   # ---------------------------------------------------------------------------
-  # Bin assignment (common to both modes, uses resolved peak/trough)
+  # Bin assignment (uses resolved peak/trough from auto or manual mode)
   # ---------------------------------------------------------------------------
   use_bins <- !is.null(peak_hour) && !is.null(trough_hour) &&
     as.integer(peak_hour) != as.integer(trough_hour)
@@ -480,6 +538,7 @@ process_gfdata <- function(data, start_date, end_date,
     if (min_bins == 2)
       message("  Note: min_bins = 2. Only animal-days covering BOTH phases are retained.")
   }
+
   # ---------------------------------------------------------------------------
   # Optional log-transform
   # ---------------------------------------------------------------------------
@@ -489,6 +548,7 @@ process_gfdata <- function(data, start_date, end_date,
   } else {
     metric <- "(g/d)"
   }
+
   # ---------------------------------------------------------------------------
   # Daily aggregation
   # ---------------------------------------------------------------------------
@@ -549,6 +609,7 @@ process_gfdata <- function(data, start_date, end_date,
       dplyr::select(RFID, week, day, n, minutes,
                     CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay)
   }
+
   # ---------------------------------------------------------------------------
   # Weekly aggregation
   # ---------------------------------------------------------------------------
@@ -568,10 +629,11 @@ process_gfdata <- function(data, start_date, end_date,
     dplyr::filter(nDays >= param2) %>%
     dplyr::select(RFID, week, nDays, nRecords, TotalMin,
                   CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay)
+
   # ---------------------------------------------------------------------------
   # Experimental averages (one row per animal, arithmetic mean across weeks)
-  # Animals must have records in >= min_weeks out of total_weeks study weeks.
-  # Gas means are unweighted across weeks (each week contributes equally).
+  # Each week contributes equally regardless of how many days it contains.
+  # Animals must appear in >= min_weeks out of total_weeks study weeks.
   # ---------------------------------------------------------------------------
   exp_df <- weekly_df %>%
     dplyr::group_by(RFID) %>%
@@ -589,6 +651,7 @@ process_gfdata <- function(data, start_date, end_date,
     dplyr::filter(weeks >= min_weeks) %>%
     dplyr::select(RFID, weeks, days, totaln, minutes,
                   CO2GramsPerDay, CH4GramsPerDay, O2GramsPerDay, H2GramsPerDay)
+
   # ---------------------------------------------------------------------------
   # Summary messages
   # ---------------------------------------------------------------------------
@@ -606,6 +669,7 @@ process_gfdata <- function(data, start_date, end_date,
   message(sprintf(
     "Experimental averages: %d animals retained (>= %d/%d study weeks = %.0f%% threshold)",
     nrow(exp_df), min_weeks, total_weeks, min_weeks_pct * 100))
+
   # ---------------------------------------------------------------------------
   # Optional rename for transform
   # ---------------------------------------------------------------------------
@@ -624,6 +688,7 @@ process_gfdata <- function(data, start_date, end_date,
     weekly_df <- rename_gases(weekly_df)
     exp_df    <- rename_gases(exp_df)
   }
+
   # ---------------------------------------------------------------------------
   # Return
   # ---------------------------------------------------------------------------

@@ -21,16 +21,16 @@ automatic selection (default: \code{NULL}).}
 \item{min_time}{numeric. Minimum visit duration in minutes. Omit for
 automatic selection (default: \code{NULL}).}
 
-\item{gas}{character. Gas whose ICC is maximised in automatic mode.
-One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, \code{"H2"}.
+\item{gas}{character. Gas used for reliability optimisation in automatic
+mode. One of \code{"CH4"}, \code{"CO2"}, \code{"O2"}, \code{"H2"}.
 Default: \code{"CH4"}.}
 
 \item{min_retention}{numeric (0--1). Minimum proportion of study animals
 a combination must retain in automatic mode. Default: \code{0.80}.}
 
-\item{icc_tol}{numeric. Combinations within \code{icc_tol} of the maximum
-composite ICC are treated as tied; the most lenient is selected.
-Default: \code{0.01}.}
+\item{tol}{numeric. Combinations within \code{tol} percentage points of
+the minimum median RSE are treated as tied; the most lenient is
+selected. Default: \code{0.5}.}
 
 \item{quick}{logical. Use a reduced parameter grid in automatic mode.
 Default: \code{FALSE}.}
@@ -63,7 +63,8 @@ A named list with four data frames:
     with columns \code{RFID}, \code{weeks}, \code{days}, \code{totaln},
     \code{minutes}, and one column per gas. Only animals present in at
     least \code{min_weeks_pct} of study weeks are included.}
-  In automatic mode, the full optimisation table is accessible via
+  In automatic mode, the full optimisation table (column \code{med_rse}:
+  median relative SE in percent) is accessible via
   \code{attr(result, "optimization")} and the diurnal analysis via
   \code{attr(result, "diurnal")}.
 }
@@ -73,12 +74,17 @@ Processes and calculates daily, weekly, and experimental averages of
 
 When \code{param1}, \code{param2}, and \code{min_time} are all omitted
 (the default), the function automatically selects the combination of
-filtering parameters that maximises the composite repeatability (ICC) of
-\code{gas} emission estimates while retaining at least
-\code{min_retention} of the study animals. Diurnal time bins are derived
-from the data and used in the optimisation. The selected parameters and
-repeatability statistics are printed to the console, and the full
-optimisation table is attached as \code{attr(result, "optimization")}.
+filtering parameters that minimises the \strong{median relative standard
+error} (RSE) of individual animal emission estimates while retaining at
+least \code{min_retention} of the study animals. For each animal, RSE
+equals \eqn{(SD_{weekly} / \bar{x}) / \sqrt{n_{weeks}} \times 100},
+directly measuring how precisely the repeated spot-sample means converge
+on the animal's true emission rate. Because RSE is computed entirely from
+the data, the optimal parameters are study-specific — no external
+thresholds are imposed. Diurnal time bins are derived from the data and
+used in the optimisation. The selected parameters are printed to the
+console, and the full optimisation table is attached as
+\code{attr(result, "optimization")}.
 
 When all three of \code{param1}, \code{param2}, and \code{min_time} are
 supplied, the function runs in manual mode with those exact values.
