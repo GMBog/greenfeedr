@@ -53,6 +53,15 @@ experimental averages (\code{exp_data}). Default: \code{0.50}.}
 Default: \code{FALSE}.}
 
 \item{cutoff}{integer. SDs for outlier removal. Default: \code{3}.}
+
+\item{require_both_gases}{logical. If \code{TRUE} (default), records must
+have both CH4 and CO2 to be kept, so each record can be checked for
+plausibility through the CH4:CO2 relationship (both gases come from the
+same breath sample, so missing CO2 often indicates a problem with the
+visit). If \code{FALSE}, records with valid CH4 but missing CO2 are kept
+(e.g. when C-Lock has finalized CH4 as valid but left CO2 blank). The
+outlier filter is still applied to CO2 when it is present. Use only when
+you trust the source validation of CH4.}
 }
 \value{
 A named list with four data frames:

@@ -56,6 +56,14 @@
 #' @param transform logical. Convert gas production from g/day to L/day.
 #'   Default: \code{FALSE}.
 #' @param cutoff integer. SDs for outlier removal. Default: \code{3}.
+#' @param require_both_gases logical. If \code{TRUE} (default), records must
+#'   have both CH4 and CO2 to be kept, so each record can be checked for
+#'   plausibility through the CH4:CO2 relationship (both gases come from the
+#'   same breath sample, so missing CO2 often indicates a problem with the
+#'   visit). If \code{FALSE}, records with valid CH4 but missing CO2 are kept
+#'   (e.g. when C-Lock has finalized CH4 as valid but left CO2 blank). The
+#'   outlier filter is still applied to CO2 when it is present. Use only when
+#'   you trust the source validation of CH4.
 #'
 #' @return A named list with four data frames:
 #'   \item{filtered_data}{visit-level records after quality filtering.}
@@ -111,7 +119,8 @@ process_gfdata <- function(data, start_date, end_date,
                            min_bins      = 1,
                            min_weeks_pct = 0.50,
                            transform     = FALSE,
-                           cutoff        = 3) {
+                           cutoff        = 3,
+                           require_both_gases = TRUE) {
   # ---------------------------------------------------------------------------
   # Parameter mode detection
   # ---------------------------------------------------------------------------
@@ -143,6 +152,9 @@ process_gfdata <- function(data, start_date, end_date,
     stop("'tol' must be a non-negative number.")
   if (!is.numeric(min_weeks_pct) || min_weeks_pct <= 0 || min_weeks_pct > 1)
     stop("'min_weeks_pct' must be between 0 (exclusive) and 1.")
+  if (!is.logical(require_both_gases) || length(require_both_gases) != 1 ||
+      is.na(require_both_gases))
+    stop("'require_both_gases' must be TRUE or FALSE.")
 
   # Total study weeks (used for exp_data threshold)
   total_weeks <- as.integer(
@@ -172,13 +184,32 @@ process_gfdata <- function(data, start_date, end_date,
 
   # Base dataset: outlier-removed, date-filtered; min_time not yet applied
   # so the grid search can explore all min_time thresholds without re-filtering.
-  d_base <- df %>%
-    dplyr::filter(
-      dplyr::if_all(c(CH4GramsPerDay, CO2GramsPerDay),
-                    ~ filter_within_range(.x, cutoff)),
-      !is.na(CH4GramsPerDay) & !is.na(CO2GramsPerDay),
-      day >= start_date & day <= end_date
-    )
+  if (isTRUE(require_both_gases)) {
+    # Default: CH4 and CO2 must both be present and within range, so each
+    # record can be checked for plausibility through the CH4:CO2 relationship.
+    d_base <- df %>%
+      dplyr::filter(
+        dplyr::if_all(c(CH4GramsPerDay, CO2GramsPerDay),
+                      ~ filter_within_range(.x, cutoff)),
+        !is.na(CH4GramsPerDay) & !is.na(CO2GramsPerDay),
+        day >= start_date & day <= end_date
+      )
+  } else {
+    # CH4 must be present and within range; CO2 may be missing (e.g. blank in
+    # C-Lock finalized reports). When CO2 is present, its outlier filter still applies.
+    n_ch4_only <- sum(!is.na(df$CH4GramsPerDay) & is.na(df$CO2GramsPerDay))
+    d_base <- df %>%
+      dplyr::filter(
+        !is.na(CH4GramsPerDay),
+        filter_within_range(CH4GramsPerDay, cutoff),
+        is.na(CO2GramsPerDay) | filter_within_range(CO2GramsPerDay, cutoff),
+        day >= start_date & day <= end_date
+      )
+    message(sprintf(paste0(
+      "require_both_gases = FALSE: %d record(s) with valid CH4 but missing CO2 ",
+      "are eligible to be kept (before date and duration filters). ",
+      "CH4 for these records cannot be checked against CO2."), n_ch4_only))
+  }
   if (nrow(d_base) == 0)
     stop("No valid records found after date range and quality filters.")
 
